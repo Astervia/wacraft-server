@@ -1,0 +1,12 @@
+# Binaries
+/bin/wacraft-server
+
+# Env variables
+.env
+.env.production
+
+# Temporary
+tmp/
+
+# Personal
+debug/

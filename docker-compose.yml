@@ -1,0 +1,29 @@
+services:
+  app:
+    image: wacraft-server:latest
+    depends_on: [db]
+    env_file: [.env]
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/postgres
+    ports:
+      - "6900:6900"
+    networks: [main]
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "${DATABASE_PORT}:5432"
+    networks: [main]
+
+volumes:
+  db_data:
+
+networks:
+  main:

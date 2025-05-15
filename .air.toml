@@ -1,0 +1,29 @@
+# Working directory inside container
+root = "."
+
+# Watch files with these extensions
+[watcher]
+extensions = ["go", "tpl", "tmpl", "html"]
+exclude_dir = ["vendor", "node_modules", "tmp", "dist"]
+
+# Build settings
+[build]
+cmd = "go build -buildvcs=false -o ./tmp/main ./main.go"
+bin = "tmp/main"
+full_bin = "tmp/main"
+include_ext = ["go", "mod"]
+exclude_dir = ["assets", "tmp"]
+exclude_file = []
+follow_symlink = true
+delay = 1000
+stop_on_error = true
+
+# Run settings
+[log]
+time = true
+
+[color]
+main = "yellow"
+watcher = "cyan"
+build = "green"
+runner = "magenta"
