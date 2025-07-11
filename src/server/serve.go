@@ -14,6 +14,7 @@ import (
 	status_router "github.com/Astervia/wacraft-server/src/status/router"
 	status_websocket "github.com/Astervia/wacraft-server/src/status/websocket-router"
 	user_router "github.com/Astervia/wacraft-server/src/user/router"
+	"github.com/Astervia/wacraft-server/src/validators"
 	webhook_config "github.com/Astervia/wacraft-server/src/webhook-in/config"
 	webhook_router "github.com/Astervia/wacraft-server/src/webhook/router"
 	"github.com/Astervia/wacraft-server/src/websocket"
@@ -28,6 +29,8 @@ func serve() {
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
 	}))
+
+	validators.InitValidators()
 
 	// Serving http endpoints
 	webhook_config.ServeWebhook(app)

@@ -478,6 +478,8 @@ definitions:
         description: Type of message.
       video:
         $ref: '#/definitions/media_model.UseMedia'
+    required:
+    - type
     type: object
   message_model.MessageReceived:
     properties:
@@ -540,7 +542,9 @@ definitions:
       id:
         type: string
       message_status:
-        type: string
+        $ref: '#/definitions/message_model.SendingStatus'
+    required:
+    - message_status
     type: object
   message_model.ProductData:
     properties:
@@ -756,6 +760,8 @@ definitions:
         description: Type of message.
       video:
         $ref: '#/definitions/media_model.UseMedia'
+    required:
+    - type
     type: object
   message_model.SendingStatus:
     enum:
@@ -1080,6 +1086,8 @@ definitions:
         allOf:
         - $ref: '#/definitions/message_type_interactive_model.ButtonType'
         description: The only supported option is reply for Reply Button Messages.
+    required:
+    - type
     type: object
   message_type_interactive_model.ButtonReplyData:
     properties:
@@ -1149,6 +1157,8 @@ definitions:
         description: Type of message.
       video:
         $ref: '#/definitions/media_model.UseMedia'
+    required:
+    - type
     type: object
   message_type_interactive_model.HeaderType:
     enum:
@@ -1399,11 +1409,11 @@ definitions:
   template_model.ButtonData:
     properties:
       example:
-        description: string or string array
+        description: Check valid examples here https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates/#template-components
       flow_action:
         type: string
       flow_id:
-        type: string
+        type: integer
       navigate_screen:
         type: string
       phone_number:
@@ -1414,6 +1424,8 @@ definitions:
         $ref: '#/definitions/template_model.ButtonType'
       url:
         type: string
+    required:
+    - type
     type: object
   template_model.ButtonType:
     enum:
@@ -1444,6 +1456,8 @@ definitions:
         description: Only for button type.
       type:
         $ref: '#/definitions/template_model.ComponentType'
+    required:
+    - type
     type: object
   template_model.ComponentExample:
     properties:
@@ -1553,6 +1567,16 @@ definitions:
     - Document
     - Button
     - Payload
+  template_model.Status:
+    enum:
+    - APPROVED
+    - PENDING
+    - REJECTED
+    type: string
+    x-enum-varnames:
+    - Approved
+    - Pending
+    - Rejected
   template_model.Template:
     properties:
       category:
@@ -1568,7 +1592,7 @@ definitions:
       name:
         type: string
       status:
-        type: string
+        $ref: '#/definitions/template_model.Status'
     type: object
   template_model.TemplateComponent:
     properties:
@@ -1598,6 +1622,8 @@ definitions:
         $ref: '#/definitions/template_model.ComponentType'
       video:
         $ref: '#/definitions/media_model.UseMedia'
+    required:
+    - type
     type: object
   template_model.TemplateFields:
     enum:
@@ -1957,7 +1983,7 @@ definitions:
 host: localhost:6900
 info:
   contact:
-    email: development@astservia.io
+    email: wacraft@astervia.tech
     name: Astervia Dev Team
     url: https://github.com/Astervia
   description: Backend server for the wacraft project. Handles WhatsApp Cloud API
@@ -6614,9 +6640,17 @@ paths:
       - in: query
         name: name_or_content
         type: string
-      - in: query
+      - enum:
+        - APPROVED
+        - PENDING
+        - REJECTED
+        in: query
         name: status
         type: string
+        x-enum-varnames:
+        - Approved
+        - Pending
+        - Rejected
       - collectionFormat: csv
         description: Summary to be returned.
         in: query

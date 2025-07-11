@@ -12,7 +12,7 @@ const docTemplate = `{
         "contact": {
             "name": "Astervia Dev Team",
             "url": "https://github.com/Astervia",
-            "email": "development@astservia.io"
+            "email": "wacraft@astervia.tech"
         },
         "license": {
             "name": "MIT",
@@ -7132,7 +7132,17 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            "APPROVED",
+                            "PENDING",
+                            "REJECTED"
+                        ],
                         "type": "string",
+                        "x-enum-varnames": [
+                            "Approved",
+                            "Pending",
+                            "Rejected"
+                        ],
                         "name": "status",
                         "in": "query"
                     },
@@ -7805,6 +7815,9 @@ const docTemplate = `{
         },
         "message_model.Message": {
             "type": "object",
+            "required": [
+                "type"
+            ],
             "properties": {
                 "audio": {
                     "$ref": "#/definitions/media_model.UseMedia"
@@ -7965,12 +7978,15 @@ const docTemplate = `{
         },
         "message_model.MessageResponse": {
             "type": "object",
+            "required": [
+                "message_status"
+            ],
             "properties": {
                 "id": {
                     "type": "string"
                 },
                 "message_status": {
-                    "type": "string"
+                    "$ref": "#/definitions/message_model.SendingStatus"
                 }
             }
         },
@@ -8193,6 +8209,9 @@ const docTemplate = `{
         },
         "message_model.SenderData": {
             "type": "object",
+            "required": [
+                "type"
+            ],
             "properties": {
                 "audio": {
                     "$ref": "#/definitions/media_model.UseMedia"
@@ -8700,6 +8719,9 @@ const docTemplate = `{
         },
         "message_type_interactive_model.ButtonData": {
             "type": "object",
+            "required": [
+                "type"
+            ],
             "properties": {
                 "reply": {
                     "description": "The reply object contains the title and ID of the reply button.",
@@ -8795,6 +8817,9 @@ const docTemplate = `{
         },
         "message_type_interactive_model.Header": {
             "type": "object",
+            "required": [
+                "type"
+            ],
             "properties": {
                 "audio": {
                     "$ref": "#/definitions/media_model.UseMedia"
@@ -9159,15 +9184,18 @@ const docTemplate = `{
         },
         "template_model.ButtonData": {
             "type": "object",
+            "required": [
+                "type"
+            ],
             "properties": {
                 "example": {
-                    "description": "string or string array"
+                    "description": "Check valid examples here https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates/#template-components"
                 },
                 "flow_action": {
                     "type": "string"
                 },
                 "flow_id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "navigate_screen": {
                     "type": "string"
@@ -9205,6 +9233,9 @@ const docTemplate = `{
         },
         "template_model.Component": {
             "type": "object",
+            "required": [
+                "type"
+            ],
             "properties": {
                 "index": {
                     "description": "Only for button type. This is actually an integer string.",
@@ -9377,6 +9408,19 @@ const docTemplate = `{
                 "Payload"
             ]
         },
+        "template_model.Status": {
+            "type": "string",
+            "enum": [
+                "APPROVED",
+                "PENDING",
+                "REJECTED"
+            ],
+            "x-enum-varnames": [
+                "Approved",
+                "Pending",
+                "Rejected"
+            ]
+        },
         "template_model.Template": {
             "type": "object",
             "properties": {
@@ -9399,12 +9443,15 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
+                    "$ref": "#/definitions/template_model.Status"
                 }
             }
         },
         "template_model.TemplateComponent": {
             "type": "object",
+            "required": [
+                "type"
+            ],
             "properties": {
                 "audio": {
                     "$ref": "#/definitions/media_model.UseMedia"
