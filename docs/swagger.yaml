@@ -1980,7 +1980,6 @@ definitions:
         description: The specific webhook a business is subscribed to. The webhook
           is whatsapp_business_account.
     type: object
-host: localhost:6900
 info:
   contact:
     email: wacraft@astervia.tech

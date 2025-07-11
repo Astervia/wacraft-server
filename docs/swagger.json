@@ -18,7 +18,6 @@
         },
         "version": "0.1.0"
     },
-    "host": "localhost:6900",
     "basePath": "/",
     "paths": {
         "/campaign": {
