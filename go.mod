@@ -3,7 +3,7 @@ module github.com/Astervia/wacraft-server
 go 1.23.0
 
 require (
-	github.com/Astervia/wacraft-core v0.1.8
+	github.com/Astervia/wacraft-core v0.1.9
 	github.com/Rfluid/whatsapp-cloud-api v0.1.53
 	github.com/Rfluid/whatsapp-webhook-server v0.1.53
 	github.com/go-playground/validator/v10 v10.27.0
