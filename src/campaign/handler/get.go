@@ -6,10 +6,12 @@ import (
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 // Get returns a paginated list of campaigns.
+//
 //	@Summary		List campaigns (paginated)
 //	@Description	Retrieves a paginated list of campaigns based on query parameters.
 //	@Tags			Campaign
@@ -25,7 +27,13 @@ func Get(c *fiber.Ctx) error {
 	query := new(campaign_model.QueryPaginated)
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
-			common_model.NewParseJsonError(err),
+			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 
@@ -44,7 +52,7 @@ func Get(c *fiber.Ctx) error {
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
-			common_model.NewApiError("unable to get paginated", err, "repository"),
+			common_model.NewApiError("unable to get paginated", err, "repository").Send(),
 		)
 	}
 
@@ -52,6 +60,7 @@ func Get(c *fiber.Ctx) error {
 }
 
 // GetMessages returns a paginated list of campaign messages.
+//
 //	@Summary		List campaign messages (paginated)
 //	@Description	Retrieves a paginated list of messages associated with campaigns.
 //	@Tags			Campaign Message
@@ -67,12 +76,17 @@ func GetMessages(c *fiber.Ctx) error {
 	query := new(campaign_model.QueryMessagesPaginated)
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
-			common_model.NewParseJsonError(err),
+			common_model.NewParseJsonError(err).Send(),
 		)
 	}
 
-	db := database.DB.Model(&campaign_entity.CampaignMessage{})
-	db = db.Joins("Message")
+	if err := validators.Validator().Struct(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
+		)
+	}
+
+	db := database.DB.Model(&campaign_entity.CampaignMessage{}).Joins("Message")
 
 	campaigns, err := repository.GetPaginated(
 		campaign_entity.CampaignMessage{
@@ -90,7 +104,7 @@ func GetMessages(c *fiber.Ctx) error {
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
-			common_model.NewApiError("unable to get paginated", err, "repository"),
+			common_model.NewApiError("unable to get paginated", err, "repository").Send(),
 		)
 	}
 
@@ -98,6 +112,7 @@ func GetMessages(c *fiber.Ctx) error {
 }
 
 // GetUnsentMessages returns a paginated list of unsent campaign messages.
+//
 //	@Summary		List unsent campaign messages
 //	@Description	Retrieves a paginated list of campaign messages that were not sent.
 //	@Tags			Campaign Message
@@ -113,13 +128,17 @@ func GetUnsentMessages(c *fiber.Ctx) error {
 	query := new(campaign_model.QueryMessagesPaginated)
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
-			common_model.NewParseJsonError(err),
+			common_model.NewParseJsonError(err).Send(),
 		)
 	}
 
-	db := database.DB.Model(&campaign_entity.CampaignMessage{})
-	db = db.Joins("Message")
-	db = db.Where("message_id IS NULL")
+	if err := validators.Validator().Struct(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
+		)
+	}
+
+	db := database.DB.Model(&campaign_entity.CampaignMessage{}).Joins("Message").Where("message_id IS NULL")
 
 	campaigns, err := repository.GetPaginated(
 		campaign_entity.CampaignMessage{
@@ -137,7 +156,7 @@ func GetUnsentMessages(c *fiber.Ctx) error {
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
-			common_model.NewApiError("unable to get paginated", err, "repository"),
+			common_model.NewApiError("unable to get paginated", err, "repository").Send(),
 		)
 	}
 
@@ -145,6 +164,7 @@ func GetUnsentMessages(c *fiber.Ctx) error {
 }
 
 // GetSentMessages returns a paginated list of sent campaign messages.
+//
 //	@Summary		List sent campaign messages
 //	@Description	Retrieves a paginated list of campaign messages that have been sent.
 //	@Tags			Campaign Message
@@ -160,13 +180,17 @@ func GetSentMessages(c *fiber.Ctx) error {
 	query := new(campaign_model.QueryMessagesPaginated)
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
-			common_model.NewParseJsonError(err),
+			common_model.NewParseJsonError(err).Send(),
 		)
 	}
 
-	db := database.DB.Model(&campaign_entity.CampaignMessage{})
-	db = db.Joins("Message")
-	db = db.Where("message_id IS NOT NULL")
+	if err := validators.Validator().Struct(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
+		)
+	}
+
+	db := database.DB.Model(&campaign_entity.CampaignMessage{}).Joins("Message").Where("message_id IS NOT NULL")
 
 	campaigns, err := repository.GetPaginated(
 		campaign_entity.CampaignMessage{
@@ -184,7 +208,7 @@ func GetSentMessages(c *fiber.Ctx) error {
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
-			common_model.NewApiError("unable to get paginated", err, "repository"),
+			common_model.NewApiError("unable to get paginated", err, "repository").Send(),
 		)
 	}
 
@@ -192,6 +216,7 @@ func GetSentMessages(c *fiber.Ctx) error {
 }
 
 // GetErrors returns a paginated list of campaign message send errors.
+//
 //	@Summary		List campaign message send errors
 //	@Description	Retrieves a paginated list of send errors associated with campaign messages.
 //	@Tags			Campaign Message Error
@@ -208,6 +233,12 @@ func GetErrors(c *fiber.Ctx) error {
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 

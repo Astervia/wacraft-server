@@ -8,12 +8,14 @@ import (
 	messaging_product_model "github.com/Astervia/wacraft-core/src/messaging-product/model"
 	"github.com/Astervia/wacraft-server/src/database"
 	messaging_product_service "github.com/Astervia/wacraft-server/src/messaging-product/service"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 // ContactContentLike returns a paginated list of messaging product contacts matching a text pattern.
-//	@Summary		Get messaging products contacts paginated
-//	@Description	Uses the ~ operator (regex) to match the provided text in contact name, email, and product_details fields.
+//
+//	@Summary		Search contacts by content
+//	@Description	Returns a paginated list of messaging product contacts where the provided text matches contact name, email, or product_details fields using regex (~).
 //	@Tags			Messaging product contact
 //	@Accept			json
 //	@Produce		json
@@ -37,6 +39,12 @@ func ContactContentLike(c *fiber.Ctx) error {
 	if err := c.QueryParser(&query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(&query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 

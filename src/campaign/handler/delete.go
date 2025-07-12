@@ -5,10 +5,12 @@ import (
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 // Delete removes a campaign by its ID.
+//
 //	@Summary		Delete campaign
 //	@Description	Deletes a campaign using the provided ID in the request body.
 //	@Tags			Campaign
@@ -21,11 +23,16 @@ import (
 //	@Security		ApiKeyAuth
 //	@Router			/campaign [delete]
 func Delete(c *fiber.Ctx) error {
-	// Retrieve the user from the context
 	var body common_model.RequiredId
 	if err := c.BodyParser(&body); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(&body); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 
@@ -39,6 +46,7 @@ func Delete(c *fiber.Ctx) error {
 }
 
 // DeleteMessage removes a campaign message by its ID.
+//
 //	@Summary		Delete campaign message
 //	@Description	Deletes a campaign message using the provided ID in the request body.
 //	@Tags			Campaign Message
@@ -51,11 +59,16 @@ func Delete(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/campaign/message [delete]
 func DeleteMessage(c *fiber.Ctx) error {
-	// Retrieve the user from the context
 	var body common_model.RequiredId
 	if err := c.BodyParser(&body); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(&body); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 

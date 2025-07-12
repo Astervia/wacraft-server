@@ -7,12 +7,14 @@ import (
 	status_entity "github.com/Astervia/wacraft-core/src/status/entity"
 	status_model "github.com/Astervia/wacraft-core/src/status/model"
 	status_service "github.com/Astervia/wacraft-server/src/status/service"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 // GetWamId returns a paginated list of statuses with the given WhatsApp message ID (wamId).
-//	@Summary		Queries statuses by wamId
-//	@Description	Returns a paginated list of statuses matching the given wamId and query parameters.
+//
+//	@Summary		Retrieve statuses by wamId
+//	@Description	Returns a paginated list of statuses filtered by WhatsApp message ID (wamId) and other query parameters.
 //	@Tags			WhatsApp status
 //	@Accept			json
 //	@Produce		json
@@ -36,6 +38,12 @@ func GetWamId(c *fiber.Ctx) error {
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 

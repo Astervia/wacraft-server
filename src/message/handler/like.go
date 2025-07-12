@@ -7,12 +7,14 @@ import (
 	message_entity "github.com/Astervia/wacraft-core/src/message/entity"
 	message_model "github.com/Astervia/wacraft-core/src/message/model"
 	message_service "github.com/Astervia/wacraft-server/src/message/service"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 // ContentLike returns messages where text matches sender, receiver, or product data fields.
-//	@Summary		Queries message content like text paginated
-//	@Description	Uses regex (~) to match the given text against `sender_data`, `receiver_data`, and `product_data` fields.
+//
+//	@Summary		Search messages by content text
+//	@Description	Matches the given text using regex (~) against `sender_data`, `receiver_data`, and `product_data` fields.
 //	@Tags			Message
 //	@Accept			json
 //	@Produce		json
@@ -36,6 +38,12 @@ func ContentLike(c *fiber.Ctx) error {
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 
@@ -68,8 +76,9 @@ func ContentLike(c *fiber.Ctx) error {
 }
 
 // ContentKeyLike returns messages matching text in a specific field.
-//	@Summary		Queries message content like text paginated
-//	@Description	Uses regex (~) to match the given text on a dynamic key field. The fields `from` and `to` are populated in the result.
+//
+//	@Summary		Search messages by content field
+//	@Description	Uses regex (~) to match the given text in the specified key field. The fields `from` and `to` are populated in the result.
 //	@Tags			Message
 //	@Accept			json
 //	@Produce		json
@@ -102,6 +111,12 @@ func ContentKeyLike(c *fiber.Ctx) error {
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 

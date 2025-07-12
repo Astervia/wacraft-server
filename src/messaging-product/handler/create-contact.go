@@ -5,11 +5,13 @@ import (
 	messaging_product_entity "github.com/Astervia/wacraft-core/src/messaging-product/entity"
 	messaging_product_model "github.com/Astervia/wacraft-core/src/messaging-product/model"
 	"github.com/Astervia/wacraft-server/src/database"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 // CreateContact creates a new contact for a messaging product.
-//	@Summary		Creates a new messaging product contact
+//
+//	@Summary		Create messaging product contact
 //	@Description	Creates and stores a new contact associated with a messaging product.
 //	@Tags			Messaging product contact
 //	@Accept			json
@@ -21,7 +23,6 @@ import (
 //	@Security		ApiKeyAuth
 //	@Router			/messaging-product/contact [post]
 func CreateContact(c *fiber.Ctx) error {
-	// Parse the request body
 	var data messaging_product_model.CreateContact
 	if err := c.BodyParser(&data); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -29,20 +30,23 @@ func CreateContact(c *fiber.Ctx) error {
 		)
 	}
 
-	// Create the new user
+	if err := validators.Validator().Struct(&data); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
+		)
+	}
+
 	newEntity := messaging_product_entity.MessagingProductContact{
 		ContactId:          data.ContactId,
 		MessagingProductId: data.MessagingProductId,
 		ProductDetails:     &data.ProductDetails,
 	}
 
-	// Save the new user to the database
 	if err := database.DB.Create(&newEntity).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("unable to create messaging product contact", err, "gorm.io/gorm").Send(),
 		)
 	}
 
-	// Return the created user (or just a success message)
 	return c.Status(fiber.StatusCreated).JSON(newEntity)
 }

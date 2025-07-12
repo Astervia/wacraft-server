@@ -6,12 +6,14 @@ import (
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 // Create registers a new campaign.
+//
 //	@Summary		Create a new campaign
-//	@Description	Creates a new campaign and returns the created object.
+//	@Description	Creates a new campaign using the provided data and returns the created object.
 //	@Tags			Campaign
 //	@Accept			json
 //	@Produce		json
@@ -26,6 +28,12 @@ func Create(c *fiber.Ctx) error {
 	if err := c.BodyParser(&newCampaign); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(&newCampaign); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 
@@ -45,8 +53,9 @@ func Create(c *fiber.Ctx) error {
 }
 
 // CreateMessage registers a new campaign message.
+//
 //	@Summary		Create a new campaign message
-//	@Description	Creates a new campaign message and returns the created object.
+//	@Description	Creates a new campaign message using the provided data and returns the created object.
 //	@Tags			Campaign Message
 //	@Accept			json
 //	@Produce		json
@@ -61,6 +70,12 @@ func CreateMessage(c *fiber.Ctx) error {
 	if err := c.BodyParser(&newCampaign); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(&newCampaign); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 

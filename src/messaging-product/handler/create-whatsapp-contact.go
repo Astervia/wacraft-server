@@ -6,12 +6,14 @@ import (
 	messaging_product_entity "github.com/Astervia/wacraft-core/src/messaging-product/entity"
 	messaging_product_model "github.com/Astervia/wacraft-core/src/messaging-product/model"
 	messaging_product_service "github.com/Astervia/wacraft-server/src/messaging-product/service"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 // CreateWhatsAppContact creates a new WhatsApp contact for a messaging product.
-//	@Summary		Creates a new messaging product WhatsApp contact
-//	@Description	Creates and stores a new WhatsApp contact associated with a messaging product, using WhatsApp-specific product details.
+//
+//	@Summary		Create WhatsApp contact
+//	@Description	Creates and stores a WhatsApp contact linked to a messaging product, using WhatsApp-specific product details.
 //	@Tags			Messaging product contact
 //	@Accept			json
 //	@Produce		json
@@ -22,11 +24,16 @@ import (
 //	@Security		ApiKeyAuth
 //	@Router			/messaging-product/contact/whatsapp [post]
 func CreateWhatsAppContact(c *fiber.Ctx) error {
-	// Parse the request body
 	var data messaging_product_model.CreateWhatsAppContact
 	if err := c.BodyParser(&data); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(&data); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 
@@ -48,6 +55,5 @@ func CreateWhatsAppContact(c *fiber.Ctx) error {
 		)
 	}
 
-	// Return the created user (or just a success message)
 	return c.Status(fiber.StatusCreated).JSON(entity)
 }

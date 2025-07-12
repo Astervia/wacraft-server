@@ -6,11 +6,14 @@ import (
 	webhook_entity "github.com/Astervia/wacraft-core/src/webhook/entity"
 	webhook_model "github.com/Astervia/wacraft-core/src/webhook/model"
 	"github.com/Astervia/wacraft-server/src/database"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
+// GetWebhooks returns a paginated list of registered webhooks.
+//
 //	@Summary		Get webhooks paginated
-//	@Description	Returns a paginated list of webhooks
+//	@Description	Returns a paginated list of registered webhooks.
 //	@Tags			Webhook
 //	@Accept			json
 //	@Produce		json
@@ -25,6 +28,12 @@ func GetWebhooks(c *fiber.Ctx) error {
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 
@@ -50,8 +59,10 @@ func GetWebhooks(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(webhooks)
 }
 
+// GetWebhookLogs returns a paginated list of webhook execution logs.
+//
 //	@Summary		Get webhook logs paginated
-//	@Description	Returns a paginated list of webhook logs
+//	@Description	Returns a paginated list of webhook execution logs.
 //	@Tags			Webhook log
 //	@Accept			json
 //	@Produce		json
@@ -66,6 +77,12 @@ func GetWebhookLogs(c *fiber.Ctx) error {
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 

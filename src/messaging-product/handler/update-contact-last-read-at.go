@@ -12,8 +12,9 @@ import (
 )
 
 // UpdateContactLastReadAt sets the `last_read_at` field of a messaging product contact to the current timestamp.
-//	@Summary		Sets last_read_at of the messaging_product_contact
-//	@Description	Sets the `last_read_at` timestamp of the contact as the current date and time.
+//
+//	@Summary		Update last_read_at timestamp
+//	@Description	Sets the `last_read_at` field of the specified messaging product contact to the current timestamp.
 //	@Tags			Messaging product contact
 //	@Accept			json
 //	@Produce		json

@@ -8,17 +8,19 @@ import (
 	messaging_product_model "github.com/Astervia/wacraft-core/src/messaging-product/model"
 	"github.com/Astervia/wacraft-server/src/database"
 	messaging_product_service "github.com/Astervia/wacraft-server/src/messaging-product/service"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 // ContactContentLikeCount returns the number of messaging product contacts matching a text pattern.
-//	@Summary		Counts messaging product contacts with text comparison
-//	@Description	Uses the ~ operator (regex) to match the provided text in contact name, email, and product_details fields.
+//
+//	@Summary		Count contacts by content
+//	@Description	Returns the number of messaging product contacts that match the provided text (regex ~) in fields like name, email, and product_details.
 //	@Tags			Messaging product contact
 //	@Accept			json
 //	@Produce		json
 //	@Param			paginate	query		messaging_product_model.QueryContact	true	"Query parameters"
-//	@Param			likeText	path		string									true	"Text to match using like (~) operator"
+//	@Param			likeText	path		string									true	"Text to match using regex (~)"
 //	@Success		200			{integer}	int										"Count of matching contacts"
 //	@Failure		400			{object}	common_model.DescriptiveError			"Invalid query or likeText"
 //	@Failure		500			{object}	common_model.DescriptiveError			"Failed to count contacts"
@@ -37,6 +39,12 @@ func ContactContentLikeCount(c *fiber.Ctx) error {
 	if err := c.QueryParser(&query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(&query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 

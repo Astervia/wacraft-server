@@ -7,12 +7,14 @@ import (
 	messaging_product_model "github.com/Astervia/wacraft-core/src/messaging-product/model"
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 // GetContact returns a paginated list of messaging product contacts.
-//	@Summary		Get messaging products contacts paginated
-//	@Description	Returns a paginated list of messaging product contacts, joining with the contact entity.
+//
+//	@Summary		Retrieve messaging product contacts
+//	@Description	Fetches a paginated list of messaging product contacts, joining with the contact entity.
 //	@Tags			Messaging product contact
 //	@Accept			json
 //	@Produce		json
@@ -27,6 +29,12 @@ func GetContact(c *fiber.Ctx) error {
 	if err := c.QueryParser(&query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(&query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 
@@ -64,8 +72,9 @@ func GetContact(c *fiber.Ctx) error {
 }
 
 // GetWhatsAppContact returns a paginated list of WhatsApp messaging product contacts.
-//	@Summary		Get WhatsApp messaging products contacts paginated
-//	@Description	Queries a paginated list of WhatsApp messaging product contacts, including WhatsApp-specific fields and joining with the contact entity.
+//
+//	@Summary		Retrieve WhatsApp contacts
+//	@Description	Fetches a paginated list of WhatsApp messaging product contacts, including WhatsApp-specific fields and joining with the contact entity.
 //	@Tags			Messaging product contact
 //	@Accept			json
 //	@Produce		json
@@ -78,7 +87,15 @@ func GetContact(c *fiber.Ctx) error {
 func GetWhatsAppContact(c *fiber.Ctx) error {
 	query := new(messaging_product_model.QueryWhatsAppContactPaginated)
 	if err := c.QueryParser(query); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err})
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
+		)
 	}
 
 	mpc := messaging_product_entity.MessagingProductContact{
@@ -114,7 +131,9 @@ func GetWhatsAppContact(c *fiber.Ctx) error {
 		db,
 	)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err})
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			common_model.NewApiError("unable to get WhatsApp messaging product contacts", err, "repository").Send(),
+		)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(mps)

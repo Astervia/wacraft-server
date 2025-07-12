@@ -8,15 +8,16 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// DeleteCurrentUser removes the user who made the request.
+//
 //	@Summary		Delete current user
-//	@Description	Deletes the user who made the request
+//	@Description	Deletes the authenticated user from the database.
 //	@Tags			User
-//	@Success		204	"No content"
+//	@Success		204	{string}	string							"No content"
 //	@Failure		500	{object}	common_model.DescriptiveError	"Internal server error"
 //	@Router			/user/me [delete]
 //	@Security		ApiKeyAuth
 func DeleteCurrentUser(c *fiber.Ctx) error {
-	// Retrieve the user from the context
 	user := c.Locals("user").(*user_entity.User)
 
 	if err := repository.DeleteById[user_entity.User](user.Id, database.DB); err != nil {
@@ -28,13 +29,15 @@ func DeleteCurrentUser(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
+// DeleteUserByID removes a user by their ID. Only admins can call this.
+//
 //	@Summary		Delete user by ID
-//	@Description	Deletes a user by their ID (only accessible by admins). You cannot delete su@sudo
+//	@Description	Deletes a user by ID. The special user su@sudo cannot be deleted.
 //	@Tags			User
 //	@Accept			json
 //	@Produce		json
-//	@Param			body	body	common_model.RequiredId	true	"User ID to delete"
-//	@Success		204		"No content"
+//	@Param			body	body	common_model.RequiredId			true	"User ID to delete"
+//	@Success		204		{string}	string							"No content"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		401		{object}	common_model.DescriptiveError	"Cannot delete su@sudo user"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"

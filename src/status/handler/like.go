@@ -7,17 +7,19 @@ import (
 	status_entity "github.com/Astervia/wacraft-core/src/status/entity"
 	status_model "github.com/Astervia/wacraft-core/src/status/model"
 	status_service "github.com/Astervia/wacraft-server/src/status/service"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 // ContentLike returns statuses that match a partial text pattern in key fields.
-//	@Summary		Queries status content like text paginated
-//	@Description	Uses regex with the ~ operator to query text at the key. The query is based on the like operator on the fields sender_data, receiver_data, and product_data.
+//
+//	@Summary		Search statuses by content
+//	@Description	Returns a paginated list of statuses matching a partial text (using regex ~) in sender_data, receiver_data, or product_data.
 //	@Tags			Status
 //	@Accept			json
 //	@Produce		json
 //	@Param			status		query		status_model.QueryPaginated		true	"Pagination and query parameters"
-//	@Param			likeText	path		string							true	"Text to apply like operator on sender_data, receiver_data, and product_data fields"
+//	@Param			likeText	path		string							true	"Text to match in content fields"
 //	@Success		200			{array}		status_entity.Status			"List of statuses"
 //	@Failure		400			{object}	common_model.DescriptiveError	"Invalid query or path parameter"
 //	@Failure		500			{object}	common_model.DescriptiveError	"Failed to retrieve statuses"
@@ -36,6 +38,12 @@ func ContentLike(c *fiber.Ctx) error {
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 
@@ -64,14 +72,15 @@ func ContentLike(c *fiber.Ctx) error {
 }
 
 // ContentKeyLike returns statuses filtered by a key and a partial text pattern.
-//	@Summary		Queries status content like text paginated
-//	@Description	Returns a paginated list of statuses. The query is based on the like operator applied to the given key.
+//
+//	@Summary		Search statuses by key and content
+//	@Description	Returns a paginated list of statuses where a given key matches a partial value using regex (~).
 //	@Tags			Status
 //	@Accept			json
 //	@Produce		json
 //	@Param			status		query		status_model.QueryPaginated		true	"Pagination and query parameters"
-//	@Param			keyName		path		string							true	"The key to apply like operator"
-//	@Param			likeText	path		string							true	"Text to apply like operator on the given key"
+//	@Param			keyName		path		string							true	"Field name to search"
+//	@Param			likeText	path		string							true	"Text to match on the key"
 //	@Success		200			{array}		status_entity.Status			"List of statuses"
 //	@Failure		400			{object}	common_model.DescriptiveError	"Invalid query or path parameter"
 //	@Failure		500			{object}	common_model.DescriptiveError	"Failed to retrieve statuses"
@@ -98,6 +107,12 @@ func ContentKeyLike(c *fiber.Ctx) error {
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 
