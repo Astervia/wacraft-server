@@ -1807,6 +1807,7 @@ definitions:
         - PATCH
         type: string
       timeout:
+        maximum: 60
         minimum: 1
         type: integer
       url:
@@ -1935,6 +1936,7 @@ definitions:
         description: The unique identifier.
         type: string
       timeout:
+        maximum: 60
         minimum: 1
         type: integer
       url:
