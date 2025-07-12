@@ -273,9 +273,6 @@ definitions:
     x-enum-varnames:
     - Asc
     - Desc
-  fiber.Map:
-    additionalProperties: true
-    type: object
   media_model.MediaInfo:
     properties:
       file_size:
@@ -478,6 +475,8 @@ definitions:
         description: Type of message.
       video:
         $ref: '#/definitions/media_model.UseMedia'
+    required:
+    - type
     type: object
   message_model.MessageReceived:
     properties:
@@ -540,7 +539,9 @@ definitions:
       id:
         type: string
       message_status:
-        type: string
+        $ref: '#/definitions/message_model.SendingStatus'
+    required:
+    - message_status
     type: object
   message_model.ProductData:
     properties:
@@ -756,6 +757,8 @@ definitions:
         description: Type of message.
       video:
         $ref: '#/definitions/media_model.UseMedia'
+    required:
+    - type
     type: object
   message_model.SendingStatus:
     enum:
@@ -1080,6 +1083,8 @@ definitions:
         allOf:
         - $ref: '#/definitions/message_type_interactive_model.ButtonType'
         description: The only supported option is reply for Reply Button Messages.
+    required:
+    - type
     type: object
   message_type_interactive_model.ButtonReplyData:
     properties:
@@ -1149,6 +1154,8 @@ definitions:
         description: Type of message.
       video:
         $ref: '#/definitions/media_model.UseMedia'
+    required:
+    - type
     type: object
   message_type_interactive_model.HeaderType:
     enum:
@@ -1399,11 +1406,11 @@ definitions:
   template_model.ButtonData:
     properties:
       example:
-        description: string or string array
+        description: Check valid examples here https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates/#template-components
       flow_action:
         type: string
       flow_id:
-        type: string
+        type: integer
       navigate_screen:
         type: string
       phone_number:
@@ -1414,6 +1421,8 @@ definitions:
         $ref: '#/definitions/template_model.ButtonType'
       url:
         type: string
+    required:
+    - type
     type: object
   template_model.ButtonType:
     enum:
@@ -1444,6 +1453,8 @@ definitions:
         description: Only for button type.
       type:
         $ref: '#/definitions/template_model.ComponentType'
+    required:
+    - type
     type: object
   template_model.ComponentExample:
     properties:
@@ -1553,6 +1564,16 @@ definitions:
     - Document
     - Button
     - Payload
+  template_model.Status:
+    enum:
+    - APPROVED
+    - PENDING
+    - REJECTED
+    type: string
+    x-enum-varnames:
+    - Approved
+    - Pending
+    - Rejected
   template_model.Template:
     properties:
       category:
@@ -1568,7 +1589,7 @@ definitions:
       name:
         type: string
       status:
-        type: string
+        $ref: '#/definitions/template_model.Status'
     type: object
   template_model.TemplateComponent:
     properties:
@@ -1598,6 +1619,8 @@ definitions:
         $ref: '#/definitions/template_model.ComponentType'
       video:
         $ref: '#/definitions/media_model.UseMedia'
+    required:
+    - type
     type: object
   template_model.TemplateFields:
     enum:
@@ -1954,10 +1977,9 @@ definitions:
         description: The specific webhook a business is subscribed to. The webhook
           is whatsapp_business_account.
     type: object
-host: localhost:6900
 info:
   contact:
-    email: development@astservia.io
+    email: wacraft@astervia.tech
     name: Astervia Dev Team
     url: https://github.com/Astervia
   description: Backend server for the wacraft project. Handles WhatsApp Cloud API
@@ -2082,7 +2104,7 @@ paths:
     patch:
       consumes:
       - application/json
-      description: Updates a campaign identified by its ID.
+      description: Updates an existing campaign using the provided ID and data.
       parameters:
       - description: Updated campaign data
         in: body
@@ -2113,7 +2135,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Creates a new campaign and returns the created object.
+      description: Creates a new campaign using the provided data and returns the
+        created object.
       parameters:
       - description: Campaign data
         in: body
@@ -2428,7 +2451,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Creates a new campaign message and returns the created object.
+      description: Creates a new campaign message using the provided data and returns
+        the created object.
       parameters:
       - description: Campaign message data
         in: body
@@ -2460,7 +2484,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Counts campaign messages based on the query parameters.
+      description: Returns the total number of campaign messages that match the given
+        filters.
       parameters:
       - in: query
         name: campaign_id
@@ -2508,7 +2533,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Count of campaign messages
+          description: Number of campaign messages
           schema:
             type: integer
         "400":
@@ -2528,7 +2553,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Counts campaign messages where message ID is not null.
+      description: Returns the number of campaign messages where the message ID is
+        not null (sent messages).
       parameters:
       - in: query
         name: campaign_id
@@ -2576,7 +2602,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Count of sent campaign messages
+          description: Number of sent campaign messages
           schema:
             type: integer
         "400":
@@ -2596,7 +2622,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Counts campaign messages where message ID is null.
+      description: Returns the number of campaign messages where the message ID is
+        null (unsent messages).
       parameters:
       - in: query
         name: campaign_id
@@ -2644,7 +2671,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Count of unsent campaign messages
+          description: Number of unsent campaign messages
           schema:
             type: integer
         "400":
@@ -2856,7 +2883,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Returns a paginated list of contacts.
+      description: Returns a paginated list of contacts using optional query parameters
+        for filtering and sorting.
       parameters:
       - default: desc
         enum:
@@ -2938,7 +2966,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Creates a new contact and returns the created object.
+      description: Creates a new contact using the provided data and returns the created
+        object.
       parameters:
       - description: Contact data
         in: body
@@ -2969,10 +2998,9 @@ paths:
     put:
       consumes:
       - application/json
-      description: Updates a contact using the provided data and returns the updated
-        object.
+      description: Updates an existing contact using the provided ID and data.
       parameters:
-      - description: Contact data
+      - description: Updated contact data
         in: body
         name: contact
         required: true
@@ -2982,7 +3010,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Edited contact
+          description: Updated contact
           schema:
             $ref: '#/definitions/contact_entity.Contact'
         "400":
@@ -2995,15 +3023,15 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Edit a contact
+      summary: Update contact
       tags:
       - Contact
   /media/whatsapp/{mediaId}:
     get:
       consumes:
       - application/json
-      description: Uses the WhatsApp API to get a temporary URL to download the media.
-        The URL expires in 5 minutes.
+      description: Uses the WhatsApp API to retrieve a temporary media download URL.
+        This URL expires in 5 minutes.
       parameters:
       - description: Media ID
         in: path
@@ -3027,14 +3055,15 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Gets URL for WhatsApp media
+      summary: Get WhatsApp media URL
       tags:
       - Media
   /media/whatsapp/download/{mediaId}:
     get:
       consumes:
       - application/json
-      description: Downloads media using the URL retrieved via the WhatsApp API.
+      description: Downloads media using a temporary URL retrieved via the WhatsApp
+        API.
       parameters:
       - description: Media ID
         in: path
@@ -3058,15 +3087,15 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Downloads WhatsApp media
+      summary: Download WhatsApp media
       tags:
       - Media
   /media/whatsapp/media-info/download:
     post:
       consumes:
       - application/json
-      description: Receives MediaInfo JSON, downloads the media from the provided
-        URL, and sends it back as a file.
+      description: Receives MediaInfo JSON, validates it, downloads the media from
+        the provided URL, and streams it.
       parameters:
       - description: Media Info with URL and metadata
         in: body
@@ -3098,8 +3127,8 @@ paths:
     post:
       consumes:
       - multipart/form-data
-      description: Uploads media files to WhatsApp. Files persist for up to 30 days
-        unless deleted earlier.
+      description: Uploads a media file to WhatsApp. Files remain available for up
+        to 30 days unless deleted earlier.
       parameters:
       - description: Media file
         in: formData
@@ -3139,8 +3168,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Returns a paginated list of messages based on filters such as sender,
-        receiver, and messaging product.
+      description: Fetches a paginated list of messages filtered by sender, receiver,
+        messaging product, etc.
       parameters:
       - default: desc
         enum:
@@ -3232,14 +3261,14 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Get messages paginated
+      summary: Retrieve messages
       tags:
       - Message
   /message/content/{keyName}/like/{likeText}:
     get:
       consumes:
       - application/json
-      description: Uses regex (~) to match the given text on a dynamic key field.
+      description: Uses regex (~) to match the given text in the specified key field.
         The fields `from` and `to` are populated in the result.
       parameters:
       - default: desc
@@ -3342,14 +3371,14 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Queries message content like text paginated
+      summary: Search messages by content field
       tags:
       - Message
   /message/content/like/{likeText}:
     get:
       consumes:
       - application/json
-      description: Uses regex (~) to match the given text against `sender_data`, `receiver_data`,
+      description: Matches the given text using regex (~) against `sender_data`, `receiver_data`,
         and `product_data` fields.
       parameters:
       - default: desc
@@ -3447,14 +3476,14 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Queries message content like text paginated
+      summary: Search messages by content text
       tags:
       - Message
   /message/conversation:
     get:
       consumes:
       - application/json
-      description: Returns a paginated list of the latest messages per conversation,
+      description: Retrieves a paginated list of the latest messages per conversation,
         enriched with contact information.
       parameters:
       - default: desc
@@ -3595,19 +3624,9 @@ paths:
         in: query
         name: id
         type: string
-      - default: 10
-        description: Number of items to return
-        in: query
-        name: limit
-        type: integer
       - in: query
         name: messaging_product_id
         type: string
-      - default: 0
-        description: The offset from where to start the items
-        in: query
-        name: offset
-        type: integer
       - in: query
         name: to_id
         type: string
@@ -3644,7 +3663,7 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Counts conversations
+      summary: Count distinct conversations
       tags:
       - Message conversation
   /message/conversation/count/messaging-product-contact/{messagingProductContactId}:
@@ -3693,19 +3712,9 @@ paths:
         in: query
         name: id
         type: string
-      - default: 10
-        description: Number of items to return
-        in: query
-        name: limit
-        type: integer
       - in: query
         name: messaging_product_id
         type: string
-      - default: 0
-        description: The offset from where to start the items
-        in: query
-        name: offset
-        type: integer
       - in: query
         name: to_id
         type: string
@@ -3747,7 +3756,7 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Counts conversations by messaging product contact
+      summary: Count messages by contact
       tags:
       - Message conversation
   /message/conversation/count/messaging-product-contact/{messagingProductContactId}/content/like/{likeText}:
@@ -3755,7 +3764,7 @@ paths:
       consumes:
       - application/json
       description: Counts messages from a messaging product contact matching a "like"
-        pattern on sender/receiver/product data.
+        pattern on sender, receiver, or product data.
       parameters:
       - default: desc
         enum:
@@ -3796,19 +3805,9 @@ paths:
         in: query
         name: id
         type: string
-      - default: 10
-        description: Number of items to return
-        in: query
-        name: limit
-        type: integer
       - in: query
         name: messaging_product_id
         type: string
-      - default: 0
-        description: The offset from where to start the items
-        in: query
-        name: offset
-        type: integer
       - in: query
         name: to_id
         type: string
@@ -3833,7 +3832,7 @@ paths:
         name: messagingProductContactId
         required: true
         type: string
-      - description: Substring to match against sender/receiver/product data
+      - description: Substring to match against sender, receiver, or product data
         in: path
         name: likeText
         required: true
@@ -3855,15 +3854,15 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Counts conversation messages by content
+      summary: Count messages by content
       tags:
       - Message conversation
   /message/conversation/messaging-product-contact/{messagingProductContactId}:
     get:
       consumes:
       - application/json
-      description: Returns a paginated list of messages sent or received by the specified
-        messaging product contact.
+      description: Retrieves a paginated list of messages sent or received by the
+        specified messaging product contact.
       parameters:
       - default: desc
         enum:
@@ -3967,8 +3966,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Returns messages filtered by a "like" match on sender/receiver/product
-        data fields.
+      description: Returns messages filtered by a "like" match on sender, receiver,
+        or product data.
       parameters:
       - default: desc
         enum:
@@ -4046,7 +4045,7 @@ paths:
         name: messagingProductContactId
         required: true
         type: string
-      - description: Substring to match against sender/receiver/product data
+      - description: Substring to match against sender, receiver, or product data
         in: path
         name: likeText
         required: true
@@ -4070,15 +4069,14 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Count conversation messages by content and messaging product contact
-        ID
+      summary: Search messages by content
       tags:
       - Message conversation
   /message/count:
     get:
       consumes:
       - application/json
-      description: Counts messages based on the query parameters.
+      description: Returns the total number of messages matching the specified filters.
       parameters:
       - default: desc
         enum:
@@ -4168,15 +4166,15 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Counts messages
+      summary: Count messages
       tags:
       - Message
   /message/count/content/like/{likeText}:
     get:
       consumes:
       - application/json
-      description: Counts messages where the given text matches fields such as sender_data,
-        receiver_data, or product_data.
+      description: Returns the number of messages where the provided text matches
+        content fields like sender_data, receiver_data, or product_data.
       parameters:
       - default: desc
         enum:
@@ -4249,7 +4247,7 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
-      - description: Text to apply like operator on content fields
+      - description: Substring to search in content fields
         in: path
         name: likeText
         required: true
@@ -4271,15 +4269,15 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Counts messages with content like comparison
+      summary: Count messages with content match
       tags:
       - Message
   /message/whatsapp:
     post:
       consumes:
       - application/json
-      description: Tries to send a WhatsApp message and stores it in the database
-        if successful.
+      description: Sends a WhatsApp message and stores it in the database if the operation
+        is successful.
       parameters:
       - description: Message data
         in: body
@@ -4291,7 +4289,7 @@ paths:
       - application/json
       responses:
         "201":
-          description: Message sent
+          description: Message sent successfully
           schema:
             $ref: '#/definitions/message_entity.Message'
         "400":
@@ -4299,20 +4297,20 @@ paths:
           schema:
             $ref: '#/definitions/common_model.DescriptiveError'
         "500":
-          description: Failed to send or save message
+          description: Failed to send or save the message
           schema:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Sends new message
+      summary: Send WhatsApp message
       tags:
       - WhatsApp message
   /message/whatsapp/mark-as-read:
     post:
       consumes:
       - application/json
-      description: Marks the latest message in a conversation as read so that the
-        recipient sees the double blue tick in WhatsApp.
+      description: Marks the latest WhatsApp message in the conversation as read so
+        the user sees the double blue check.
       parameters:
       - default: desc
         enum:
@@ -4402,15 +4400,15 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Marks conversation as read to user
+      summary: Mark last message as read
       tags:
       - WhatsApp message
   /message/whatsapp/wam-id/{wamId}:
     get:
       consumes:
       - application/json
-      description: Returns a paginated list of messages where the wamId matches and
-        the query parameters are satisfied.
+      description: Fetches a paginated list of messages where the wamId matches and
+        filters are applied.
       parameters:
       - default: desc
         enum:
@@ -4483,7 +4481,7 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
-      - description: Desired wamId to search for
+      - description: wamId value to search for
         in: path
         name: wamId
         required: true
@@ -4492,13 +4490,13 @@ paths:
       - application/json
       responses:
         "200":
-          description: List of messages
+          description: List of matching messages
           schema:
             items:
               $ref: '#/definitions/message_entity.Message'
             type: array
         "400":
-          description: Invalid wamId or query
+          description: Invalid wamId or query parameters
           schema:
             $ref: '#/definitions/common_model.DescriptiveError'
         "500":
@@ -4507,14 +4505,14 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Queries messages by wamId
+      summary: Search messages by wamId
       tags:
       - WhatsApp message
   /messaging-product:
     get:
       consumes:
       - application/json
-      description: Returns a paginated list of messaging products.
+      description: Fetches a paginated list of messaging products using optional filters.
       parameters:
       - default: desc
         enum:
@@ -4588,14 +4586,14 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Get messaging products paginated
+      summary: Retrieve messaging products
       tags:
       - Messaging product
   /messaging-product/contact:
     delete:
       consumes:
       - application/json
-      description: Deletes a messaging product contact by their ID.
+      description: Deletes a messaging product contact using the provided ID.
       parameters:
       - description: Messaging product contact ID to delete
         in: body
@@ -4618,13 +4616,13 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Delete messaging product contact by ID
+      summary: Delete messaging product contact
       tags:
       - Messaging product contact
     get:
       consumes:
       - application/json
-      description: Returns a paginated list of messaging product contacts, joining
+      description: Fetches a paginated list of messaging product contacts, joining
         with the contact entity.
       parameters:
       - in: query
@@ -4717,7 +4715,7 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Get messaging products contacts paginated
+      summary: Retrieve messaging product contacts
       tags:
       - Messaging product contact
     post:
@@ -4748,7 +4746,7 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Creates a new messaging product contact
+      summary: Create messaging product contact
       tags:
       - Messaging product contact
   /messaging-product/contact/block:
@@ -4781,7 +4779,7 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Unblocks a messaging product contact
+      summary: Unblock messaging product contact
       tags:
       - Messaging product contact
     patch:
@@ -4813,15 +4811,16 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Blocks a messaging product contact
+      summary: Block messaging product contact
       tags:
       - Messaging product contact
   /messaging-product/contact/content/like/{likeText}:
     get:
       consumes:
       - application/json
-      description: Uses the ~ operator (regex) to match the provided text in contact
-        name, email, and product_details fields.
+      description: Returns a paginated list of messaging product contacts where the
+        provided text matches contact name, email, or product_details fields using
+        regex (~).
       parameters:
       - in: query
         name: blocked
@@ -4918,15 +4917,15 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Get messaging products contacts paginated
+      summary: Search contacts by content
       tags:
       - Messaging product contact
   /messaging-product/contact/count/content/like/{likeText}:
     get:
       consumes:
       - application/json
-      description: Uses the ~ operator (regex) to match the provided text in contact
-        name, email, and product_details fields.
+      description: Returns the number of messaging product contacts that match the
+        provided text (regex ~) in fields like name, email, and product_details.
       parameters:
       - in: query
         name: blocked
@@ -4989,7 +4988,7 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
-      - description: Text to match using like (~) operator
+      - description: Text to match using regex (~)
         in: path
         name: likeText
         required: true
@@ -5011,15 +5010,15 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Counts messaging product contacts with text comparison
+      summary: Count contacts by content
       tags:
       - Messaging product contact
   /messaging-product/contact/last-read-at/{messagingProductContactId}:
     put:
       consumes:
       - application/json
-      description: Sets the `last_read_at` timestamp of the contact as the current
-        date and time.
+      description: Sets the `last_read_at` field of the specified messaging product
+        contact to the current timestamp.
       parameters:
       - description: Messaging product contact ID
         in: path
@@ -5043,14 +5042,14 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Sets last_read_at of the messaging_product_contact
+      summary: Update last_read_at timestamp
       tags:
       - Messaging product contact
   /messaging-product/contact/whatsapp:
     get:
       consumes:
       - application/json
-      description: Queries a paginated list of WhatsApp messaging product contacts,
+      description: Fetches a paginated list of WhatsApp messaging product contacts,
         including WhatsApp-specific fields and joining with the contact entity.
       parameters:
       - in: query
@@ -5143,14 +5142,14 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Get WhatsApp messaging products contacts paginated
+      summary: Retrieve WhatsApp contacts
       tags:
       - Messaging product contact
     post:
       consumes:
       - application/json
-      description: Creates and stores a new WhatsApp contact associated with a messaging
-        product, using WhatsApp-specific product details.
+      description: Creates and stores a WhatsApp contact linked to a messaging product,
+        using WhatsApp-specific product details.
       parameters:
       - description: Contact data
         in: body
@@ -5175,14 +5174,14 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Creates a new messaging product WhatsApp contact
+      summary: Create WhatsApp contact
       tags:
       - Messaging product contact
   /status:
     get:
       consumes:
       - application/json
-      description: Returns a paginated list of statuses.
+      description: Returns a paginated list of statuses based on optional filters.
       parameters:
       - default: desc
         enum:
@@ -5268,15 +5267,15 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Get statuses paginated
+      summary: Retrieve statuses
       tags:
       - Status
   /status/content/{keyName}/like/{likeText}:
     get:
       consumes:
       - application/json
-      description: Returns a paginated list of statuses. The query is based on the
-        like operator applied to the given key.
+      description: Returns a paginated list of statuses where a given key matches
+        a partial value using regex (~).
       parameters:
       - default: desc
         enum:
@@ -5343,12 +5342,12 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
-      - description: The key to apply like operator
+      - description: Field name to search
         in: path
         name: keyName
         required: true
         type: string
-      - description: Text to apply like operator on the given key
+      - description: Text to match on the key
         in: path
         name: likeText
         required: true
@@ -5372,16 +5371,15 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Queries status content like text paginated
+      summary: Search statuses by key and content
       tags:
       - Status
   /status/content/like/{likeText}:
     get:
       consumes:
       - application/json
-      description: Uses regex with the ~ operator to query text at the key. The query
-        is based on the like operator on the fields sender_data, receiver_data, and
-        product_data.
+      description: Returns a paginated list of statuses matching a partial text (using
+        regex ~) in sender_data, receiver_data, or product_data.
       parameters:
       - default: desc
         enum:
@@ -5448,8 +5446,7 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
-      - description: Text to apply like operator on sender_data, receiver_data, and
-          product_data fields
+      - description: Text to match in content fields
         in: path
         name: likeText
         required: true
@@ -5473,14 +5470,15 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Queries status content like text paginated
+      summary: Search statuses by content
       tags:
       - Status
   /status/count:
     get:
       consumes:
       - application/json
-      description: Counts statuses based on the query parameters.
+      description: Returns the number of status records that match the provided query
+        parameters.
       parameters:
       - default: desc
         enum:
@@ -5564,15 +5562,15 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Counts statuses
+      summary: Count statuses
       tags:
       - Status
   /status/whatsapp/wam-id/{wamId}:
     get:
       consumes:
       - application/json
-      description: Returns a paginated list of statuses matching the given wamId and
-        query parameters.
+      description: Returns a paginated list of statuses filtered by WhatsApp message
+        ID (wamId) and other query parameters.
       parameters:
       - default: desc
         enum:
@@ -5663,15 +5661,14 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Queries statuses by wamId
+      summary: Retrieve statuses by wamId
       tags:
       - WhatsApp status
   /user:
     delete:
       consumes:
       - application/json
-      description: Deletes a user by their ID (only accessible by admins). You cannot
-        delete su@sudo
+      description: Deletes a user by ID. The special user su@sudo cannot be deleted.
       parameters:
       - description: User ID to delete
         in: body
@@ -5684,6 +5681,8 @@ paths:
       responses:
         "204":
           description: No content
+          schema:
+            type: string
         "400":
           description: Invalid request body
           schema:
@@ -5704,7 +5703,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Returns a paginated list of users
+      description: Returns a paginated list of users based on optional filters.
       parameters:
       - default: desc
         enum:
@@ -5780,13 +5779,13 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Get users paginated
+      summary: Retrieve users
       tags:
       - User
     post:
       consumes:
       - application/json
-      description: Creates a new user account
+      description: Creates a new user account with the provided information.
       parameters:
       - description: User data
         in: body
@@ -5811,13 +5810,14 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Creates a new user
+      summary: Create a new user
       tags:
       - User
     put:
       consumes:
       - application/json
-      description: Updates a user's details by their ID (accessible by superuser)
+      description: Updates user data by ID. Restricted to superusers. Cannot update
+        su@sudo.
       parameters:
       - description: User data to update
         in: body
@@ -5853,7 +5853,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Uses regex with the ~ operator to query text at the key.
+      description: Returns a paginated list of users where the specified key matches
+        a partial value using regex (~ operator).
       parameters:
       - default: desc
         enum:
@@ -5910,14 +5911,14 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
-      - description: Text to apply like operator on the given key
-        in: path
-        name: likeText
-        required: true
-        type: string
-      - description: The key to apply like operator
+      - description: The field name to apply the like operator
         in: path
         name: keyName
+        required: true
+        type: string
+      - description: The text to search with regex (~)
+        in: path
+        name: likeText
         required: true
         type: string
       produces:
@@ -5939,15 +5940,17 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Queries user key like text paginated
+      summary: Search users by key and text
       tags:
       - User
   /user/me:
     delete:
-      description: Deletes the user who made the request
+      description: Deletes the authenticated user from the database.
       responses:
         "204":
           description: No content
+          schema:
+            type: string
         "500":
           description: Internal server error
           schema:
@@ -5960,7 +5963,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Returns the currently authenticated user
+      description: Returns information about the currently authenticated user.
       produces:
       - application/json
       responses:
@@ -5974,13 +5977,13 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Gets current user
+      summary: Get current user
       tags:
       - User
     put:
       consumes:
       - application/json
-      description: Updates the details of the user who made the request
+      description: Updates the profile details of the authenticated user.
       parameters:
       - description: User data to update
         in: body
@@ -5994,7 +5997,7 @@ paths:
         "200":
           description: User updated successfully
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/user_entity.User'
         "400":
           description: Invalid request body
           schema:
@@ -6012,7 +6015,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Issues access and refresh tokens based on grant type.
+      description: Issues access and refresh tokens based on the provided grant type
+        (password or refresh_token).
       parameters:
       - description: OAuth token request
         in: body
@@ -6041,14 +6045,14 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: OAuth 2.0 Token Endpoint
+      summary: Issue access and refresh tokens
       tags:
       - Auth
   /webhook:
     delete:
       consumes:
       - application/json
-      description: Deletes a webhook by its ID
+      description: Deletes a webhook using the provided unique ID.
       parameters:
       - description: Webhook ID to delete
         in: body
@@ -6071,13 +6075,13 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Delete webhook by ID
+      summary: Delete a webhook
       tags:
       - Webhook
     get:
       consumes:
       - application/json
-      description: Returns a paginated list of webhooks
+      description: Returns a paginated list of registered webhooks.
       parameters:
       - default: desc
         enum:
@@ -6165,8 +6169,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Creates a new webhook with the specified URL, authorization, and
-        event type
+      description: Creates a new webhook with the specified URL, authorization header,
+        method, timeout, and event type.
       parameters:
       - description: Webhook data
         in: body
@@ -6197,8 +6201,8 @@ paths:
     put:
       consumes:
       - application/json
-      description: Edits a webhook based on its ID with updated URL, authorization,
-        and event type
+      description: Updates a webhook identified by its ID with new URL, authorization,
+        event, and method settings.
       parameters:
       - description: Updated webhook data
         in: body
@@ -6210,7 +6214,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Edited webhook
+          description: Updated webhook
           schema:
             $ref: '#/definitions/webhook_entity.Webhook'
         "400":
@@ -6223,27 +6227,26 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Edit an existing webhook
+      summary: Update an existing webhook
       tags:
       - Webhook
   /webhook-in:
     get:
       consumes:
       - application/json
-      description: Used by meta to verify if it is a valid webhook endpoint.
+      description: Used by Meta to verify the validity of the webhook endpoint.
       parameters:
-      - description: Subscription mode, always set to 'subscribe'
+      - description: Subscription mode (should be 'subscribe')
         in: query
         name: hub.mode
         required: true
         type: string
-      - description: A challenge integer that must be returned to confirm the webhook
+      - description: Challenge token returned by the endpoint
         in: query
         name: hub.challenge
         required: true
         type: integer
-      - description: A string used for validation, defined in the Webhooks setup in
-          the App Dashboard
+      - description: Verification token defined in Meta dashboard
         in: query
         name: hub.verify_token
         required: true
@@ -6252,19 +6255,19 @@ paths:
       - application/json
       responses:
         "200":
-          description: hub.challenge returned as a string.
+          description: hub.challenge echoed back
           schema:
             type: string
-      summary: Verify Webhook.
+      summary: Verify webhook endpoint
       tags:
       - Webhook In
     post:
       consumes:
       - application/json
-      description: Executes the context handler then the change handlers. If any error
-        is thrown this function will also throw an error.
+      description: Processes the context handler and all change handlers. If an error
+        occurs, it is returned.
       parameters:
-      - description: Content sent by WhatsApp Cloud API.
+      - description: Content sent by WhatsApp Cloud API
         in: body
         name: input
         required: true
@@ -6274,15 +6277,18 @@ paths:
       - application/json
       responses:
         "200":
-          description: Valid webhook endpoint.
-      summary: Handles Webhooks.
+          description: Valid webhook received
+          schema:
+            type: string
+      summary: Handle webhook events
       tags:
       - Webhook In
   /webhook/content/{keyName}/like/{likeText}:
     get:
       consumes:
       - application/json
-      description: Uses regex with the ~ operator to query text at the key.
+      description: Filters webhooks using the ~ operator on a specified field and
+        partial value.
       parameters:
       - default: desc
         enum:
@@ -6374,14 +6380,14 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Queries webhook key like text paginated
+      summary: Query webhooks by key and partial value
       tags:
       - Webhook
   /webhook/log:
     get:
       consumes:
       - application/json
-      description: Returns a paginated list of webhook logs
+      description: Returns a paginated list of webhook execution logs.
       parameters:
       - default: desc
         enum:
@@ -6478,15 +6484,17 @@ paths:
     get:
       consumes:
       - application/json
-      description: Upgrades to WebSocket to send a campaign and receive real-time
-        status and results.
+      description: 'Upgrades the connection to WebSocket to start sending a campaign
+        and receive real-time status and results. Use message types: "send", "cancel",
+        "status", and "ping".'
       parameters:
-      - description: Campaign ID
+      - description: Campaign ID (UUID format)
         in: path
         name: campaignId
         required: true
         type: string
-      - description: 'Optional: customize message send behavior'
+      - description: 'Optional: customize message sending behavior (currently not
+          used)'
         in: body
         name: function
         schema:
@@ -6515,8 +6523,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Upgrades the connection to WebSocket. Streams messages sent or
-        received in real-time.
+      description: Establishes a WebSocket connection and streams incoming and outgoing
+        WhatsApp messages in real-time.
       produces:
       - application/json
       responses:
@@ -6534,22 +6542,22 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Watches for new messages
+      summary: Subscribe to new messages
       tags:
       - Message Websocket
   /websocket/status/new:
     get:
       consumes:
       - application/json
-      description: WebSocket route that allows the user to watch for incoming message
-        status updates.
+      description: Upgrades the HTTP connection to a WebSocket stream to receive real-time
+        message status updates.
       produces:
       - application/json
       responses:
-        "200":
-          description: Status update received
+        "101":
+          description: WebSocket connection established
           schema:
-            $ref: '#/definitions/status_entity.Status'
+            type: string
         "400":
           description: Invalid WebSocket handshake
           schema:
@@ -6559,20 +6567,20 @@ paths:
           schema:
             $ref: '#/definitions/common_model.DescriptiveError'
         "500":
-          description: Server error
+          description: Internal server error
           schema:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Watches for new statuses
+      summary: Subscribe to status updates
       tags:
       - Status Websocket
   /whatsapp-template:
     get:
       consumes:
       - application/json
-      description: Returns a paginated list of templates for WhatsApp using graph
-        API pagination.
+      description: Retrieves a paginated list of WhatsApp templates using the Graph
+        API.
       parameters:
       - description: Used to paginate.
         in: query
@@ -6614,9 +6622,17 @@ paths:
       - in: query
         name: name_or_content
         type: string
-      - in: query
+      - enum:
+        - APPROVED
+        - PENDING
+        - REJECTED
+        in: query
         name: status
         type: string
+        x-enum-varnames:
+        - Approved
+        - Pending
+        - Rejected
       - collectionFormat: csv
         description: Summary to be returned.
         in: query
@@ -6643,12 +6659,12 @@ paths:
           schema:
             $ref: '#/definitions/common_model.DescriptiveError'
         "500":
-          description: Unable to get templates from API
+          description: Unable to retrieve templates from API
           schema:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Get templates paginated
+      summary: Get WhatsApp templates
       tags:
       - WhatsApp template
 schemes:

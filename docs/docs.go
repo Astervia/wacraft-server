@@ -12,7 +12,7 @@ const docTemplate = `{
         "contact": {
             "name": "Astervia Dev Team",
             "url": "https://github.com/Astervia",
-            "email": "development@astservia.io"
+            "email": "wacraft@astervia.tech"
         },
         "license": {
             "name": "MIT",
@@ -151,7 +151,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Creates a new campaign and returns the created object.",
+                "description": "Creates a new campaign using the provided data and returns the created object.",
                 "consumes": [
                     "application/json"
                 ],
@@ -249,7 +249,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Updates a campaign identified by its ID.",
+                "description": "Updates an existing campaign using the provided ID and data.",
                 "consumes": [
                     "application/json"
                 ],
@@ -681,7 +681,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Creates a new campaign message and returns the created object.",
+                "description": "Creates a new campaign message using the provided data and returns the created object.",
                 "consumes": [
                     "application/json"
                 ],
@@ -781,7 +781,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Counts campaign messages based on the query parameters.",
+                "description": "Returns the total number of campaign messages that match the given filters.",
                 "consumes": [
                     "application/json"
                 ],
@@ -860,7 +860,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Count of campaign messages",
+                        "description": "Number of campaign messages",
                         "schema": {
                             "type": "integer"
                         }
@@ -887,7 +887,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Counts campaign messages where message ID is not null.",
+                "description": "Returns the number of campaign messages where the message ID is not null (sent messages).",
                 "consumes": [
                     "application/json"
                 ],
@@ -966,7 +966,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Count of sent campaign messages",
+                        "description": "Number of sent campaign messages",
                         "schema": {
                             "type": "integer"
                         }
@@ -993,7 +993,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Counts campaign messages where message ID is null.",
+                "description": "Returns the number of campaign messages where the message ID is null (unsent messages).",
                 "consumes": [
                     "application/json"
                 ],
@@ -1072,7 +1072,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Count of unsent campaign messages",
+                        "description": "Number of unsent campaign messages",
                         "schema": {
                             "type": "integer"
                         }
@@ -1345,7 +1345,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns a paginated list of contacts.",
+                "description": "Returns a paginated list of contacts using optional query parameters for filtering and sorting.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1471,7 +1471,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Updates a contact using the provided data and returns the updated object.",
+                "description": "Updates an existing contact using the provided ID and data.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1481,10 +1481,10 @@ const docTemplate = `{
                 "tags": [
                     "Contact"
                 ],
-                "summary": "Edit a contact",
+                "summary": "Update contact",
                 "parameters": [
                     {
-                        "description": "Contact data",
+                        "description": "Updated contact data",
                         "name": "contact",
                         "in": "body",
                         "required": true,
@@ -1495,7 +1495,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Edited contact",
+                        "description": "Updated contact",
                         "schema": {
                             "$ref": "#/definitions/contact_entity.Contact"
                         }
@@ -1520,7 +1520,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Creates a new contact and returns the created object.",
+                "description": "Creates a new contact using the provided data and returns the created object.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1620,7 +1620,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Downloads media using the URL retrieved via the WhatsApp API.",
+                "description": "Downloads media using a temporary URL retrieved via the WhatsApp API.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1630,7 +1630,7 @@ const docTemplate = `{
                 "tags": [
                     "Media"
                 ],
-                "summary": "Downloads WhatsApp media",
+                "summary": "Download WhatsApp media",
                 "parameters": [
                     {
                         "type": "string",
@@ -1669,7 +1669,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Receives MediaInfo JSON, downloads the media from the provided URL, and sends it back as a file.",
+                "description": "Receives MediaInfo JSON, validates it, downloads the media from the provided URL, and streams it.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1720,7 +1720,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Uploads media files to WhatsApp. Files persist for up to 30 days unless deleted earlier.",
+                "description": "Uploads a media file to WhatsApp. Files remain available for up to 30 days unless deleted earlier.",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -1782,7 +1782,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Uses the WhatsApp API to get a temporary URL to download the media. The URL expires in 5 minutes.",
+                "description": "Uses the WhatsApp API to retrieve a temporary media download URL. This URL expires in 5 minutes.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1792,7 +1792,7 @@ const docTemplate = `{
                 "tags": [
                     "Media"
                 ],
-                "summary": "Gets URL for WhatsApp media",
+                "summary": "Get WhatsApp media URL",
                 "parameters": [
                     {
                         "type": "string",
@@ -1831,7 +1831,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns a paginated list of messages based on filters such as sender, receiver, and messaging product.",
+                "description": "Fetches a paginated list of messages filtered by sender, receiver, messaging product, etc.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1841,7 +1841,7 @@ const docTemplate = `{
                 "tags": [
                     "Message"
                 ],
-                "summary": "Get messages paginated",
+                "summary": "Retrieve messages",
                 "parameters": [
                     {
                         "enum": [
@@ -1983,7 +1983,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Uses regex (~) to match the given text against ` + "`" + `sender_data` + "`" + `, ` + "`" + `receiver_data` + "`" + `, and ` + "`" + `product_data` + "`" + ` fields.",
+                "description": "Matches the given text using regex (~) against ` + "`" + `sender_data` + "`" + `, ` + "`" + `receiver_data` + "`" + `, and ` + "`" + `product_data` + "`" + ` fields.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1993,7 +1993,7 @@ const docTemplate = `{
                 "tags": [
                     "Message"
                 ],
-                "summary": "Queries message content like text paginated",
+                "summary": "Search messages by content text",
                 "parameters": [
                     {
                         "enum": [
@@ -2142,7 +2142,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Uses regex (~) to match the given text on a dynamic key field. The fields ` + "`" + `from` + "`" + ` and ` + "`" + `to` + "`" + ` are populated in the result.",
+                "description": "Uses regex (~) to match the given text in the specified key field. The fields ` + "`" + `from` + "`" + ` and ` + "`" + `to` + "`" + ` are populated in the result.",
                 "consumes": [
                     "application/json"
                 ],
@@ -2152,7 +2152,7 @@ const docTemplate = `{
                 "tags": [
                     "Message"
                 ],
-                "summary": "Queries message content like text paginated",
+                "summary": "Search messages by content field",
                 "parameters": [
                     {
                         "enum": [
@@ -2308,7 +2308,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns a paginated list of the latest messages per conversation, enriched with contact information.",
+                "description": "Retrieves a paginated list of the latest messages per conversation, enriched with contact information.",
                 "consumes": [
                     "application/json"
                 ],
@@ -2470,7 +2470,7 @@ const docTemplate = `{
                 "tags": [
                     "Message conversation"
                 ],
-                "summary": "Counts conversations",
+                "summary": "Count distinct conversations",
                 "parameters": [
                     {
                         "enum": [
@@ -2532,22 +2532,8 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Number of items to return",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
                         "type": "string",
                         "name": "messaging_product_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 0,
-                        "description": "The offset from where to start the items",
-                        "name": "offset",
                         "in": "query"
                     },
                     {
@@ -2619,7 +2605,7 @@ const docTemplate = `{
                 "tags": [
                     "Message conversation"
                 ],
-                "summary": "Counts conversations by messaging product contact",
+                "summary": "Count messages by contact",
                 "parameters": [
                     {
                         "enum": [
@@ -2681,22 +2667,8 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Number of items to return",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
                         "type": "string",
                         "name": "messaging_product_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 0,
-                        "description": "The offset from where to start the items",
-                        "name": "offset",
                         "in": "query"
                     },
                     {
@@ -2765,7 +2737,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Counts messages from a messaging product contact matching a \"like\" pattern on sender/receiver/product data.",
+                "description": "Counts messages from a messaging product contact matching a \"like\" pattern on sender, receiver, or product data.",
                 "consumes": [
                     "application/json"
                 ],
@@ -2775,7 +2747,7 @@ const docTemplate = `{
                 "tags": [
                     "Message conversation"
                 ],
-                "summary": "Counts conversation messages by content",
+                "summary": "Count messages by content",
                 "parameters": [
                     {
                         "enum": [
@@ -2837,22 +2809,8 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Number of items to return",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
                         "type": "string",
                         "name": "messaging_product_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 0,
-                        "description": "The offset from where to start the items",
-                        "name": "offset",
                         "in": "query"
                     },
                     {
@@ -2893,7 +2851,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Substring to match against sender/receiver/product data",
+                        "description": "Substring to match against sender, receiver, or product data",
                         "name": "likeText",
                         "in": "path",
                         "required": true
@@ -2928,7 +2886,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns a paginated list of messages sent or received by the specified messaging product contact.",
+                "description": "Retrieves a paginated list of messages sent or received by the specified messaging product contact.",
                 "consumes": [
                     "application/json"
                 ],
@@ -3087,7 +3045,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns messages filtered by a \"like\" match on sender/receiver/product data fields.",
+                "description": "Returns messages filtered by a \"like\" match on sender, receiver, or product data.",
                 "consumes": [
                     "application/json"
                 ],
@@ -3097,7 +3055,7 @@ const docTemplate = `{
                 "tags": [
                     "Message conversation"
                 ],
-                "summary": "Count conversation messages by content and messaging product contact ID",
+                "summary": "Search messages by content",
                 "parameters": [
                     {
                         "enum": [
@@ -3215,7 +3173,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Substring to match against sender/receiver/product data",
+                        "description": "Substring to match against sender, receiver, or product data",
                         "name": "likeText",
                         "in": "path",
                         "required": true
@@ -3253,7 +3211,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Counts messages based on the query parameters.",
+                "description": "Returns the total number of messages matching the specified filters.",
                 "consumes": [
                     "application/json"
                 ],
@@ -3263,7 +3221,7 @@ const docTemplate = `{
                 "tags": [
                     "Message"
                 ],
-                "summary": "Counts messages",
+                "summary": "Count messages",
                 "parameters": [
                     {
                         "enum": [
@@ -3402,7 +3360,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Counts messages where the given text matches fields such as sender_data, receiver_data, or product_data.",
+                "description": "Returns the number of messages where the provided text matches content fields like sender_data, receiver_data, or product_data.",
                 "consumes": [
                     "application/json"
                 ],
@@ -3412,7 +3370,7 @@ const docTemplate = `{
                 "tags": [
                     "Message"
                 ],
-                "summary": "Counts messages with content like comparison",
+                "summary": "Count messages with content match",
                 "parameters": [
                     {
                         "enum": [
@@ -3523,7 +3481,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Text to apply like operator on content fields",
+                        "description": "Substring to search in content fields",
                         "name": "likeText",
                         "in": "path",
                         "required": true
@@ -3558,7 +3516,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Tries to send a WhatsApp message and stores it in the database if successful.",
+                "description": "Sends a WhatsApp message and stores it in the database if the operation is successful.",
                 "consumes": [
                     "application/json"
                 ],
@@ -3568,7 +3526,7 @@ const docTemplate = `{
                 "tags": [
                     "WhatsApp message"
                 ],
-                "summary": "Sends new message",
+                "summary": "Send WhatsApp message",
                 "parameters": [
                     {
                         "description": "Message data",
@@ -3582,7 +3540,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Message sent",
+                        "description": "Message sent successfully",
                         "schema": {
                             "$ref": "#/definitions/message_entity.Message"
                         }
@@ -3594,7 +3552,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "Failed to send or save message",
+                        "description": "Failed to send or save the message",
                         "schema": {
                             "$ref": "#/definitions/common_model.DescriptiveError"
                         }
@@ -3609,7 +3567,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Marks the latest message in a conversation as read so that the recipient sees the double blue tick in WhatsApp.",
+                "description": "Marks the latest WhatsApp message in the conversation as read so the user sees the double blue check.",
                 "consumes": [
                     "application/json"
                 ],
@@ -3619,7 +3577,7 @@ const docTemplate = `{
                 "tags": [
                     "WhatsApp message"
                 ],
-                "summary": "Marks conversation as read to user",
+                "summary": "Mark last message as read",
                 "parameters": [
                     {
                         "enum": [
@@ -3758,7 +3716,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns a paginated list of messages where the wamId matches and the query parameters are satisfied.",
+                "description": "Fetches a paginated list of messages where the wamId matches and filters are applied.",
                 "consumes": [
                     "application/json"
                 ],
@@ -3768,7 +3726,7 @@ const docTemplate = `{
                 "tags": [
                     "WhatsApp message"
                 ],
-                "summary": "Queries messages by wamId",
+                "summary": "Search messages by wamId",
                 "parameters": [
                     {
                         "enum": [
@@ -3879,7 +3837,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Desired wamId to search for",
+                        "description": "wamId value to search for",
                         "name": "wamId",
                         "in": "path",
                         "required": true
@@ -3887,7 +3845,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "List of messages",
+                        "description": "List of matching messages",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -3896,7 +3854,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid wamId or query",
+                        "description": "Invalid wamId or query parameters",
                         "schema": {
                             "$ref": "#/definitions/common_model.DescriptiveError"
                         }
@@ -3917,7 +3875,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns a paginated list of messaging products.",
+                "description": "Fetches a paginated list of messaging products using optional filters.",
                 "consumes": [
                     "application/json"
                 ],
@@ -3927,7 +3885,7 @@ const docTemplate = `{
                 "tags": [
                     "Messaging product"
                 ],
-                "summary": "Get messaging products paginated",
+                "summary": "Retrieve messaging products",
                 "parameters": [
                     {
                         "enum": [
@@ -4041,7 +3999,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns a paginated list of messaging product contacts, joining with the contact entity.",
+                "description": "Fetches a paginated list of messaging product contacts, joining with the contact entity.",
                 "consumes": [
                     "application/json"
                 ],
@@ -4051,7 +4009,7 @@ const docTemplate = `{
                 "tags": [
                     "Messaging product contact"
                 ],
-                "summary": "Get messaging products contacts paginated",
+                "summary": "Retrieve messaging product contacts",
                 "parameters": [
                     {
                         "type": "boolean",
@@ -4201,7 +4159,7 @@ const docTemplate = `{
                 "tags": [
                     "Messaging product contact"
                 ],
-                "summary": "Creates a new messaging product contact",
+                "summary": "Create messaging product contact",
                 "parameters": [
                     {
                         "description": "Contact data",
@@ -4240,7 +4198,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Deletes a messaging product contact by their ID.",
+                "description": "Deletes a messaging product contact using the provided ID.",
                 "consumes": [
                     "application/json"
                 ],
@@ -4250,7 +4208,7 @@ const docTemplate = `{
                 "tags": [
                     "Messaging product contact"
                 ],
-                "summary": "Delete messaging product contact by ID",
+                "summary": "Delete messaging product contact",
                 "parameters": [
                     {
                         "description": "Messaging product contact ID to delete",
@@ -4298,7 +4256,7 @@ const docTemplate = `{
                 "tags": [
                     "Messaging product contact"
                 ],
-                "summary": "Unblocks a messaging product contact",
+                "summary": "Unblock messaging product contact",
                 "parameters": [
                     {
                         "description": "Contact ID to unblock",
@@ -4347,7 +4305,7 @@ const docTemplate = `{
                 "tags": [
                     "Messaging product contact"
                 ],
-                "summary": "Blocks a messaging product contact",
+                "summary": "Block messaging product contact",
                 "parameters": [
                     {
                         "description": "Contact ID to block",
@@ -4388,7 +4346,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Uses the ~ operator (regex) to match the provided text in contact name, email, and product_details fields.",
+                "description": "Returns a paginated list of messaging product contacts where the provided text matches contact name, email, or product_details fields using regex (~).",
                 "consumes": [
                     "application/json"
                 ],
@@ -4398,7 +4356,7 @@ const docTemplate = `{
                 "tags": [
                     "Messaging product contact"
                 ],
-                "summary": "Get messaging products contacts paginated",
+                "summary": "Search contacts by content",
                 "parameters": [
                     {
                         "type": "boolean",
@@ -4547,7 +4505,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Uses the ~ operator (regex) to match the provided text in contact name, email, and product_details fields.",
+                "description": "Returns the number of messaging product contacts that match the provided text (regex ~) in fields like name, email, and product_details.",
                 "consumes": [
                     "application/json"
                 ],
@@ -4557,7 +4515,7 @@ const docTemplate = `{
                 "tags": [
                     "Messaging product contact"
                 ],
-                "summary": "Counts messaging product contacts with text comparison",
+                "summary": "Count contacts by content",
                 "parameters": [
                     {
                         "type": "boolean",
@@ -4654,7 +4612,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Text to match using like (~) operator",
+                        "description": "Text to match using regex (~)",
                         "name": "likeText",
                         "in": "path",
                         "required": true
@@ -4689,7 +4647,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Sets the ` + "`" + `last_read_at` + "`" + ` timestamp of the contact as the current date and time.",
+                "description": "Sets the ` + "`" + `last_read_at` + "`" + ` field of the specified messaging product contact to the current timestamp.",
                 "consumes": [
                     "application/json"
                 ],
@@ -4699,7 +4657,7 @@ const docTemplate = `{
                 "tags": [
                     "Messaging product contact"
                 ],
-                "summary": "Sets last_read_at of the messaging_product_contact",
+                "summary": "Update last_read_at timestamp",
                 "parameters": [
                     {
                         "type": "string",
@@ -4738,7 +4696,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Queries a paginated list of WhatsApp messaging product contacts, including WhatsApp-specific fields and joining with the contact entity.",
+                "description": "Fetches a paginated list of WhatsApp messaging product contacts, including WhatsApp-specific fields and joining with the contact entity.",
                 "consumes": [
                     "application/json"
                 ],
@@ -4748,7 +4706,7 @@ const docTemplate = `{
                 "tags": [
                     "Messaging product contact"
                 ],
-                "summary": "Get WhatsApp messaging products contacts paginated",
+                "summary": "Retrieve WhatsApp contacts",
                 "parameters": [
                     {
                         "type": "string",
@@ -4888,7 +4846,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Creates and stores a new WhatsApp contact associated with a messaging product, using WhatsApp-specific product details.",
+                "description": "Creates and stores a WhatsApp contact linked to a messaging product, using WhatsApp-specific product details.",
                 "consumes": [
                     "application/json"
                 ],
@@ -4898,7 +4856,7 @@ const docTemplate = `{
                 "tags": [
                     "Messaging product contact"
                 ],
-                "summary": "Creates a new messaging product WhatsApp contact",
+                "summary": "Create WhatsApp contact",
                 "parameters": [
                     {
                         "description": "Contact data",
@@ -4939,7 +4897,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns a paginated list of statuses.",
+                "description": "Returns a paginated list of statuses based on optional filters.",
                 "consumes": [
                     "application/json"
                 ],
@@ -4949,7 +4907,7 @@ const docTemplate = `{
                 "tags": [
                     "Status"
                 ],
-                "summary": "Get statuses paginated",
+                "summary": "Retrieve statuses",
                 "parameters": [
                     {
                         "enum": [
@@ -5081,7 +5039,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Uses regex with the ~ operator to query text at the key. The query is based on the like operator on the fields sender_data, receiver_data, and product_data.",
+                "description": "Returns a paginated list of statuses matching a partial text (using regex ~) in sender_data, receiver_data, or product_data.",
                 "consumes": [
                     "application/json"
                 ],
@@ -5091,7 +5049,7 @@ const docTemplate = `{
                 "tags": [
                     "Status"
                 ],
-                "summary": "Queries status content like text paginated",
+                "summary": "Search statuses by content",
                 "parameters": [
                     {
                         "enum": [
@@ -5192,7 +5150,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Text to apply like operator on sender_data, receiver_data, and product_data fields",
+                        "description": "Text to match in content fields",
                         "name": "likeText",
                         "in": "path",
                         "required": true
@@ -5230,7 +5188,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns a paginated list of statuses. The query is based on the like operator applied to the given key.",
+                "description": "Returns a paginated list of statuses where a given key matches a partial value using regex (~).",
                 "consumes": [
                     "application/json"
                 ],
@@ -5240,7 +5198,7 @@ const docTemplate = `{
                 "tags": [
                     "Status"
                 ],
-                "summary": "Queries status content like text paginated",
+                "summary": "Search statuses by key and content",
                 "parameters": [
                     {
                         "enum": [
@@ -5341,14 +5299,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "The key to apply like operator",
+                        "description": "Field name to search",
                         "name": "keyName",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Text to apply like operator on the given key",
+                        "description": "Text to match on the key",
                         "name": "likeText",
                         "in": "path",
                         "required": true
@@ -5386,7 +5344,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Counts statuses based on the query parameters.",
+                "description": "Returns the number of status records that match the provided query parameters.",
                 "consumes": [
                     "application/json"
                 ],
@@ -5396,7 +5354,7 @@ const docTemplate = `{
                 "tags": [
                     "Status"
                 ],
-                "summary": "Counts statuses",
+                "summary": "Count statuses",
                 "parameters": [
                     {
                         "enum": [
@@ -5525,7 +5483,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns a paginated list of statuses matching the given wamId and query parameters.",
+                "description": "Returns a paginated list of statuses filtered by WhatsApp message ID (wamId) and other query parameters.",
                 "consumes": [
                     "application/json"
                 ],
@@ -5535,7 +5493,7 @@ const docTemplate = `{
                 "tags": [
                     "WhatsApp status"
                 ],
-                "summary": "Queries statuses by wamId",
+                "summary": "Retrieve statuses by wamId",
                 "parameters": [
                     {
                         "enum": [
@@ -5674,7 +5632,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns a paginated list of users",
+                "description": "Returns a paginated list of users based on optional filters.",
                 "consumes": [
                     "application/json"
                 ],
@@ -5684,7 +5642,7 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Get users paginated",
+                "summary": "Retrieve users",
                 "parameters": [
                     {
                         "enum": [
@@ -5800,7 +5758,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Updates a user's details by their ID (accessible by superuser)",
+                "description": "Updates user data by ID. Restricted to superusers. Cannot update su@sudo.",
                 "consumes": [
                     "application/json"
                 ],
@@ -5855,7 +5813,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Creates a new user account",
+                "description": "Creates a new user account with the provided information.",
                 "consumes": [
                     "application/json"
                 ],
@@ -5865,7 +5823,7 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Creates a new user",
+                "summary": "Create a new user",
                 "parameters": [
                     {
                         "description": "User data",
@@ -5904,7 +5862,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Deletes a user by their ID (only accessible by admins). You cannot delete su@sudo",
+                "description": "Deletes a user by ID. The special user su@sudo cannot be deleted.",
                 "consumes": [
                     "application/json"
                 ],
@@ -5928,7 +5886,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "No content"
+                        "description": "No content",
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     "400": {
                         "description": "Invalid request body",
@@ -5958,7 +5919,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Uses regex with the ~ operator to query text at the key.",
+                "description": "Returns a paginated list of users where the specified key matches a partial value using regex (~ operator).",
                 "consumes": [
                     "application/json"
                 ],
@@ -5968,7 +5929,7 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Queries user key like text paginated",
+                "summary": "Search users by key and text",
                 "parameters": [
                     {
                         "enum": [
@@ -6055,15 +6016,15 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Text to apply like operator on the given key",
-                        "name": "likeText",
+                        "description": "The field name to apply the like operator",
+                        "name": "keyName",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "The key to apply like operator",
-                        "name": "keyName",
+                        "description": "The text to search with regex (~)",
+                        "name": "likeText",
                         "in": "path",
                         "required": true
                     }
@@ -6100,7 +6061,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns the currently authenticated user",
+                "description": "Returns information about the currently authenticated user.",
                 "consumes": [
                     "application/json"
                 ],
@@ -6110,7 +6071,7 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Gets current user",
+                "summary": "Get current user",
                 "responses": {
                     "200": {
                         "description": "Current user",
@@ -6132,7 +6093,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Updates the details of the user who made the request",
+                "description": "Updates the profile details of the authenticated user.",
                 "consumes": [
                     "application/json"
                 ],
@@ -6158,7 +6119,7 @@ const docTemplate = `{
                     "200": {
                         "description": "User updated successfully",
                         "schema": {
-                            "$ref": "#/definitions/fiber.Map"
+                            "$ref": "#/definitions/user_entity.User"
                         }
                     },
                     "400": {
@@ -6181,14 +6142,17 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Deletes the user who made the request",
+                "description": "Deletes the authenticated user from the database.",
                 "tags": [
                     "User"
                 ],
                 "summary": "Delete current user",
                 "responses": {
                     "204": {
-                        "description": "No content"
+                        "description": "No content",
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     "500": {
                         "description": "Internal server error",
@@ -6206,7 +6170,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Issues access and refresh tokens based on grant type.",
+                "description": "Issues access and refresh tokens based on the provided grant type (password or refresh_token).",
                 "consumes": [
                     "application/json"
                 ],
@@ -6216,7 +6180,7 @@ const docTemplate = `{
                 "tags": [
                     "Auth"
                 ],
-                "summary": "OAuth 2.0 Token Endpoint",
+                "summary": "Issue access and refresh tokens",
                 "parameters": [
                     {
                         "description": "OAuth token request",
@@ -6263,7 +6227,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns a paginated list of webhooks",
+                "description": "Returns a paginated list of registered webhooks.",
                 "consumes": [
                     "application/json"
                 ],
@@ -6397,7 +6361,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Edits a webhook based on its ID with updated URL, authorization, and event type",
+                "description": "Updates a webhook identified by its ID with new URL, authorization, event, and method settings.",
                 "consumes": [
                     "application/json"
                 ],
@@ -6407,7 +6371,7 @@ const docTemplate = `{
                 "tags": [
                     "Webhook"
                 ],
-                "summary": "Edit an existing webhook",
+                "summary": "Update an existing webhook",
                 "parameters": [
                     {
                         "description": "Updated webhook data",
@@ -6421,7 +6385,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Edited webhook",
+                        "description": "Updated webhook",
                         "schema": {
                             "$ref": "#/definitions/webhook_entity.Webhook"
                         }
@@ -6446,7 +6410,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Creates a new webhook with the specified URL, authorization, and event type",
+                "description": "Creates a new webhook with the specified URL, authorization header, method, timeout, and event type.",
                 "consumes": [
                     "application/json"
                 ],
@@ -6495,7 +6459,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Deletes a webhook by its ID",
+                "description": "Deletes a webhook using the provided unique ID.",
                 "consumes": [
                     "application/json"
                 ],
@@ -6505,7 +6469,7 @@ const docTemplate = `{
                 "tags": [
                     "Webhook"
                 ],
-                "summary": "Delete webhook by ID",
+                "summary": "Delete a webhook",
                 "parameters": [
                     {
                         "description": "Webhook ID to delete",
@@ -6538,7 +6502,7 @@ const docTemplate = `{
         },
         "/webhook-in": {
             "get": {
-                "description": "Used by meta to verify if it is a valid webhook endpoint.",
+                "description": "Used by Meta to verify the validity of the webhook endpoint.",
                 "consumes": [
                     "application/json"
                 ],
@@ -6548,25 +6512,25 @@ const docTemplate = `{
                 "tags": [
                     "Webhook In"
                 ],
-                "summary": "Verify Webhook.",
+                "summary": "Verify webhook endpoint",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Subscription mode, always set to 'subscribe'",
+                        "description": "Subscription mode (should be 'subscribe')",
                         "name": "hub.mode",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "A challenge integer that must be returned to confirm the webhook",
+                        "description": "Challenge token returned by the endpoint",
                         "name": "hub.challenge",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "A string used for validation, defined in the Webhooks setup in the App Dashboard",
+                        "description": "Verification token defined in Meta dashboard",
                         "name": "hub.verify_token",
                         "in": "query",
                         "required": true
@@ -6574,7 +6538,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "hub.challenge returned as a string.",
+                        "description": "hub.challenge echoed back",
                         "schema": {
                             "type": "string"
                         }
@@ -6582,7 +6546,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Executes the context handler then the change handlers. If any error is thrown this function will also throw an error.",
+                "description": "Processes the context handler and all change handlers. If an error occurs, it is returned.",
                 "consumes": [
                     "application/json"
                 ],
@@ -6592,10 +6556,10 @@ const docTemplate = `{
                 "tags": [
                     "Webhook In"
                 ],
-                "summary": "Handles Webhooks.",
+                "summary": "Handle webhook events",
                 "parameters": [
                     {
-                        "description": "Content sent by WhatsApp Cloud API.",
+                        "description": "Content sent by WhatsApp Cloud API",
                         "name": "input",
                         "in": "body",
                         "required": true,
@@ -6606,7 +6570,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Valid webhook endpoint."
+                        "description": "Valid webhook received",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 }
             }
@@ -6618,7 +6585,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Uses regex with the ~ operator to query text at the key.",
+                "description": "Filters webhooks using the ~ operator on a specified field and partial value.",
                 "consumes": [
                     "application/json"
                 ],
@@ -6628,7 +6595,7 @@ const docTemplate = `{
                 "tags": [
                     "Webhook"
                 ],
-                "summary": "Queries webhook key like text paginated",
+                "summary": "Query webhooks by key and partial value",
                 "parameters": [
                     {
                         "enum": [
@@ -6768,7 +6735,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns a paginated list of webhook logs",
+                "description": "Returns a paginated list of webhook execution logs.",
                 "consumes": [
                     "application/json"
                 ],
@@ -6891,7 +6858,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Upgrades to WebSocket to send a campaign and receive real-time status and results.",
+                "description": "Upgrades the connection to WebSocket to start sending a campaign and receive real-time status and results. Use message types: \"send\", \"cancel\", \"status\", and \"ping\".",
                 "consumes": [
                     "application/json"
                 ],
@@ -6905,13 +6872,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Campaign ID",
+                        "description": "Campaign ID (UUID format)",
                         "name": "campaignId",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Optional: customize message send behavior",
+                        "description": "Optional: customize message sending behavior (currently not used)",
                         "name": "function",
                         "in": "body",
                         "schema": {
@@ -6948,7 +6915,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Upgrades the connection to WebSocket. Streams messages sent or received in real-time.",
+                "description": "Establishes a WebSocket connection and streams incoming and outgoing WhatsApp messages in real-time.",
                 "consumes": [
                     "application/json"
                 ],
@@ -6958,7 +6925,7 @@ const docTemplate = `{
                 "tags": [
                     "Message Websocket"
                 ],
-                "summary": "Watches for new messages",
+                "summary": "Subscribe to new messages",
                 "responses": {
                     "101": {
                         "description": "WebSocket connection established",
@@ -6988,7 +6955,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "WebSocket route that allows the user to watch for incoming message status updates.",
+                "description": "Upgrades the HTTP connection to a WebSocket stream to receive real-time message status updates.",
                 "consumes": [
                     "application/json"
                 ],
@@ -6998,12 +6965,12 @@ const docTemplate = `{
                 "tags": [
                     "Status Websocket"
                 ],
-                "summary": "Watches for new statuses",
+                "summary": "Subscribe to status updates",
                 "responses": {
-                    "200": {
-                        "description": "Status update received",
+                    "101": {
+                        "description": "WebSocket connection established",
                         "schema": {
-                            "$ref": "#/definitions/status_entity.Status"
+                            "type": "string"
                         }
                     },
                     "400": {
@@ -7019,7 +6986,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "Server error",
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/common_model.DescriptiveError"
                         }
@@ -7059,7 +7026,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns a paginated list of templates for WhatsApp using graph API pagination.",
+                "description": "Retrieves a paginated list of WhatsApp templates using the Graph API.",
                 "consumes": [
                     "application/json"
                 ],
@@ -7069,7 +7036,7 @@ const docTemplate = `{
                 "tags": [
                     "WhatsApp template"
                 ],
-                "summary": "Get templates paginated",
+                "summary": "Get WhatsApp templates",
                 "parameters": [
                     {
                         "type": "string",
@@ -7132,7 +7099,17 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            "APPROVED",
+                            "PENDING",
+                            "REJECTED"
+                        ],
                         "type": "string",
+                        "x-enum-varnames": [
+                            "Approved",
+                            "Pending",
+                            "Rejected"
+                        ],
                         "name": "status",
                         "in": "query"
                     },
@@ -7170,7 +7147,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "Unable to get templates from API",
+                        "description": "Unable to retrieve templates from API",
                         "schema": {
                             "$ref": "#/definitions/common_model.DescriptiveError"
                         }
@@ -7566,10 +7543,6 @@ const docTemplate = `{
                 "Desc"
             ]
         },
-        "fiber.Map": {
-            "type": "object",
-            "additionalProperties": true
-        },
         "media_model.MediaInfo": {
             "type": "object",
             "properties": {
@@ -7805,6 +7778,9 @@ const docTemplate = `{
         },
         "message_model.Message": {
             "type": "object",
+            "required": [
+                "type"
+            ],
             "properties": {
                 "audio": {
                     "$ref": "#/definitions/media_model.UseMedia"
@@ -7965,12 +7941,15 @@ const docTemplate = `{
         },
         "message_model.MessageResponse": {
             "type": "object",
+            "required": [
+                "message_status"
+            ],
             "properties": {
                 "id": {
                     "type": "string"
                 },
                 "message_status": {
-                    "type": "string"
+                    "$ref": "#/definitions/message_model.SendingStatus"
                 }
             }
         },
@@ -8193,6 +8172,9 @@ const docTemplate = `{
         },
         "message_model.SenderData": {
             "type": "object",
+            "required": [
+                "type"
+            ],
             "properties": {
                 "audio": {
                     "$ref": "#/definitions/media_model.UseMedia"
@@ -8700,6 +8682,9 @@ const docTemplate = `{
         },
         "message_type_interactive_model.ButtonData": {
             "type": "object",
+            "required": [
+                "type"
+            ],
             "properties": {
                 "reply": {
                     "description": "The reply object contains the title and ID of the reply button.",
@@ -8795,6 +8780,9 @@ const docTemplate = `{
         },
         "message_type_interactive_model.Header": {
             "type": "object",
+            "required": [
+                "type"
+            ],
             "properties": {
                 "audio": {
                     "$ref": "#/definitions/media_model.UseMedia"
@@ -9159,15 +9147,18 @@ const docTemplate = `{
         },
         "template_model.ButtonData": {
             "type": "object",
+            "required": [
+                "type"
+            ],
             "properties": {
                 "example": {
-                    "description": "string or string array"
+                    "description": "Check valid examples here https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates/#template-components"
                 },
                 "flow_action": {
                     "type": "string"
                 },
                 "flow_id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "navigate_screen": {
                     "type": "string"
@@ -9205,6 +9196,9 @@ const docTemplate = `{
         },
         "template_model.Component": {
             "type": "object",
+            "required": [
+                "type"
+            ],
             "properties": {
                 "index": {
                     "description": "Only for button type. This is actually an integer string.",
@@ -9377,6 +9371,19 @@ const docTemplate = `{
                 "Payload"
             ]
         },
+        "template_model.Status": {
+            "type": "string",
+            "enum": [
+                "APPROVED",
+                "PENDING",
+                "REJECTED"
+            ],
+            "x-enum-varnames": [
+                "Approved",
+                "Pending",
+                "Rejected"
+            ]
+        },
         "template_model.Template": {
             "type": "object",
             "properties": {
@@ -9399,12 +9406,15 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
+                    "$ref": "#/definitions/template_model.Status"
                 }
             }
         },
         "template_model.TemplateComponent": {
             "type": "object",
+            "required": [
+                "type"
+            ],
             "properties": {
                 "audio": {
                     "$ref": "#/definitions/media_model.UseMedia"
@@ -9960,7 +9970,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "0.1.0",
-	Host:             "localhost:6900",
+	Host:             "",
 	BasePath:         "/",
 	Schemes:          []string{"http", "https"},
 	Title:            "wacraft Server API",

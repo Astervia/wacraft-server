@@ -6,12 +6,14 @@ import (
 	contact_model "github.com/Astervia/wacraft-core/src/contact/model"
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 // CreateContact registers a new contact.
+//
 //	@Summary		Create a new contact
-//	@Description	Creates a new contact and returns the created object.
+//	@Description	Creates a new contact using the provided data and returns the created object.
 //	@Tags			Contact
 //	@Accept			json
 //	@Produce		json
@@ -26,6 +28,12 @@ func CreateContact(c *fiber.Ctx) error {
 	if err := c.BodyParser(&newContact); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(&newContact); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 
@@ -46,13 +54,14 @@ func CreateContact(c *fiber.Ctx) error {
 }
 
 // UpdateContact updates an existing contact.
-//	@Summary		Edit a contact
-//	@Description	Updates a contact using the provided data and returns the updated object.
+//
+//	@Summary		Update contact
+//	@Description	Updates an existing contact using the provided ID and data.
 //	@Tags			Contact
 //	@Accept			json
 //	@Produce		json
-//	@Param			contact	body		contact_model.UpdateContact		true	"Contact data"
-//	@Success		200		{object}	contact_entity.Contact			"Edited contact"
+//	@Param			contact	body		contact_model.UpdateContact		true	"Updated contact data"
+//	@Success		200		{object}	contact_entity.Contact			"Updated contact"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
@@ -62,6 +71,12 @@ func UpdateContact(c *fiber.Ctx) error {
 	if err := c.BodyParser(&editContact); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(&editContact); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 

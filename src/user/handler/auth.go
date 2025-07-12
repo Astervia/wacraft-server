@@ -9,8 +9,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-//	@Summary		OAuth 2.0 Token Endpoint
-//	@Description	Issues access and refresh tokens based on grant type.
+// OAuthTokenHandler handles the OAuth 2.0 token exchange.
+//
+//	@Summary		Issue access and refresh tokens
+//	@Description	Issues access and refresh tokens based on the provided grant type (password or refresh_token).
 //	@Tags			Auth
 //	@Accept			json
 //	@Produce		json
@@ -31,7 +33,7 @@ func OAuthTokenHandler(c *fiber.Ctx) error {
 	case "password":
 		if req.Username == "" || req.Password == "" {
 			return c.Status(fiber.StatusBadRequest).JSON(
-				common_model.NewParseJsonError(errors.New("Missing username or password")).Send(),
+				common_model.NewParseJsonError(errors.New("missing username or password")).Send(),
 			)
 		}
 		return handlePasswordGrant(c, req.Username, req.Password)
@@ -39,20 +41,22 @@ func OAuthTokenHandler(c *fiber.Ctx) error {
 	case "refresh_token":
 		if req.RefreshToken == "" {
 			return c.Status(fiber.StatusBadRequest).JSON(
-				common_model.NewParseJsonError(errors.New("Missing refresh token")).Send(),
+				common_model.NewParseJsonError(errors.New("missing refresh token")).Send(),
 			)
 		}
 		return handleRefreshTokenGrant(c, req.RefreshToken)
 
 	default:
-		return c.Status(fiber.StatusBadRequest).SendString("Unsupported grant type")
+		return c.Status(fiber.StatusBadRequest).SendString("unsupported grant type")
 	}
 }
 
 func handlePasswordGrant(c *fiber.Ctx, email, password string) error {
 	token, err := auth_service.Login(email, password)
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(common_model.NewApiError("unable to login", err, "auth_service").Send())
+		return c.Status(fiber.StatusUnauthorized).JSON(
+			common_model.NewApiError("unable to login", err, "auth_service").Send(),
+		)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(token)
@@ -61,7 +65,9 @@ func handlePasswordGrant(c *fiber.Ctx, email, password string) error {
 func handleRefreshTokenGrant(c *fiber.Ctx, refreshToken string) error {
 	token, err := auth_service.RefreshToken(refreshToken)
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(common_model.NewApiError("unable to refresh token", err, "auth_service").Send())
+		return c.Status(fiber.StatusUnauthorized).JSON(
+			common_model.NewApiError("unable to refresh token", err, "auth_service").Send(),
+		)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(token)

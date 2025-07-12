@@ -5,10 +5,12 @@ import (
 	contact_entity "github.com/Astervia/wacraft-core/src/contact/entity"
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 // DeleteContactById deletes a contact using the provided ID.
+//
 //	@Summary		Delete contact by ID
 //	@Description	Deletes a contact based on the ID sent in the request body.
 //	@Tags			Contact
@@ -25,6 +27,12 @@ func DeleteContactById(c *fiber.Ctx) error {
 	if err := c.BodyParser(&reqBody); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(&reqBody); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 

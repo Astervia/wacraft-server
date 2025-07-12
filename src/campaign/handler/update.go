@@ -6,12 +6,14 @@ import (
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 // Update updates an existing campaign.
+//
 //	@Summary		Update campaign
-//	@Description	Updates a campaign identified by its ID.
+//	@Description	Updates an existing campaign using the provided ID and data.
 //	@Tags			Campaign
 //	@Accept			json
 //	@Produce		json
@@ -26,6 +28,12 @@ func Update(c *fiber.Ctx) error {
 	if err := c.BodyParser(&updateData); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(&updateData); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 

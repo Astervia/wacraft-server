@@ -6,12 +6,14 @@ import (
 	message_model "github.com/Astervia/wacraft-core/src/message/model"
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 // Get returns a paginated list of messages.
-//	@Summary		Get messages paginated
-//	@Description	Returns a paginated list of messages based on filters such as sender, receiver, and messaging product.
+//
+//	@Summary		Retrieve messages
+//	@Description	Fetches a paginated list of messages filtered by sender, receiver, messaging product, etc.
 //	@Tags			Message
 //	@Accept			json
 //	@Produce		json
@@ -26,6 +28,12 @@ func Get(c *fiber.Ctx) error {
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 

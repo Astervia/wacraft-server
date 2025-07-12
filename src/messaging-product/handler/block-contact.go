@@ -5,11 +5,13 @@ import (
 	messaging_product_entity "github.com/Astervia/wacraft-core/src/messaging-product/entity"
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 // BlockContact blocks a messaging product contact by ID.
-//	@Summary		Blocks a messaging product contact
+//
+//	@Summary		Block messaging product contact
 //	@Description	Blocks a messaging product contact by ID. Messages from this contact will be ignored.
 //	@Tags			Messaging product contact
 //	@Accept			json
@@ -21,11 +23,16 @@ import (
 //	@Security		ApiKeyAuth
 //	@Router			/messaging-product/contact/block [patch]
 func BlockContact(c *fiber.Ctx) error {
-	// Parse the request body
 	var data common_model.RequiredId
 	if err := c.BodyParser(&data); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(&data); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 
@@ -47,7 +54,8 @@ func BlockContact(c *fiber.Ctx) error {
 }
 
 // UnblockContact unblocks a messaging product contact by ID.
-//	@Summary		Unblocks a messaging product contact
+//
+//	@Summary		Unblock messaging product contact
 //	@Description	Unblocks a messaging product contact by ID so it can send messages again.
 //	@Tags			Messaging product contact
 //	@Accept			json
@@ -59,7 +67,6 @@ func BlockContact(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/messaging-product/contact/block [delete]
 func UnblockContact(c *fiber.Ctx) error {
-	// Parse the request body
 	var data common_model.RequiredId
 	if err := c.BodyParser(&data); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -67,8 +74,14 @@ func UnblockContact(c *fiber.Ctx) error {
 		)
 	}
 
+	if err := validators.Validator().Struct(&data); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
+		)
+	}
+
 	updated, err := repository.Updates(
-		map[string]interface{}{
+		map[string]any{
 			"blocked": false,
 		},
 		&messaging_product_entity.MessagingProductContact{

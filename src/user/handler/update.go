@@ -7,16 +7,19 @@ import (
 	user_entity "github.com/Astervia/wacraft-core/src/user/entity"
 	user_model "github.com/Astervia/wacraft-core/src/user/model"
 	"github.com/Astervia/wacraft-server/src/database"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
+// UpdateCurrentUser updates the details of the authenticated user.
+//
 //	@Summary		Update current user
-//	@Description	Updates the details of the user who made the request
+//	@Description	Updates the profile details of the authenticated user.
 //	@Tags			User
 //	@Accept			json
 //	@Produce		json
 //	@Param			body	body		user_model.UpdateWithPassword	true	"User data to update"
-//	@Success		200		{object}	fiber.Map						"User updated successfully"
+//	@Success		200		{object}	user_entity.User				"User updated successfully"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Router			/user/me [put]
@@ -25,6 +28,10 @@ func UpdateCurrentUser(c *fiber.Ctx) error {
 	var editUser user_model.UpdateWithPassword
 	if err := c.BodyParser(&editUser); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(common_model.NewParseJsonError(err).Send())
+	}
+
+	if err := validators.Validator().Struct(&editUser); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(common_model.NewValidationError(err).Send())
 	}
 
 	user := c.Locals("user").(*user_entity.User)
@@ -44,14 +51,10 @@ func UpdateCurrentUser(c *fiber.Ctx) error {
 		data.Password = hashedPassword
 	}
 
-	// Update user using service function
 	updatedUser, err := repository.Updates(
 		data,
-		&user_entity.User{
-			Audit: common_model.Audit{
-				Id: user.Id,
-			},
-		}, database.DB,
+		&user_entity.User{Audit: common_model.Audit{Id: user.Id}},
+		database.DB,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
@@ -62,8 +65,10 @@ func UpdateCurrentUser(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(updatedUser)
 }
 
+// UpdateUserByID updates a user by their ID.
+//
 //	@Summary		Update user by ID
-//	@Description	Updates a user's details by their ID (accessible by superuser)
+//	@Description	Updates user data by ID. Restricted to superusers. Cannot update su@sudo.
 //	@Tags			User
 //	@Accept			json
 //	@Produce		json
@@ -80,12 +85,12 @@ func UpdateUserByID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(common_model.NewParseJsonError(err).Send())
 	}
 
+	if err := validators.Validator().Struct(&editUser); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(common_model.NewValidationError(err).Send())
+	}
+
 	user, err := repository.First(
-		user_entity.User{
-			Audit: common_model.Audit{
-				Id: editUser.Id,
-			},
-		},
+		user_entity.User{Audit: common_model.Audit{Id: editUser.Id}},
 		0, nil, nil, "", database.DB,
 	)
 	if err != nil {
@@ -105,14 +110,10 @@ func UpdateUserByID(c *fiber.Ctx) error {
 		Role:  editUser.Role,
 	}
 
-	// Update user using service function
 	updatedUser, err := repository.Updates(
 		data,
-		&user_entity.User{
-			Audit: common_model.Audit{
-				Id: editUser.Id,
-			},
-		}, database.DB,
+		&user_entity.User{Audit: common_model.Audit{Id: editUser.Id}},
+		database.DB,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(

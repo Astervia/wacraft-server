@@ -16,7 +16,6 @@ import (
 // @contact.email				wacraft@astervia.tech
 // @license.name				MIT
 // @license.url				https://opensource.org/licenses/MIT
-// @host						localhost:6900
 // @BasePath					/
 // @schemes					http https
 // @securityDefinitions.apikey	ApiKeyAuth

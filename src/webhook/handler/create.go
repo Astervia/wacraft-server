@@ -6,25 +6,34 @@ import (
 	webhook_entity "github.com/Astervia/wacraft-core/src/webhook/entity"
 	webhook_model "github.com/Astervia/wacraft-core/src/webhook/model"
 	"github.com/Astervia/wacraft-server/src/database"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
-// @Summary		Create a new webhook
-// @Description	Creates a new webhook with the specified URL, authorization, and event type
-// @Tags			Webhook
-// @Accept			json
-// @Produce		json
-// @Param			webhook	body		webhook_model.CreateWebhook		true	"Webhook data"
-// @Success		201		{object}	webhook_entity.Webhook			"Created webhook"
-// @Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
-// @Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
-// @Router			/webhook [post]
-// @Security		ApiKeyAuth
+// CreateWebhook registers a new webhook for event notifications.
+//
+//	@Summary		Create a new webhook
+//	@Description	Creates a new webhook with the specified URL, authorization header, method, timeout, and event type.
+//	@Tags			Webhook
+//	@Accept			json
+//	@Produce		json
+//	@Param			webhook	body		webhook_model.CreateWebhook		true	"Webhook data"
+//	@Success		201		{object}	webhook_entity.Webhook			"Created webhook"
+//	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
+//	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
+//	@Router			/webhook [post]
+//	@Security		ApiKeyAuth
 func CreateWebhook(c *fiber.Ctx) error {
 	var newWebhook webhook_model.CreateWebhook
 	if err := c.BodyParser(&newWebhook); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(&newWebhook); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 

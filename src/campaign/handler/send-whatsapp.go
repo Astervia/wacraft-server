@@ -19,34 +19,33 @@ var (
 )
 
 // SendWhatsAppCampaignSubscription upgrades the connection to WebSocket and streams WhatsApp campaign results.
+//
 //	@Summary		Send WhatsApp campaign via WebSocket
-//	@Description	Upgrades to WebSocket to send a campaign and receive real-time status and results.
+//	@Description	Upgrades the connection to WebSocket to start sending a campaign and receive real-time status and results. Use message types: "send", "cancel", "status", and "ping".
 //	@Tags			Campaign Websocket
 //	@Accept			json
 //	@Produce		json
-//	@Param			campaignId	path		string							true	"Campaign ID"
-//	@Param			function	body		campaign_model.SendMessage		false	"Optional: customize message send behavior"
+//	@Param			campaignId	path		string							true	"Campaign ID (UUID format)"
+//	@Param			function	body		campaign_model.SendMessage		false	"Optional: customize message sending behavior (currently not used)"
 //	@Success		101			{string}	string							"WebSocket connection established"
 //	@Failure		400			{object}	common_model.DescriptiveError	"Invalid campaign ID or bad request"
 //	@Failure		500			{object}	common_model.DescriptiveError	"Internal server error"
-//	@Router			/websocket/campaign/whatsapp/send/{campaignId} [get]
 //	@Security		ApiKeyAuth
+//	@Router			/websocket/campaign/whatsapp/send/{campaignId} [get]
 func SendWhatsAppCampaignSubscription(ctx *websocket.Conn) {
 	defer ctx.Close()
-	// Extract campaign id param from path
+
 	campaignId, err := uuid.Parse(ctx.Params("campaignId"))
 	if err != nil {
 		ctx.WriteJSON(common_model.NewApiError("unable to parse campaign id", err, "handler").Send())
 		return
 	}
 
-	// Registering user
-	user := ctx.Locals("user").(*user_entity.User) // This must be paired with the UserMiddleware. Otherwise will panic.
+	user := ctx.Locals("user").(*user_entity.User)
 	clientId := sendCampaignClientPool.CreateId(user.Id)
 	client := websocket_model.CreateClient(*clientId, ctx)
 	campaignChannel := SendCampaignPool.AddUser(*client, clientId.String(), campaignId, nil)
 
-	// Configuring disconnection
 	defer func() {
 		var deleteWg sync.WaitGroup
 
@@ -100,10 +99,9 @@ func handleSendWhatsAppCampaignMessage(
 
 	switch string(message) {
 	case string(websocket_model.Ping):
-		err := client.Connection.WriteMessage(websocket.TextMessage, []byte(websocket_model.Pong))
-		return err
+		return client.Connection.WriteMessage(websocket.TextMessage, []byte(websocket_model.Pong))
+
 	case string(campaign_model.Send):
-		// Handle the case when message is "send"
 		if campaignChannel.Sending {
 			return errors.New("currently sending campaign")
 		}
@@ -114,7 +112,6 @@ func handleSendWhatsAppCampaignMessage(
 				campaignChannel.BroadcastJsonMultithread(*data)
 			},
 		)
-
 		return err
 
 	case string(campaign_model.Cancel):
@@ -122,20 +119,15 @@ func handleSendWhatsAppCampaignMessage(
 		if err != nil {
 			return err
 		}
-
 		campaignChannel.BroadcastMessageMultithread(websocket.TextMessage, []byte(campaign_model.NotSending))
-
-		return err
+		return nil
 
 	case string(campaign_model.Status):
+		status := campaign_model.NotSending
 		if campaignChannel.Sending {
-			client.Connection.WriteMessage(websocket.TextMessage, []byte(campaign_model.Sending))
-			return nil
+			status = campaign_model.Sending
 		}
-
-		client.Connection.WriteMessage(websocket.TextMessage, []byte(campaign_model.NotSending))
-
-		return nil
+		return client.Connection.WriteMessage(websocket.TextMessage, []byte(status))
 	}
 
 	return errors.New("unsupported message")

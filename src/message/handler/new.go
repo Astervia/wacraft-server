@@ -9,14 +9,16 @@ import (
 	"github.com/gofiber/contrib/websocket"
 )
 
+// newMessageClientPool maintains all WebSocket clients connected for new messages
 var (
 	newMessageClientPool = websocket_model.CreateClientPool()
 	NewMessageChannel    = websocket_model.CreateChannel[websocket_model.ClientId, message_entity.Message, string]()
 )
 
 // NewMessageSubscription upgrades the connection to WebSocket and streams new WhatsApp messages.
-//	@Summary		Watches for new messages
-//	@Description	Upgrades the connection to WebSocket. Streams messages sent or received in real-time.
+//
+//	@Summary		Subscribe to new messages
+//	@Description	Establishes a WebSocket connection and streams incoming and outgoing WhatsApp messages in real-time.
 //	@Tags			Message Websocket
 //	@Accept			json
 //	@Produce		json

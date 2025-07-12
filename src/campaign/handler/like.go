@@ -7,10 +7,12 @@ import (
 	campaign_model "github.com/Astervia/wacraft-core/src/campaign/model"
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	campaign_service "github.com/Astervia/wacraft-server/src/campaign/service"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 // ContentKeyLike searches campaigns using a "like" pattern on a specific field.
+//
 //	@Summary		Search campaigns with regex-like operator
 //	@Description	Applies a case-insensitive regex-like (~) filter on the specified key field and returns paginated results.
 //	@Tags			Campaign
@@ -48,6 +50,12 @@ func ContentKeyLike(c *fiber.Ctx) error {
 		)
 	}
 
+	if err := validators.Validator().Struct(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
+		)
+	}
+
 	messages, err := campaign_service.ContentKeyLike(
 		decodedText,
 		decodedKey,
@@ -63,7 +71,7 @@ func ContentKeyLike(c *fiber.Ctx) error {
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
-			common_model.NewApiError("unable to get webhooks", err, "webhook_service").Send(),
+			common_model.NewApiError("unable to get campaigns", err, "campaign_service").Send(),
 		)
 	}
 

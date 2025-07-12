@@ -7,6 +7,7 @@ import (
 	cmn_model "github.com/Astervia/wacraft-core/src/common/model"
 	common_service "github.com/Astervia/wacraft-core/src/common/service"
 	"github.com/Astervia/wacraft-server/src/integration/whatsapp"
+	"github.com/Astervia/wacraft-server/src/validators"
 	common_model "github.com/Rfluid/whatsapp-cloud-api/src/common/model"
 	media_model "github.com/Rfluid/whatsapp-cloud-api/src/media/model"
 	media_service "github.com/Rfluid/whatsapp-cloud-api/src/media/service"
@@ -14,8 +15,9 @@ import (
 )
 
 // GetWhatsAppMediaURL retrieves a temporary download URL for a WhatsApp media item.
-//	@Summary		Gets URL for WhatsApp media
-//	@Description	Uses the WhatsApp API to get a temporary URL to download the media. The URL expires in 5 minutes.
+//
+//	@Summary		Get WhatsApp media URL
+//	@Description	Uses the WhatsApp API to retrieve a temporary media download URL. This URL expires in 5 minutes.
 //	@Tags			Media
 //	@Accept			json
 //	@Produce		json
@@ -28,7 +30,7 @@ import (
 func GetWhatsAppMediaURL(ctx *fiber.Ctx) error {
 	mediaId := ctx.Params("mediaId")
 	if mediaId == "" {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(
+		return ctx.Status(fiber.StatusBadRequest).JSON(
 			cmn_model.NewApiError("media ID is required", errors.New("no media ID provided"), "handler").Send(),
 		)
 	}
@@ -44,8 +46,9 @@ func GetWhatsAppMediaURL(ctx *fiber.Ctx) error {
 }
 
 // DownloadWhatsAppMedia downloads a media file directly from WhatsApp using its media ID.
-//	@Summary		Downloads WhatsApp media
-//	@Description	Downloads media using the URL retrieved via the WhatsApp API.
+//
+//	@Summary		Download WhatsApp media
+//	@Description	Downloads media using a temporary URL retrieved via the WhatsApp API.
 //	@Tags			Media
 //	@Accept			json
 //	@Produce		application/octet-stream
@@ -85,8 +88,9 @@ func DownloadWhatsAppMedia(ctx *fiber.Ctx) error {
 }
 
 // DownloadFromMediaInfo downloads media based on information in the request body.
+//
 //	@Summary		Download media from MediaInfo
-//	@Description	Receives MediaInfo JSON, downloads the media from the provided URL, and sends it back as a file.
+//	@Description	Receives MediaInfo JSON, validates it, downloads the media from the provided URL, and streams it.
 //	@Tags			Media
 //	@Accept			json
 //	@Produce		application/octet-stream
@@ -101,6 +105,12 @@ func DownloadFromMediaInfo(ctx *fiber.Ctx) error {
 	if err := ctx.BodyParser(&mediaInfo); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(
 			cmn_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(&mediaInfo); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(
+			cmn_model.NewValidationError(err).Send(),
 		)
 	}
 
@@ -119,8 +129,9 @@ func DownloadFromMediaInfo(ctx *fiber.Ctx) error {
 }
 
 // UploadWhatsAppMedia uploads a media file to WhatsApp.
+//
 //	@Summary		Upload media file
-//	@Description	Uploads media files to WhatsApp. Files persist for up to 30 days unless deleted earlier.
+//	@Description	Uploads a media file to WhatsApp. Files remain available for up to 30 days unless deleted earlier.
 //	@Tags			Media
 //	@Accept			multipart/form-data
 //	@Produce		json

@@ -7,22 +7,25 @@ import (
 	user_entity "github.com/Astervia/wacraft-core/src/user/entity"
 	user_model "github.com/Astervia/wacraft-core/src/user/model"
 	user_service "github.com/Astervia/wacraft-server/src/user/service"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
-// @Summary		Queries user key like text paginated
-// @Description	Uses regex with the ~ operator to query text at the key.
-// @Tags			User
-// @Accept			json
-// @Produce		json
-// @Param			user		query		user_model.QueryPaginated		true	"Pagination and query parameters"
-// @Param			likeText	path		string							true	"Text to apply like operator on the given key"
-// @Param			keyName		path		string							true	"The key to apply like operator"
-// @Success		200			{array}		user_entity.User				"List of users"
-// @Failure		400			{object}	common_model.DescriptiveError	"Invalid path or query parameters"
-// @Failure		500			{object}	common_model.DescriptiveError	"Internal server error"
-// @Router			/user/content/{keyName}/like/{likeText} [get]
-// @Security		ApiKeyAuth
+// ContentKeyLike searches users by a given key and a partial text pattern.
+//
+//	@Summary		Search users by key and text
+//	@Description	Returns a paginated list of users where the specified key matches a partial value using regex (~ operator).
+//	@Tags			User
+//	@Accept			json
+//	@Produce		json
+//	@Param			user		query		user_model.QueryPaginated		true	"Pagination and query parameters"
+//	@Param			keyName		path		string							true	"The field name to apply the like operator"
+//	@Param			likeText	path		string							true	"The text to search with regex (~)"
+//	@Success		200			{array}		user_entity.User				"List of users"
+//	@Failure		400			{object}	common_model.DescriptiveError	"Invalid path or query parameters"
+//	@Failure		500			{object}	common_model.DescriptiveError	"Internal server error"
+//	@Router			/user/content/{keyName}/like/{likeText} [get]
+//	@Security		ApiKeyAuth
 func ContentKeyLike(c *fiber.Ctx) error {
 	encodedText := c.Params("likeText")
 	decodedText, err := url.QueryUnescape(encodedText)
@@ -47,6 +50,12 @@ func ContentKeyLike(c *fiber.Ctx) error {
 		)
 	}
 
+	if err := validators.Validator().Struct(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
+		)
+	}
+
 	messages, err := user_service.ContentKeyLike(
 		decodedText,
 		decodedKey,
@@ -63,7 +72,7 @@ func ContentKeyLike(c *fiber.Ctx) error {
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
-			common_model.NewApiError("unable to get webhooks", err, "webhook_service").Send(),
+			common_model.NewApiError("unable to get users", err, "user_service").Send(),
 		)
 	}
 

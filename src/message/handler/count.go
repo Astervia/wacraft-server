@@ -9,12 +9,14 @@ import (
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
 	message_service "github.com/Astervia/wacraft-server/src/message/service"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 // Count returns the number of messages matching the given filters.
-//	@Summary		Counts messages
-//	@Description	Counts messages based on the query parameters.
+//
+//	@Summary		Count messages
+//	@Description	Returns the total number of messages matching the specified filters.
 //	@Tags			Message
 //	@Accept			json
 //	@Produce		json
@@ -29,6 +31,12 @@ func Count(c *fiber.Ctx) error {
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 
@@ -59,13 +67,14 @@ func Count(c *fiber.Ctx) error {
 }
 
 // CountContentLike returns the number of messages matching a likeText in content fields.
-//	@Summary		Counts messages with content like comparison
-//	@Description	Counts messages where the given text matches fields such as sender_data, receiver_data, or product_data.
+//
+//	@Summary		Count messages with content match
+//	@Description	Returns the number of messages where the provided text matches content fields like sender_data, receiver_data, or product_data.
 //	@Tags			Message
 //	@Accept			json
 //	@Produce		json
 //	@Param			message		query		message_model.QueryPaginated	true	"Pagination and filter parameters"
-//	@Param			likeText	path		string							true	"Text to apply like operator on content fields"
+//	@Param			likeText	path		string							true	"Substring to search in content fields"
 //	@Success		200			{integer}	int								"Count of messages"
 //	@Failure		400			{object}	common_model.DescriptiveError	"Invalid likeText or query"
 //	@Failure		500			{object}	common_model.DescriptiveError	"Failed to count messages"
@@ -84,6 +93,12 @@ func CountContentLike(c *fiber.Ctx) error {
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 

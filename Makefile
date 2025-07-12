@@ -31,7 +31,6 @@ prod-down:
 
 # Start the development environment using the dev Docker Compose file
 dev:
-	clear
 	echo "Generating Swagger docs"
 	swag init --parseDependency
 	echo "Starting development environment"

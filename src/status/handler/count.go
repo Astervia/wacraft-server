@@ -6,12 +6,14 @@ import (
 	status_entity "github.com/Astervia/wacraft-core/src/status/entity"
 	status_model "github.com/Astervia/wacraft-core/src/status/model"
 	"github.com/Astervia/wacraft-server/src/database"
+	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 // Count returns the total number of statuses matching the provided filters.
-//	@Summary		Counts statuses
-//	@Description	Counts statuses based on the query parameters.
+//
+//	@Summary		Count statuses
+//	@Description	Returns the number of status records that match the provided query parameters.
 //	@Tags			Status
 //	@Accept			json
 //	@Produce		json
@@ -26,6 +28,12 @@ func Count(c *fiber.Ctx) error {
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 
