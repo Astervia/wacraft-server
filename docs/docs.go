@@ -9733,6 +9733,7 @@ const docTemplate = `{
                 },
                 "timeout": {
                     "type": "integer",
+                    "maximum": 60,
                     "minimum": 1
                 },
                 "url": {
@@ -9894,6 +9895,7 @@ const docTemplate = `{
                 },
                 "timeout": {
                     "type": "integer",
+                    "maximum": 60,
                     "minimum": 1
                 },
                 "url": {

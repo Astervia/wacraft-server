@@ -13,34 +13,20 @@ func init() {
 	loadDbEnv()
 	loadServerEnv()
 	loadWhatsAppEnv()
-	loadAIEnv()
 }
 
 func loadEnv() {
 	pterm.DefaultLogger.Info(
-		"Loading production environment file...",
+		"Loading environment variables...",
 	)
 
 	err := godotenv.Load(".env")
 	if err != nil {
 		pterm.DefaultLogger.Warn(
-			"No .env at root directory",
+			fmt.Sprintf("Some error occurred loading the environment file at root directory: %s", err),
 		)
-		pterm.DefaultLogger.Info(
-			"Loading `.env.local`...",
+		pterm.DefaultLogger.Warn(
+			"Using environment variables from the system",
 		)
-		err = godotenv.Load(".env.local")
-		if err != nil {
-			pterm.DefaultLogger.Warn(
-				fmt.Sprintf("Some error occurred loading the local environment file: %s", err),
-			)
-			pterm.DefaultLogger.Warn(
-				"Using environment variables from the system",
-			)
-		}
 	}
-
-	pterm.DefaultLogger.Info(
-		"Environment file successfully set",
-	)
 }
