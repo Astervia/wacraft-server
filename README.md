@@ -126,3 +126,37 @@ Set the environment variable `WEBHOOK_VERIFY_TOKEN` and configure your webhook U
 We authenticate event notification webhooks from Meta using the App Secret and the `X-Hub-Signature-256` header. If you set the environment variable `META_APP_SECRET`, the server will verify the signature of incoming webhooks. If the signature is invalid, the server will return a 403 Forbidden response. If you don't set the environment variable, the server will not verify the signature and will accept all incoming webhooks which is not recommended for production environments.
 
 > ℹ️ Tip: Make sure that you are passing the correct headers if using a reverse proxy like Nginx or Traefik or an AWS Load Balancer. The `X-Hub-Signature-256` header must be passed to the backend server.
+
+## 🚀 Creating the Lite Version
+
+We maintain a separate repository for the [lite version of wacraft-server](https://github.com/Astervia/wacraft-server-lite), which removes premium-only features for public or non-supporter use.
+
+To generate and sync the `wacraft-server-lite` repository from this full version, use the `sync-lite.sh` script in the root directory.
+
+### 🔧 How It Works
+
+- Removes all code blocks between `// PREMIUM STARTS` and `// PREMIUM ENDS` across all files.
+- Deletes specific premium-only files and folders.
+- Commits the result and pushes to the [`wacraft-server-lite`](https://github.com/Astervia/wacraft-server-lite) repository.
+
+### ▶️ How to Use
+
+1. Make the script executable:
+
+    ```bash
+    chmod +x ./sync-lite.sh
+    ```
+
+2. Run the script:
+
+    ```bash
+    ./sync-lite.sh
+    ```
+
+This will:
+
+- Clone the current repository into a temporary directory,
+- Strip out premium-only code and content,
+- Push the cleaned version directly to the `main` branch of `wacraft-server-lite`.
+
+> ⚠️ This script will **force-push** to the `lite` repo, replacing its contents with the current state from this repository (minus premium content). Use with care.
