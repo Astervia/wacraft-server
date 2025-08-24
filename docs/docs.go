@@ -218,7 +218,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/common_model.RequiredId"
+                            "$ref": "#/definitions/common_model.RequiredID"
                         }
                     }
                 ],
@@ -748,7 +748,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/common_model.RequiredId"
+                            "$ref": "#/definitions/common_model.RequiredID"
                         }
                     }
                 ],
@@ -1587,7 +1587,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/common_model.RequiredId"
+                            "$ref": "#/definitions/common_model.RequiredID"
                         }
                     }
                 ],
@@ -1613,7 +1613,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/media/whatsapp/download/{mediaId}": {
+        "/media/whatsapp/download/{mediaID}": {
             "get": {
                 "security": [
                     {
@@ -1635,7 +1635,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Media ID",
-                        "name": "mediaId",
+                        "name": "mediaID",
                         "in": "path",
                         "required": true
                     }
@@ -1751,7 +1751,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Media ID returned from WhatsApp",
                         "schema": {
-                            "$ref": "#/definitions/common_model.Id"
+                            "$ref": "#/definitions/common_model.ID"
                         }
                     },
                     "400": {
@@ -1775,7 +1775,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/media/whatsapp/{mediaId}": {
+        "/media/whatsapp/{mediaID}": {
             "get": {
                 "security": [
                     {
@@ -1797,7 +1797,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Media ID",
-                        "name": "mediaId",
+                        "name": "mediaID",
                         "in": "path",
                         "required": true
                     }
@@ -2588,7 +2588,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/message/conversation/count/messaging-product-contact/{messagingProductContactId}": {
+        "/message/conversation/count/messaging-product-contact/{messagingProductContactID}": {
             "get": {
                 "security": [
                     {
@@ -2703,7 +2703,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Messaging product contact ID",
-                        "name": "messagingProductContactId",
+                        "name": "messagingProductContactID",
                         "in": "path",
                         "required": true
                     }
@@ -2730,7 +2730,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/message/conversation/count/messaging-product-contact/{messagingProductContactId}/content/like/{likeText}": {
+        "/message/conversation/count/messaging-product-contact/{messagingProductContactID}/content/like/{likeText}": {
             "get": {
                 "security": [
                     {
@@ -2845,7 +2845,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Messaging product contact ID",
-                        "name": "messagingProductContactId",
+                        "name": "messagingProductContactID",
                         "in": "path",
                         "required": true
                     },
@@ -2879,7 +2879,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/message/conversation/messaging-product-contact/{messagingProductContactId}": {
+        "/message/conversation/messaging-product-contact/{messagingProductContactID}": {
             "get": {
                 "security": [
                     {
@@ -3008,7 +3008,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Messaging product contact ID",
-                        "name": "messagingProductContactId",
+                        "name": "messagingProductContactID",
                         "in": "path",
                         "required": true
                     }
@@ -3038,7 +3038,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/message/conversation/messaging-product-contact/{messagingProductContactId}/content/like/{likeText}": {
+        "/message/conversation/messaging-product-contact/{messagingProductContactID}/content/like/{likeText}": {
             "get": {
                 "security": [
                     {
@@ -3167,7 +3167,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Messaging product contact ID",
-                        "name": "messagingProductContactId",
+                        "name": "messagingProductContactID",
                         "in": "path",
                         "required": true
                     },
@@ -3709,14 +3709,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/message/whatsapp/wam-id/{wamId}": {
+        "/message/whatsapp/wam-id/{wamID}": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Fetches a paginated list of messages where the wamId matches and filters are applied.",
+                "description": "Fetches a paginated list of messages where the wamID matches and filters are applied.",
                 "consumes": [
                     "application/json"
                 ],
@@ -3726,7 +3726,7 @@ const docTemplate = `{
                 "tags": [
                     "WhatsApp message"
                 ],
-                "summary": "Search messages by wamId",
+                "summary": "Search messages by wamID",
                 "parameters": [
                     {
                         "enum": [
@@ -3837,8 +3837,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "wamId value to search for",
-                        "name": "wamId",
+                        "description": "wamID value to search for",
+                        "name": "wamID",
                         "in": "path",
                         "required": true
                     }
@@ -3854,7 +3854,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid wamId or query parameters",
+                        "description": "Invalid wamID or query parameters",
                         "schema": {
                             "$ref": "#/definitions/common_model.DescriptiveError"
                         }
@@ -4216,7 +4216,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/common_model.RequiredId"
+                            "$ref": "#/definitions/common_model.RequiredID"
                         }
                     }
                 ],
@@ -4264,7 +4264,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/common_model.RequiredId"
+                            "$ref": "#/definitions/common_model.RequiredID"
                         }
                     }
                 ],
@@ -4313,7 +4313,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/common_model.RequiredId"
+                            "$ref": "#/definitions/common_model.RequiredID"
                         }
                     }
                 ],
@@ -4640,7 +4640,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/messaging-product/contact/last-read-at/{messagingProductContactId}": {
+        "/messaging-product/contact/last-read-at/{messagingProductContactID}": {
             "put": {
                 "security": [
                     {
@@ -4662,7 +4662,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Messaging product contact ID",
-                        "name": "messagingProductContactId",
+                        "name": "messagingProductContactID",
                         "in": "path",
                         "required": true
                     }
@@ -5476,14 +5476,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/status/whatsapp/wam-id/{wamId}": {
+        "/status/whatsapp/wam-id/{wamID}": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns a paginated list of statuses filtered by WhatsApp message ID (wamId) and other query parameters.",
+                "description": "Returns a paginated list of statuses filtered by WhatsApp message ID (wamID) and other query parameters.",
                 "consumes": [
                     "application/json"
                 ],
@@ -5493,7 +5493,7 @@ const docTemplate = `{
                 "tags": [
                     "WhatsApp status"
                 ],
-                "summary": "Retrieve statuses by wamId",
+                "summary": "Retrieve statuses by wamID",
                 "parameters": [
                     {
                         "enum": [
@@ -5594,8 +5594,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Desired wamId",
-                        "name": "wamId",
+                        "description": "Desired wamID",
+                        "name": "wamID",
                         "in": "path",
                         "required": true
                     }
@@ -5611,7 +5611,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid wamId or query parameters",
+                        "description": "Invalid wamID or query parameters",
                         "schema": {
                             "$ref": "#/definitions/common_model.DescriptiveError"
                         }
@@ -5776,7 +5776,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user_model.UpdateWithId"
+                            "$ref": "#/definitions/user_model.UpdateWithID"
                         }
                     }
                 ],
@@ -5880,7 +5880,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/common_model.RequiredId"
+                            "$ref": "#/definitions/common_model.RequiredID"
                         }
                     }
                 ],
@@ -6477,7 +6477,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/common_model.RequiredId"
+                            "$ref": "#/definitions/common_model.RequiredID"
                         }
                     }
                 ],
@@ -6851,7 +6851,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/websocket/campaign/whatsapp/send/{campaignId}": {
+        "/websocket/campaign/whatsapp/send/{campaignID}": {
             "get": {
                 "security": [
                     {
@@ -6873,7 +6873,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Campaign ID (UUID format)",
-                        "name": "campaignId",
+                        "name": "campaignID",
                         "in": "path",
                         "required": true
                     },
@@ -7405,7 +7405,7 @@ const docTemplate = `{
                 }
             }
         },
-        "common_model.Id": {
+        "common_model.ID": {
             "type": "object",
             "properties": {
                 "id": {
@@ -7460,7 +7460,7 @@ const docTemplate = `{
                 "ReferralConversation"
             ]
         },
-        "common_model.RequiredId": {
+        "common_model.RequiredID": {
             "type": "object",
             "properties": {
                 "id": {
@@ -7771,7 +7771,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "message_id": {
-                    "description": "Id of the message you want to answer.",
+                    "description": "ID of the message you want to answer.",
                     "type": "string"
                 }
             }
@@ -7964,7 +7964,7 @@ const docTemplate = `{
                     }
                 },
                 "messages": {
-                    "description": "Ids of sent messages.",
+                    "description": "IDs of sent messages.",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/message_model.MessageResponse"
@@ -8155,6 +8155,10 @@ const docTemplate = `{
         },
         "message_model.SendWhatsAppMessage": {
             "type": "object",
+            "required": [
+                "sender_data",
+                "to_id"
+            ],
             "properties": {
                 "sender_data": {
                     "description": "Specific data that allows to send message.",
@@ -8425,7 +8429,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "message_id": {
-                    "description": "Id of the message to react to. Something like \"wamid.HBgLM...\"",
+                    "description": "ID of the message to react to. Something like \"wamid.HBgLM...\"",
                     "type": "string"
                 }
             }
@@ -9473,7 +9477,7 @@ const docTemplate = `{
                 "Language",
                 "TemplateStatus",
                 "Category",
-                "Id"
+                "ID"
             ]
         },
         "template_model.TemplateSummary": {
@@ -9568,7 +9572,7 @@ const docTemplate = `{
                 }
             }
         },
-        "user_model.UpdateWithId": {
+        "user_model.UpdateWithID": {
             "type": "object",
             "properties": {
                 "email": {

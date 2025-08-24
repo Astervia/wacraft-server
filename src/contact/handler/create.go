@@ -88,7 +88,7 @@ func UpdateContact(c *fiber.Ctx) error {
 		},
 		&contact_entity.Contact{
 			Audit: common_model.Audit{
-				Id: editContact.Id,
+				ID: editContact.ID,
 			},
 		}, database.DB,
 	)

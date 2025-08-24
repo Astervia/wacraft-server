@@ -12,7 +12,7 @@ import (
 var (
 	DatabaseURL             string
 	DatabaseMaxOpenConns    int           = 40               // For t2.micro on AWS RDS.
-	DatabaseMaxIdleConns    int           = 20               // For t2.micro on AWS RDS. Using 2:1 ration on MaxOpenConns:MaxIdleConns.
+	DatabaseMaxIdleConns    int           = 20               // For t2.micro on AWS RDS. Using 2:1 ration on MaxOpenConns:MaxIDleConns.
 	DatabaseConnMaxLifetime time.Duration = 30 * time.Minute // Considering conservative value since we have multiple transactions running to send a single message.
 	DatabaseQueryTimeout    time.Duration = 5 * time.Minute  // Default timeout of 5 minutes
 )
@@ -26,10 +26,10 @@ func loadDbEnv() {
 		DatabaseMaxOpenConns = maxOpenConnsInt
 	}
 
-	maxIdleConns := os.Getenv("DATABASE_MAX_IDLE_CONNS")
-	maxIdleConnsInt, err := strconv.Atoi(maxIdleConns)
+	maxIDleConns := os.Getenv("DATABASE_MAX_IDLE_CONNS")
+	maxIDleConnsInt, err := strconv.Atoi(maxIDleConns)
 	if err == nil {
-		DatabaseMaxIdleConns = maxIdleConnsInt
+		DatabaseMaxIdleConns = maxIDleConnsInt
 	}
 
 	connMaxLifetimeMinutes := os.Getenv("DATABASE_CONN_MAX_LIFETIME_MINUTES")

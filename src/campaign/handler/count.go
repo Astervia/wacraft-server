@@ -39,10 +39,10 @@ func CountMessages(c *fiber.Ctx) error {
 
 	campaigns, err := repository.Count(
 		campaign_entity.CampaignMessage{
-			MessageId:  query.MessageId,
-			CampaignId: query.CampaignId,
+			MessageID:  query.MessageID,
+			CampaignID: query.CampaignID,
 			Audit: common_model.Audit{
-				Id: query.Id,
+				ID: query.ID,
 			},
 		},
 		&query.DateOrder,
@@ -90,10 +90,10 @@ func CountUnsentMessages(c *fiber.Ctx) error {
 
 	campaigns, err := repository.Count(
 		campaign_entity.CampaignMessage{
-			MessageId:  query.MessageId,
-			CampaignId: query.CampaignId,
+			MessageID:  query.MessageID,
+			CampaignID: query.CampaignID,
 			Audit: common_model.Audit{
-				Id: query.Id,
+				ID: query.ID,
 			},
 		},
 		&query.DateOrder,
@@ -142,10 +142,10 @@ func CountSentMessages(c *fiber.Ctx) error {
 
 	campaigns, err := repository.Count(
 		campaign_entity.CampaignMessage{
-			MessageId:  query.MessageId,
-			CampaignId: query.CampaignId,
+			MessageID:  query.MessageID,
+			CampaignID: query.CampaignID,
 			Audit: common_model.Audit{
-				Id: query.Id,
+				ID: query.ID,
 			},
 		},
 		&query.DateOrder,

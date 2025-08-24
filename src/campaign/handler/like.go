@@ -60,8 +60,8 @@ func ContentKeyLike(c *fiber.Ctx) error {
 		decodedText,
 		decodedKey,
 		campaign_entity.Campaign{
-			Audit:              common_model.Audit{Id: query.Id},
-			MessagingProductId: query.MessagingProductId,
+			Audit:              common_model.Audit{ID: query.ID},
+			MessagingProductID: query.MessagingProductID,
 			Name:               query.Name,
 		},
 		&query.Paginate,

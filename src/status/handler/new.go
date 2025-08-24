@@ -11,7 +11,7 @@ import (
 
 var (
 	newStatusClientPool = websocket_model.CreateClientPool()
-	NewStatusChannel    = websocket_model.CreateChannel[websocket_model.ClientId, status_entity.Status, string]()
+	NewStatusChannel    = websocket_model.CreateChannel[websocket_model.ClientID, status_entity.Status, string]()
 )
 
 // NewStatusSubscription establishes a WebSocket connection to receive real-time status updates.
@@ -31,12 +31,12 @@ func NewStatusSubscription(ctx *websocket.Conn) {
 	defer ctx.Close()
 
 	user := ctx.Locals("user").(*user_entity.User)
-	clientId := newStatusClientPool.CreateId(user.Id)
-	client := websocket_model.Client[websocket_model.ClientId]{
+	clientID := newStatusClientPool.CreateID(user.ID)
+	client := websocket_model.Client[websocket_model.ClientID]{
 		Connection: ctx,
-		Data:       *clientId,
+		Data:       *clientID,
 	}
-	NewStatusChannel.AppendClient(client, clientId.String())
+	NewStatusChannel.AppendClient(client, clientID.String())
 
 	defer func() {
 		var deleteWg sync.WaitGroup
@@ -44,7 +44,7 @@ func NewStatusSubscription(ctx *websocket.Conn) {
 		deleteWg.Add(1)
 		go func() {
 			defer deleteWg.Done()
-			newStatusClientPool.DeleteId(*clientId)
+			newStatusClientPool.DeleteID(*clientID)
 		}()
 
 		deleteWg.Add(1)

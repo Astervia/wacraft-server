@@ -10,18 +10,18 @@ import (
 )
 
 var (
-	WabaId                   string
+	WabaID                   string
 	WabaAccessToken          string
-	WabaAccountId            string
+	WabaAccountID            string
 	MetaAppSecret            string
 	MetaVerifyToken          string
 	MessageStatusSyncTimeout = 20 * time.Second
 )
 
 func loadWhatsAppEnv() {
-	WabaId = os.Getenv("WABA_ID")
+	WabaID = os.Getenv("WABA_ID")
 	WabaAccessToken = os.Getenv("WABA_ACCESS_TOKEN")
-	WabaAccountId = os.Getenv("WABA_ACCOUNT_ID")
+	WabaAccountID = os.Getenv("WABA_ACCOUNT_ID")
 	MetaAppSecret = os.Getenv("META_APP_SECRET")
 	MetaVerifyToken = os.Getenv("META_VERIFY_TOKEN")
 
@@ -34,7 +34,7 @@ func loadWhatsAppEnv() {
 	pterm.DefaultLogger.Info(
 		fmt.Sprintf(
 			"WhatsApp environment done with waba id %s and message<=>status timeout %s seconds",
-			WabaId,
+			WabaID,
 			MessageStatusSyncTimeout,
 		),
 	)

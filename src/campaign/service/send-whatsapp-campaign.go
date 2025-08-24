@@ -9,25 +9,25 @@ import (
 	campaign_model "github.com/Astervia/wacraft-core/src/campaign/model"
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	contact_entity "github.com/Astervia/wacraft-core/src/contact/entity"
-	"github.com/Astervia/wacraft-server/src/database"
 	message_entity "github.com/Astervia/wacraft-core/src/message/entity"
-	message_handler "github.com/Astervia/wacraft-server/src/message/handler"
 	message_model "github.com/Astervia/wacraft-core/src/message/model"
-	message_service "github.com/Astervia/wacraft-server/src/message/service"
 	messaging_product_entity "github.com/Astervia/wacraft-core/src/messaging-product/entity"
 	messaging_product_model "github.com/Astervia/wacraft-core/src/messaging-product/model"
-	messaging_product_service "github.com/Astervia/wacraft-server/src/messaging-product/service"
 	"github.com/Astervia/wacraft-core/src/repository"
 	synch_service "github.com/Astervia/wacraft-core/src/synch/service"
 	webhook_entity "github.com/Astervia/wacraft-core/src/webhook/entity"
 	webhook_model "github.com/Astervia/wacraft-core/src/webhook/model"
+	"github.com/Astervia/wacraft-server/src/database"
+	message_handler "github.com/Astervia/wacraft-server/src/message/handler"
+	message_service "github.com/Astervia/wacraft-server/src/message/service"
+	messaging_product_service "github.com/Astervia/wacraft-server/src/messaging-product/service"
 	webhook_service "github.com/Astervia/wacraft-server/src/webhook/service"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 func SendWhatsAppCampaign(
-	campaignId uuid.UUID,
+	campaignID uuid.UUID,
 	campaignChannel campaign_model.CampaignChannel,
 	callback func(*campaign_model.CampaignResults),
 ) (campaign_model.CampaignResults, error) {
@@ -49,7 +49,7 @@ func SendWhatsAppCampaign(
 	}()
 
 	campaign := campaign_entity.Campaign{
-		Audit:            common_model.Audit{Id: campaignId},
+		Audit:            common_model.Audit{ID: campaignID},
 		MessagingProduct: &messaging_product_entity.MessagingProduct{Name: messaging_product_model.WhatsApp},
 	}
 	if err := database.DB.Model(&campaign).Where(&campaign).First(&campaign).Error; err != nil {
@@ -57,7 +57,7 @@ func SendWhatsAppCampaign(
 	}
 
 	campaignMessage := campaign_entity.CampaignMessage{
-		CampaignId: campaignId,
+		CampaignID: campaignID,
 	}
 
 	var messagesCount int64
@@ -86,8 +86,8 @@ func SendWhatsAppCampaign(
 				return
 			default:
 				err := SendWhatsAppCampaignMessage(
-					campaignId,
-					*campaign.MessagingProductId,
+					campaignID,
+					*campaign.MessagingProductID,
 					&offset,
 					&offsetMu,
 				)
@@ -117,8 +117,8 @@ var contactSynchronizer *synch_service.MutexSwapper[string] = CreateContactSynch
 
 // Gets first message not sent at campaign, gets related WhatsApp contact or save and sends message.
 func SendWhatsAppCampaignMessage(
-	campaignId uuid.UUID,
-	messagingProductId uuid.UUID,
+	campaignID uuid.UUID,
+	messagingProductID uuid.UUID,
 	offset *int,
 	offsetMu *sync.Mutex,
 ) error {
@@ -127,12 +127,12 @@ func SendWhatsAppCampaignMessage(
 	tx := database.DB
 
 	campaignMessage := campaign_entity.CampaignMessage{
-		CampaignId: campaignId,
+		CampaignID: campaignID,
 	}
 
 	// Getting campaign and incrementing offset
 	offsetMu.Lock()
-	// Query campaign messages that satisfy the entity and where messageId is null
+	// Query campaign messages that satisfy the entity and where messageID is null
 	err = tx.Where(&campaignMessage).Where("message_id IS NULL").Offset(*offset).First(&campaignMessage).Error
 	if err != nil {
 		(*offset) = (*offset) + 1
@@ -144,7 +144,7 @@ func SendWhatsAppCampaignMessage(
 		return err
 	}
 	defer func() {
-		AddSendError(campaignMessage.Id, err)
+		AddSendError(campaignMessage.ID, err)
 	}()
 
 	(*offset) = (*offset) + 1
@@ -161,10 +161,10 @@ func SendWhatsAppCampaignMessage(
 	contactSynchronizer.Lock(senderData.To)
 	mpc, err = messaging_product_service.GetContactOrSave(
 		messaging_product_entity.MessagingProductContact{
-			MessagingProductId: messagingProductId,
+			MessagingProductID: messagingProductID,
 			ProductDetails: &messaging_product_model.ProductDetails{
 				WhatsAppProductDetails: &messaging_product_model.WhatsAppProductDetails{
-					WaId:        senderData.To,
+					WaID:        senderData.To,
 					PhoneNumber: senderData.To,
 				},
 			},
@@ -180,10 +180,10 @@ func SendWhatsAppCampaignMessage(
 	var msg message_entity.Message
 	msg, err = message_service.SendWhatsAppMessageAtTransactionWithoutWaitingForStatus(
 		message_model.SendWhatsAppMessage{
-			ToId:       mpc.Id,
+			ToID:       mpc.ID,
 			SenderData: *senderData.Message,
 		},
-		messagingProductId,
+		messagingProductID,
 		tx,
 	)
 	if err != nil {
@@ -201,13 +201,13 @@ func SendWhatsAppCampaignMessage(
 	}(msg)
 
 	campaignMessageUpdateData := campaign_entity.CampaignMessage{
-		MessageId: msg.Id,
+		MessageID: msg.ID,
 	}
 
 	offsetMu.Lock()
 	defer offsetMu.Unlock()
 
-	_, err = repository.Updates(campaignMessageUpdateData, &campaign_entity.CampaignMessage{Audit: common_model.Audit{Id: campaignMessage.Id}},
+	_, err = repository.Updates(campaignMessageUpdateData, &campaign_entity.CampaignMessage{Audit: common_model.Audit{ID: campaignMessage.ID}},
 		tx,
 	)
 	if err != nil {

@@ -37,7 +37,7 @@ func Get(c *fiber.Ctx) error {
 		user_entity.User{
 			Name:  query.Name,
 			Email: query.Email,
-			Audit: common_model.Audit{Id: query.Id},
+			Audit: common_model.Audit{ID: query.ID},
 			Role:  query.Role,
 		},
 		&query.Paginate,

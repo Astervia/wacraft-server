@@ -53,7 +53,7 @@ func UpdateCurrentUser(c *fiber.Ctx) error {
 
 	updatedUser, err := repository.Updates(
 		data,
-		&user_entity.User{Audit: common_model.Audit{Id: user.Id}},
+		&user_entity.User{Audit: common_model.Audit{ID: user.ID}},
 		database.DB,
 	)
 	if err != nil {
@@ -72,7 +72,7 @@ func UpdateCurrentUser(c *fiber.Ctx) error {
 //	@Tags			User
 //	@Accept			json
 //	@Produce		json
-//	@Param			body	body		user_model.UpdateWithId			true	"User data to update"
+//	@Param			body	body		user_model.UpdateWithID			true	"User data to update"
 //	@Success		200		{object}	user_entity.User				"User updated successfully"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		401		{object}	common_model.DescriptiveError	"Unauthorized"
@@ -80,7 +80,7 @@ func UpdateCurrentUser(c *fiber.Ctx) error {
 //	@Router			/user [put]
 //	@Security		ApiKeyAuth
 func UpdateUserByID(c *fiber.Ctx) error {
-	var editUser user_model.UpdateWithId
+	var editUser user_model.UpdateWithID
 	if err := c.BodyParser(&editUser); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(common_model.NewParseJsonError(err).Send())
 	}
@@ -90,7 +90,7 @@ func UpdateUserByID(c *fiber.Ctx) error {
 	}
 
 	user, err := repository.First(
-		user_entity.User{Audit: common_model.Audit{Id: editUser.Id}},
+		user_entity.User{Audit: common_model.Audit{ID: editUser.ID}},
 		0, nil, nil, "", database.DB,
 	)
 	if err != nil {
@@ -112,7 +112,7 @@ func UpdateUserByID(c *fiber.Ctx) error {
 
 	updatedUser, err := repository.Updates(
 		data,
-		&user_entity.User{Audit: common_model.Audit{Id: editUser.Id}},
+		&user_entity.User{Audit: common_model.Audit{ID: editUser.ID}},
 		database.DB,
 	)
 	if err != nil {

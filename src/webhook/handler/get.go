@@ -39,7 +39,7 @@ func GetWebhooks(c *fiber.Ctx) error {
 
 	webhooks, err := repository.GetPaginated(
 		webhook_entity.Webhook{
-			Audit:      common_model.Audit{Id: query.Id},
+			Audit:      common_model.Audit{ID: query.ID},
 			Url:        query.Url,
 			Event:      query.Event,
 			HttpMethod: query.HttpMethod,
@@ -88,8 +88,8 @@ func GetWebhookLogs(c *fiber.Ctx) error {
 
 	webhooks, err := repository.GetPaginated(
 		webhook_entity.WebhookLog{
-			Audit:            common_model.Audit{Id: query.Id},
-			WebhookId:        query.WebhookId,
+			Audit:            common_model.Audit{ID: query.ID},
+			WebhookID:        query.WebhookID,
 			HttpResponseCode: query.HttpResponseCode,
 		},
 		&query.Paginate,

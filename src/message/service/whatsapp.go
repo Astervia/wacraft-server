@@ -3,16 +3,16 @@ package message_service
 import (
 	"errors"
 
-	message_service "github.com/Rfluid/whatsapp-cloud-api/src/message/service"
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
-	common_service "github.com/Astervia/wacraft-server/src/common/service"
-	"github.com/Astervia/wacraft-server/src/config/env"
-	"github.com/Astervia/wacraft-server/src/database"
-	"github.com/Astervia/wacraft-server/src/integration/whatsapp"
 	message_entity "github.com/Astervia/wacraft-core/src/message/entity"
 	message_model "github.com/Astervia/wacraft-core/src/message/model"
 	messaging_product_entity "github.com/Astervia/wacraft-core/src/messaging-product/entity"
 	messaging_product_model "github.com/Astervia/wacraft-core/src/messaging-product/model"
+	common_service "github.com/Astervia/wacraft-server/src/common/service"
+	"github.com/Astervia/wacraft-server/src/config/env"
+	"github.com/Astervia/wacraft-server/src/database"
+	"github.com/Astervia/wacraft-server/src/integration/whatsapp"
+	message_service "github.com/Rfluid/whatsapp-cloud-api/src/message/service"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -29,9 +29,9 @@ func FindMessagingProductAndSendMessage(
 
 	var msg message_entity.Message
 	if common_service.IsEnvLocal() {
-		msg, err = SendWhatsAppMessageAtTransactionWithoutWaitingForStatus(body, mp.Id, nil)
+		msg, err = SendWhatsAppMessageAtTransactionWithoutWaitingForStatus(body, mp.ID, nil)
 	} else {
-		msg, err = SendWhatsAppMessageAtTransaction(body, mp.Id, nil)
+		msg, err = SendWhatsAppMessageAtTransaction(body, mp.ID, nil)
 	}
 	if err != nil {
 		return msg, err
@@ -46,13 +46,13 @@ func FindMessagingProductAndSendMessage(
 // Handles messages saved and rollback.
 func SendWhatsAppMessageAtTransaction(
 	body message_model.SendWhatsAppMessage,
-	messagingProductId uuid.UUID,
+	messagingProductID uuid.UUID,
 	tx *gorm.DB, // Transaction. If nil will be executed without transaction.
 ) (message_entity.Message, error) {
 	var message message_entity.Message
 	body.SenderData.SetDefault()
-	message.ToId = body.ToId
-	message.MessagingProductId = messagingProductId
+	message.ToID = &body.ToID
+	message.MessagingProductID = messagingProductID
 
 	// Begin transaction
 	transactionProvided := tx != nil
@@ -62,8 +62,8 @@ func SendWhatsAppMessageAtTransaction(
 
 	// Adding contact to message
 	contact := messaging_product_entity.MessagingProductContact{
-		Audit:              common_model.Audit{Id: body.ToId},
-		MessagingProductId: messagingProductId,
+		Audit:              common_model.Audit{ID: body.ToID},
+		MessagingProductID: messagingProductID,
 	}
 	if err := tx.Model(&contact).Where(&contact).Joins("Contact").First(&contact).Error; err != nil {
 		return message, err
@@ -85,12 +85,12 @@ func SendWhatsAppMessageAtTransaction(
 	message.ProductData = &message_model.ProductData{
 		Response: &response,
 	}
-	if message.ProductData.Messages == nil || len(message.ProductData.Messages) == 0 {
+	if len(message.ProductData.Messages) == 0 {
 		return message, errors.New("no message id returned by Meta")
 	}
 
 	err = StatusSynchronizer.AddMessage(
-		message.ProductData.Messages[0].Id.Id,
+		message.ProductData.Messages[0].ID.ID,
 		env.MessageStatusSyncTimeout,
 	)
 	if err != nil {
@@ -101,7 +101,7 @@ func SendWhatsAppMessageAtTransaction(
 	err = tx.Create(&message).Error
 	if err != nil {
 		StatusSynchronizer.RollbackMessage(
-			message.ProductData.Messages[0].Id.Id,
+			message.ProductData.Messages[0].ID.ID,
 			env.MessageStatusSyncTimeout,
 		)
 		return message, err
@@ -110,8 +110,8 @@ func SendWhatsAppMessageAtTransaction(
 	go func() {
 		if !transactionProvided {
 			StatusSynchronizer.MessageSaved(
-				message.ProductData.Messages[0].Id.Id,
-				message.Id,
+				message.ProductData.Messages[0].ID.ID,
+				message.ID,
 				env.MessageStatusSyncTimeout,
 			)
 		}
@@ -123,13 +123,13 @@ func SendWhatsAppMessageAtTransaction(
 // Same as above but does not lock at waiting for status
 func SendWhatsAppMessageAtTransactionWithoutWaitingForStatus(
 	body message_model.SendWhatsAppMessage,
-	messagingProductId uuid.UUID,
+	messagingProductID uuid.UUID,
 	tx *gorm.DB, // Transaction. If nil will be executed without transaction.
 ) (message_entity.Message, error) {
 	var message message_entity.Message
 	body.SenderData.SetDefault()
-	message.ToId = body.ToId
-	message.MessagingProductId = messagingProductId
+	message.ToID = &body.ToID
+	message.MessagingProductID = messagingProductID
 
 	// Begin transaction
 	transactionProvided := tx != nil
@@ -139,8 +139,8 @@ func SendWhatsAppMessageAtTransactionWithoutWaitingForStatus(
 
 	// Adding contact to message
 	contact := messaging_product_entity.MessagingProductContact{
-		Audit:              common_model.Audit{Id: body.ToId},
-		MessagingProductId: messagingProductId,
+		Audit:              common_model.Audit{ID: body.ToID},
+		MessagingProductID: messagingProductID,
 	}
 	if err := tx.Model(&contact).Where(&contact).Joins("Contact").First(&contact).Error; err != nil {
 		return message, err
@@ -169,7 +169,7 @@ func SendWhatsAppMessageAtTransactionWithoutWaitingForStatus(
 	addMessageCh := make(chan error)
 	go func() {
 		addMessageCh <- StatusSynchronizer.AddMessage(
-			message.ProductData.Messages[0].Id.Id,
+			message.ProductData.Messages[0].ID.ID,
 			env.MessageStatusSyncTimeout,
 		)
 	}()
@@ -182,7 +182,7 @@ func SendWhatsAppMessageAtTransactionWithoutWaitingForStatus(
 				return
 			}
 			StatusSynchronizer.RollbackMessage(
-				message.ProductData.Messages[0].Id.Id,
+				message.ProductData.Messages[0].ID.ID,
 				env.MessageStatusSyncTimeout,
 			)
 		}()
@@ -195,8 +195,8 @@ func SendWhatsAppMessageAtTransactionWithoutWaitingForStatus(
 				return
 			}
 			StatusSynchronizer.MessageSaved(
-				message.ProductData.Messages[0].Id.Id,
-				message.Id,
+				message.ProductData.Messages[0].ID.ID,
+				message.ID,
 				env.MessageStatusSyncTimeout,
 			)
 		} else {

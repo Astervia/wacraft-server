@@ -49,10 +49,10 @@ func ContactContentLike(c *fiber.Ctx) error {
 	}
 
 	mpc := messaging_product_entity.MessagingProductContact{
-		ContactId:          query.ContactID,
-		MessagingProductId: query.MessagingProductID,
+		ContactID:          query.ContactID,
+		MessagingProductID: query.MessagingProductID,
 		Audit: common_model.Audit{
-			Id: query.Id,
+			ID: query.ID,
 		},
 	}
 

@@ -16,14 +16,14 @@ import (
 //	@Tags			Messaging product contact
 //	@Accept			json
 //	@Produce		json
-//	@Param			contact	body		common_model.RequiredId								true	"Contact ID to block"
+//	@Param			contact	body		common_model.RequiredID								true	"Contact ID to block"
 //	@Success		201		{object}	messaging_product_entity.MessagingProductContact	"Blocked contact"
 //	@Failure		400		{object}	common_model.DescriptiveError						"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError						"Failed to block contact"
 //	@Security		ApiKeyAuth
 //	@Router			/messaging-product/contact/block [patch]
 func BlockContact(c *fiber.Ctx) error {
-	var data common_model.RequiredId
+	var data common_model.RequiredID
 	if err := c.BodyParser(&data); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
@@ -41,7 +41,7 @@ func BlockContact(c *fiber.Ctx) error {
 			Blocked: true,
 		},
 		&messaging_product_entity.MessagingProductContact{
-			Audit: common_model.Audit{Id: data.Id},
+			Audit: common_model.Audit{ID: data.ID},
 		}, database.DB,
 	)
 	if err != nil {
@@ -60,14 +60,14 @@ func BlockContact(c *fiber.Ctx) error {
 //	@Tags			Messaging product contact
 //	@Accept			json
 //	@Produce		json
-//	@Param			contact	body		common_model.RequiredId								true	"Contact ID to unblock"
+//	@Param			contact	body		common_model.RequiredID								true	"Contact ID to unblock"
 //	@Success		201		{object}	messaging_product_entity.MessagingProductContact	"Unblocked contact"
 //	@Failure		400		{object}	common_model.DescriptiveError						"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError						"Failed to unblock contact"
 //	@Security		ApiKeyAuth
 //	@Router			/messaging-product/contact/block [delete]
 func UnblockContact(c *fiber.Ctx) error {
-	var data common_model.RequiredId
+	var data common_model.RequiredID
 	if err := c.BodyParser(&data); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
@@ -85,7 +85,7 @@ func UnblockContact(c *fiber.Ctx) error {
 			"blocked": false,
 		},
 		&messaging_product_entity.MessagingProductContact{
-			Audit: common_model.Audit{Id: data.Id},
+			Audit: common_model.Audit{ID: data.ID},
 		}, database.DB,
 	)
 	if err != nil {

@@ -39,7 +39,7 @@ func Get(c *fiber.Ctx) error {
 
 	contacts, err := repository.GetPaginated(
 		contact_entity.Contact{
-			Audit: common_model.Audit{Id: query.Id},
+			Audit: common_model.Audit{ID: query.ID},
 			Name:  query.Name,
 			Email: query.Email,
 		},

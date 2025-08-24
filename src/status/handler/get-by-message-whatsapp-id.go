@@ -11,26 +11,26 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// GetWamId returns a paginated list of statuses with the given WhatsApp message ID (wamId).
+// GetWamID returns a paginated list of statuses with the given WhatsApp message ID (wamID).
 //
-//	@Summary		Retrieve statuses by wamId
-//	@Description	Returns a paginated list of statuses filtered by WhatsApp message ID (wamId) and other query parameters.
+//	@Summary		Retrieve statuses by wamID
+//	@Description	Returns a paginated list of statuses filtered by WhatsApp message ID (wamID) and other query parameters.
 //	@Tags			WhatsApp status
 //	@Accept			json
 //	@Produce		json
 //	@Param			status	query		status_model.QueryPaginated		true	"Pagination and query parameters"
-//	@Param			wamId	path		string							true	"Desired wamId"
+//	@Param			wamID	path		string							true	"Desired wamID"
 //	@Success		200		{array}		status_entity.Status			"List of statuses"
-//	@Failure		400		{object}	common_model.DescriptiveError	"Invalid wamId or query parameters"
+//	@Failure		400		{object}	common_model.DescriptiveError	"Invalid wamID or query parameters"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Failed to fetch statuses"
 //	@Security		ApiKeyAuth
-//	@Router			/status/whatsapp/wam-id/{wamId} [get]
-func GetWamId(c *fiber.Ctx) error {
-	encodedText := c.Params("wamId")
+//	@Router			/status/whatsapp/wam-id/{wamID} [get]
+func GetWamID(c *fiber.Ctx) error {
+	encodedText := c.Params("wamID")
 	decodedText, err := url.QueryUnescape(encodedText)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
-			common_model.NewApiError("unable to decode wamId", err, "net/url").Send(),
+			common_model.NewApiError("unable to decode wamID", err, "net/url").Send(),
 		)
 	}
 
@@ -47,13 +47,13 @@ func GetWamId(c *fiber.Ctx) error {
 		)
 	}
 
-	statuses, err := status_service.GetWamId(
+	statuses, err := status_service.GetWamID(
 		decodedText,
 		status_entity.Status{
 			StatusFields: status_model.StatusFields{
-				MessageId: query.MessageId,
+				MessageID: query.MessageID,
 				Audit: common_model.Audit{
-					Id: query.Id,
+					ID: query.ID,
 				},
 			},
 		},

@@ -58,7 +58,7 @@ func messageCallback(ctx *fiber.Ctx, body *wh_model.WebhookBody, change *wh_mode
 	eg.Go(func() error {
 		if value.Messages != nil {
 			var err error
-			msgs, err = handleMessages(value, tx, mp.Id)
+			msgs, err = handleMessages(value, tx, mp.ID)
 			return err
 		}
 		return nil
@@ -67,7 +67,7 @@ func messageCallback(ctx *fiber.Ctx, body *wh_model.WebhookBody, change *wh_mode
 	eg.Go(func() error {
 		if value.Statuses != nil {
 			var err error
-			statuses, err = handleStatuses(value, tx, mp.Id)
+			statuses, err = handleStatuses(value, tx, mp.ID)
 			return err
 		}
 		return nil
@@ -107,7 +107,7 @@ func messageCallback(ctx *fiber.Ctx, body *wh_model.WebhookBody, change *wh_mode
 }
 
 // Returns messages from unblocked contacts
-func handleMessages(value wh_model.Value, tx *gorm.DB, mpId uuid.UUID) ([]message_entity.Message, error) {
+func handleMessages(value wh_model.Value, tx *gorm.DB, mpID uuid.UUID) ([]message_entity.Message, error) {
 	var eg errgroup.Group
 
 	msgs := []message_entity.Message{}
@@ -124,17 +124,17 @@ func handleMessages(value wh_model.Value, tx *gorm.DB, mpId uuid.UUID) ([]messag
 
 			mpContact, err := messaging_product_service.GetContactOrSave(
 				messaging_product_entity.MessagingProductContact{
-					MessagingProductId: mpId,
+					MessagingProductID: mpID,
 					ProductDetails: &messaging_product_model.ProductDetails{
 						WhatsAppProductDetails: &messaging_product_model.WhatsAppProductDetails{
-							WaId:        message.From,
+							WaID:        message.From,
 							PhoneNumber: message.From,
 						},
 					},
 				},
 				contact_entity.Contact{
-					Name:  name,
-					Email: "",
+					Name:  &name,
+					Email: nil,
 				},
 				tx,
 			)
@@ -146,8 +146,8 @@ func handleMessages(value wh_model.Value, tx *gorm.DB, mpId uuid.UUID) ([]messag
 			msg := message_entity.Message{
 				MessageFields: message_model.MessageFields{
 					ReceiverData:       &message_model.ReceiverData{MessageReceived: &message},
-					FromId:             mpContact.Id,
-					MessagingProductId: mpId,
+					FromID:             &mpContact.ID,
+					MessagingProductID: mpID,
 				},
 				From: &mpContact,
 			}

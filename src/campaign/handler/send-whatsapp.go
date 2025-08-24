@@ -25,26 +25,26 @@ var (
 //	@Tags			Campaign Websocket
 //	@Accept			json
 //	@Produce		json
-//	@Param			campaignId	path		string							true	"Campaign ID (UUID format)"
+//	@Param			campaignID	path		string							true	"Campaign ID (UUID format)"
 //	@Param			function	body		campaign_model.SendMessage		false	"Optional: customize message sending behavior (currently not used)"
 //	@Success		101			{string}	string							"WebSocket connection established"
 //	@Failure		400			{object}	common_model.DescriptiveError	"Invalid campaign ID or bad request"
 //	@Failure		500			{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
-//	@Router			/websocket/campaign/whatsapp/send/{campaignId} [get]
+//	@Router			/websocket/campaign/whatsapp/send/{campaignID} [get]
 func SendWhatsAppCampaignSubscription(ctx *websocket.Conn) {
 	defer ctx.Close()
 
-	campaignId, err := uuid.Parse(ctx.Params("campaignId"))
+	campaignID, err := uuid.Parse(ctx.Params("campaignID"))
 	if err != nil {
 		ctx.WriteJSON(common_model.NewApiError("unable to parse campaign id", err, "handler").Send())
 		return
 	}
 
 	user := ctx.Locals("user").(*user_entity.User)
-	clientId := sendCampaignClientPool.CreateId(user.Id)
-	client := websocket_model.CreateClient(*clientId, ctx)
-	campaignChannel := SendCampaignPool.AddUser(*client, clientId.String(), campaignId, nil)
+	clientID := sendCampaignClientPool.CreateID(user.ID)
+	client := websocket_model.CreateClient(*clientID, ctx)
+	campaignChannel := SendCampaignPool.AddUser(*client, clientID.String(), campaignID, nil)
 
 	defer func() {
 		var deleteWg sync.WaitGroup
@@ -52,13 +52,13 @@ func SendWhatsAppCampaignSubscription(ctx *websocket.Conn) {
 		deleteWg.Add(1)
 		go func() {
 			defer deleteWg.Done()
-			sendCampaignClientPool.DeleteId(*clientId)
+			sendCampaignClientPool.DeleteID(*clientID)
 		}()
 
 		deleteWg.Add(1)
 		go func() {
 			defer deleteWg.Done()
-			SendCampaignPool.RemoveUser(clientId.String(), campaignId)
+			SendCampaignPool.RemoveUser(clientID.String(), campaignID)
 		}()
 
 		deleteWg.Wait()
@@ -70,7 +70,7 @@ func SendWhatsAppCampaignSubscription(ctx *websocket.Conn) {
 			break
 		}
 
-		err = handleSendWhatsAppCampaignMessage(campaignId, messageType, message, *campaignChannel, *client)
+		err = handleSendWhatsAppCampaignMessage(campaignID, messageType, message, *campaignChannel, *client)
 		if err != nil {
 			ctx.WriteJSON(common_model.NewApiError("unable to handle message", err, "handler").Send())
 		}
@@ -87,11 +87,11 @@ func watchWhatsAppCampaignResults(
 }
 
 func handleSendWhatsAppCampaignMessage(
-	campaignId uuid.UUID,
+	campaignID uuid.UUID,
 	messageType int,
 	message []byte,
 	campaignChannel campaign_model.CampaignChannel,
-	client websocket_model.Client[websocket_model.ClientId],
+	client websocket_model.Client[websocket_model.ClientID],
 ) error {
 	if messageType != websocket.TextMessage {
 		return errors.New("only text messages are allowed")
@@ -106,7 +106,7 @@ func handleSendWhatsAppCampaignMessage(
 			return errors.New("currently sending campaign")
 		}
 		_, err := campaign_service.SendWhatsAppCampaign(
-			campaignId,
+			campaignID,
 			campaignChannel,
 			func(data *campaign_model.CampaignResults) {
 				campaignChannel.BroadcastJsonMultithread(*data)

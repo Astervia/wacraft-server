@@ -40,9 +40,9 @@ func Get(c *fiber.Ctx) error {
 	campaigns, err := repository.GetPaginated(
 		campaign_entity.Campaign{
 			Name:               query.Name,
-			MessagingProductId: query.MessagingProductId,
+			MessagingProductID: query.MessagingProductID,
 			Audit: common_model.Audit{
-				Id: query.Id,
+				ID: query.ID,
 			},
 		},
 		&query.Paginate,
@@ -90,10 +90,10 @@ func GetMessages(c *fiber.Ctx) error {
 
 	campaigns, err := repository.GetPaginated(
 		campaign_entity.CampaignMessage{
-			MessageId:  query.MessageId,
-			CampaignId: query.CampaignId,
+			MessageID:  query.MessageID,
+			CampaignID: query.CampaignID,
 			Audit: common_model.Audit{
-				Id: query.Id,
+				ID: query.ID,
 			},
 		},
 		&query.Paginate,
@@ -142,10 +142,10 @@ func GetUnsentMessages(c *fiber.Ctx) error {
 
 	campaigns, err := repository.GetPaginated(
 		campaign_entity.CampaignMessage{
-			MessageId:  query.MessageId,
-			CampaignId: query.CampaignId,
+			MessageID:  query.MessageID,
+			CampaignID: query.CampaignID,
 			Audit: common_model.Audit{
-				Id: query.Id,
+				ID: query.ID,
 			},
 		},
 		&query.Paginate,
@@ -194,10 +194,10 @@ func GetSentMessages(c *fiber.Ctx) error {
 
 	campaigns, err := repository.GetPaginated(
 		campaign_entity.CampaignMessage{
-			MessageId:  query.MessageId,
-			CampaignId: query.CampaignId,
+			MessageID:  query.MessageID,
+			CampaignID: query.CampaignID,
 			Audit: common_model.Audit{
-				Id: query.Id,
+				ID: query.ID,
 			},
 		},
 		&query.Paginate,
@@ -244,12 +244,12 @@ func GetErrors(c *fiber.Ctx) error {
 
 	campaigns, err := repository.GetPaginated(
 		campaign_entity.CampaignMessageSendError{
-			CampaignMessageId: query.CampaignMessageId,
+			CampaignMessageID: query.CampaignMessageID,
 			CampaignMessage: &campaign_entity.CampaignMessage{
-				CampaignId: query.CampaignId,
+				CampaignID: query.CampaignID,
 			},
 			Audit: common_model.Audit{
-				Id: query.Id,
+				ID: query.ID,
 			},
 		},
 		&query.Paginate,

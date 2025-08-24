@@ -20,7 +20,7 @@ import (
 func DeleteCurrentUser(c *fiber.Ctx) error {
 	user := c.Locals("user").(*user_entity.User)
 
-	if err := repository.DeleteById[user_entity.User](user.Id, database.DB); err != nil {
+	if err := repository.DeleteByID[user_entity.User](user.ID, database.DB); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("unable to delete user", err, "repository").Send(),
 		)
@@ -36,7 +36,7 @@ func DeleteCurrentUser(c *fiber.Ctx) error {
 //	@Tags			User
 //	@Accept			json
 //	@Produce		json
-//	@Param			body	body	common_model.RequiredId			true	"User ID to delete"
+//	@Param			body	body	common_model.RequiredID			true	"User ID to delete"
 //	@Success		204		{string}	string							"No content"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		401		{object}	common_model.DescriptiveError	"Cannot delete su@sudo user"
@@ -44,7 +44,7 @@ func DeleteCurrentUser(c *fiber.Ctx) error {
 //	@Router			/user [delete]
 //	@Security		ApiKeyAuth
 func DeleteUserByID(c *fiber.Ctx) error {
-	var reqBody common_model.RequiredId
+	var reqBody common_model.RequiredID
 	if err := c.BodyParser(&reqBody); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
@@ -54,7 +54,7 @@ func DeleteUserByID(c *fiber.Ctx) error {
 	user, err := repository.First(
 		user_entity.User{
 			Audit: common_model.Audit{
-				Id: reqBody.Id,
+				ID: reqBody.ID,
 			},
 		},
 		0, nil, nil, "", database.DB,
@@ -70,7 +70,7 @@ func DeleteUserByID(c *fiber.Ctx) error {
 		)
 	}
 
-	err = repository.DeleteById[user_entity.User](reqBody.Id, database.DB)
+	err = repository.DeleteByID[user_entity.User](reqBody.ID, database.DB)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("unable to delete user", err, "repository").Send(),

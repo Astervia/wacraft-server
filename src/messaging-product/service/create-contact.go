@@ -3,9 +3,9 @@ package messaging_product_service
 import (
 	"errors"
 
-	"github.com/Astervia/wacraft-server/src/database"
 	messaging_product_entity "github.com/Astervia/wacraft-core/src/messaging-product/entity"
 	messaging_product_model "github.com/Astervia/wacraft-core/src/messaging-product/model"
+	"github.com/Astervia/wacraft-server/src/database"
 )
 
 func CreateContactForMessagingProduct(
@@ -23,7 +23,7 @@ func CreateContactForMessagingProduct(
 		tx.Rollback()
 		return contact, errors.New("unable to find messaging product")
 	}
-	contact.MessagingProductId = mp.Id
+	contact.MessagingProductID = mp.ID
 
 	if err := tx.Create(&contact).Error; err != nil {
 		tx.Rollback()

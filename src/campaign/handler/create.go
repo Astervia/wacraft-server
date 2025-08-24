@@ -40,7 +40,7 @@ func Create(c *fiber.Ctx) error {
 	campaign, err := repository.Create(
 		campaign_entity.Campaign{
 			Name:               newCampaign.Name,
-			MessagingProductId: newCampaign.MessagingProductId,
+			MessagingProductID: newCampaign.MessagingProductID,
 		}, database.DB,
 	)
 	if err != nil {
@@ -81,7 +81,7 @@ func CreateMessage(c *fiber.Ctx) error {
 
 	campaign, err := repository.Create(
 		campaign_entity.CampaignMessage{
-			CampaignId: newCampaign.CampaignId,
+			CampaignID: newCampaign.CampaignID,
 			SenderData: newCampaign.SenderData,
 		}, database.DB,
 	)

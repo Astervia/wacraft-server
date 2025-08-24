@@ -38,7 +38,7 @@ func mainContactRoutes(contactGroup fiber.Router) {
 	contactGroup.Get("/count/content/like/:likeText",
 		auth_middleware.UserMiddleware, messaging_product_handler.ContactContentLikeCount)
 
-	contactGroup.Put("/last-read-at/:messagingProductContactId",
+	contactGroup.Put("/last-read-at/:messagingProductContactID",
 		auth_middleware.UserMiddleware, messaging_product_handler.UpdateContactLastReadAt)
 }
 

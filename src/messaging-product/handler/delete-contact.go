@@ -16,14 +16,14 @@ import (
 //	@Tags			Messaging product contact
 //	@Accept			json
 //	@Produce		json
-//	@Param			body	body	common_model.RequiredId	true	"Messaging product contact ID to delete"
+//	@Param			body	body	common_model.RequiredID	true	"Messaging product contact ID to delete"
 //	@Success		204		"Messaging product contact deleted successfully"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Failed to delete contact"
 //	@Security		ApiKeyAuth
 //	@Router			/messaging-product/contact [delete]
 func DeleteContact(c *fiber.Ctx) error {
-	var reqBody common_model.RequiredId
+	var reqBody common_model.RequiredID
 	if err := c.BodyParser(&reqBody); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
@@ -36,8 +36,8 @@ func DeleteContact(c *fiber.Ctx) error {
 		)
 	}
 
-	err := repository.DeleteById[messaging_product_entity.MessagingProductContact](
-		reqBody.Id, database.DB,
+	err := repository.DeleteByID[messaging_product_entity.MessagingProductContact](
+		reqBody.ID, database.DB,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(

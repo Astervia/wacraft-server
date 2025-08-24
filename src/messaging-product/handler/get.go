@@ -41,7 +41,7 @@ func Get(c *fiber.Ctx) error {
 		messaging_product_entity.MessagingProduct{
 			Name: query.Name,
 			Audit: common_model.Audit{
-				Id: query.Id,
+				ID: query.ID,
 			},
 		},
 		&query.Paginate,

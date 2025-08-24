@@ -1,39 +1,39 @@
 services:
-  app:
-    image: cosmtrek/air:latest # Air = live-reload for Go
-    working_dir: /app
-    volumes:
-      - .:/app # mount source for hot-reload
-      - air-cache:/root/.cache/go-build # speed up rebuilds
-      - $SSH_AUTH_SOCK:/ssh-agent # use your ssh socket to download custom modules
-      - ~/.gitconfig:/root/.gitconfig:ro # use your git config (contains insteadOf rule)
-    depends_on: [db]
-    env_file: [.env]
-    environment:
-      SSH_AUTH_SOCK: /ssh-agent
-      GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
-      DATABASE_URL: postgres://postgres:postgres@db:5432/postgres
-    command: ["air"] # default Air config is fine
-    ports:
-      - "6900:6900"
-    networks: [dev]
+    app:
+        image: cosmtrek/air:latest # Air = live-reload for Go
+        working_dir: /app
+        volumes:
+            - .:/app # mount source for hot-reload
+            - air-cache:/root/.cache/go-build # speed up rebuilds
+            - $SSH_AUTH_SOCK:/ssh-agent # use your ssh socket to download custom modules
+            - ~/.gitconfig:/root/.gitconfig:ro # use your git config (contains insteadOf rule)
+        depends_on: [db]
+        env_file: [.env]
+        environment:
+            SSH_AUTH_SOCK: /ssh-agent
+            GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
+            DATABASE_URL: postgres://postgres:postgres@db:5432/postgres
+        command: ["air"] # default Air config is fine
+        ports:
+            - "6900:6900"
+        networks: [dev]
 
-  db:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    volumes:
-      - db_dev_data:/var/lib/postgresql/data
-    ports:
-      - "${DATABASE_PORT}:5432"
-    networks: [dev]
+    db:
+        image: postgres:16-alpine
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+        volumes:
+            - db_dev_data:/var/lib/postgresql/data
+        ports:
+            - "${DATABASE_PORT}:5432"
+        networks: [dev]
 
 volumes:
-  db_dev_data:
-  air-cache:
+    db_dev_data:
+    air-cache:
 
 networks:
-  dev:
+    dev:

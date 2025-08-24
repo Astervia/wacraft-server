@@ -25,12 +25,12 @@ func Login(email, password string) (*auth_model.TokenResponse, error) {
 	}
 
 	// Generate JWT tokens
-	accessToken, err := generateToken(user.Id.String(), 1*time.Hour)
+	accessToken, err := generateToken(user.ID.String(), 1*time.Hour)
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := generateToken(user.Id.String(), 7*24*time.Hour)
+	refreshToken, err := generateToken(user.ID.String(), 7*24*time.Hour)
 	if err != nil {
 		return nil, err
 	}

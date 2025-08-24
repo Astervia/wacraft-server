@@ -9,5 +9,5 @@ import (
 func whatsappRoutes(group fiber.Router) {
 	wppGroup := group.Group("/whatsapp")
 
-	wppGroup.Get("/wam-id/:wamId", auth_middleware.UserMiddleware, status_handler.GetWamId)
+	wppGroup.Get("/wam-id/:wamID", auth_middleware.UserMiddleware, status_handler.GetWamID)
 }

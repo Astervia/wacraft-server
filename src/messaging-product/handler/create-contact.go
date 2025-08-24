@@ -37,8 +37,8 @@ func CreateContact(c *fiber.Ctx) error {
 	}
 
 	newEntity := messaging_product_entity.MessagingProductContact{
-		ContactId:          data.ContactId,
-		MessagingProductId: data.MessagingProductId,
+		ContactID:          data.ContactID,
+		MessagingProductID: data.MessagingProductID,
 		ProductDetails:     &data.ProductDetails,
 	}
 

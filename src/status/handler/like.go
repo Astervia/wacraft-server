@@ -51,9 +51,9 @@ func ContentLike(c *fiber.Ctx) error {
 		decodedText,
 		status_entity.Status{
 			StatusFields: status_model.StatusFields{
-				MessageId: query.MessageId,
+				MessageID: query.MessageID,
 				Audit: common_model.Audit{
-					Id: query.Id,
+					ID: query.ID,
 				},
 			},
 		},
@@ -121,9 +121,9 @@ func ContentKeyLike(c *fiber.Ctx) error {
 		decodedKey,
 		status_entity.Status{
 			StatusFields: status_model.StatusFields{
-				MessageId: query.MessageId,
+				MessageID: query.MessageID,
 				Audit: common_model.Audit{
-					Id: query.Id,
+					ID: query.ID,
 				},
 			},
 		},

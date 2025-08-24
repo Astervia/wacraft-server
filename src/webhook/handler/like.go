@@ -60,7 +60,7 @@ func ContentKeyLike(c *fiber.Ctx) error {
 		decodedText,
 		decodedKey,
 		webhook_entity.Webhook{
-			Audit:      common_model.Audit{Id: query.Id},
+			Audit:      common_model.Audit{ID: query.ID},
 			Url:        query.Url,
 			Event:      query.Event,
 			HttpMethod: query.HttpMethod,

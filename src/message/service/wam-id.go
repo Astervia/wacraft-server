@@ -1,15 +1,15 @@
 package message_service
 
 import (
-	"github.com/Astervia/wacraft-server/src/database"
 	database_model "github.com/Astervia/wacraft-core/src/database/model"
 	message_entity "github.com/Astervia/wacraft-core/src/message/entity"
 	"github.com/Astervia/wacraft-core/src/repository"
+	"github.com/Astervia/wacraft-server/src/database"
 	"gorm.io/gorm"
 )
 
-func GetWamId(
-	wamId string,
+func GetWamID(
+	wamID string,
 	entity message_entity.Message,
 	pagination database_model.Paginable,
 	order database_model.Orderable,
@@ -27,15 +27,15 @@ func GetWamId(
 		Joins("From.Contact").
 		Joins("To.Contact").
 		Where(
-			// Match waId in receiver_data.id
+			// Match waID in receiver_data.id
 			"receiver_data->>'id' = ? OR "+
-				// Match waId in any product_data.messages[].id
+				// Match waID in any product_data.messages[].id
 				"EXISTS ("+
 				"SELECT 1 FROM jsonb_array_elements(product_data->'messages') AS m(message) "+
 				"WHERE m.message->>'id' = ?"+
 				")",
-			wamId,
-			wamId,
+			wamID,
+			wamID,
 		)
 
 	// Apply pagination, ordering, and additional where conditions

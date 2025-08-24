@@ -39,11 +39,11 @@ func CreateWhatsAppContact(c *fiber.Ctx) error {
 
 	entity, err := messaging_product_service.CreateContactForMessagingProduct(
 		messaging_product_entity.MessagingProductContact{
-			ContactId: data.ContactId,
+			ContactID: data.ContactID,
 			ProductDetails: &messaging_product_model.ProductDetails{
 				WhatsAppProductDetails: &messaging_product_model.WhatsAppProductDetails{
 					PhoneNumber: data.ProductDetails.PhoneNumber,
-					WaId:        data.ProductDetails.WaId,
+					WaID:        data.ProductDetails.WaID,
 				},
 			},
 		},
