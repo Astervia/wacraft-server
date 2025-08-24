@@ -40,9 +40,9 @@ func Get(c *fiber.Ctx) error {
 	statuses, err := repository.GetPaginated(
 		status_entity.Status{
 			StatusFields: status_model.StatusFields{
-				MessageId: query.MessageId,
+				MessageID: query.MessageID,
 				Audit: common_model.Audit{
-					Id: query.Id,
+					ID: query.ID,
 				},
 			},
 		},

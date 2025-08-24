@@ -10,7 +10,7 @@ import (
 )
 
 func GetConversation(
-	mpcId uuid.UUID, // Id of messaging product contact
+	mpcID uuid.UUID, // ID of messaging product contact
 	entity message_entity.Message,
 	pagination database_model.Paginable,
 	order database_model.Orderable,
@@ -23,7 +23,7 @@ func GetConversation(
 	}
 	// Add the condition to filter messages sent or received by the messaging product contact
 	db = db.
-		Where("from_id = ? OR to_id = ?", mpcId, mpcId).
+		Where("from_id = ? OR to_id = ?", mpcID, mpcID).
 		Preload("Statuses", func(db *gorm.DB) *gorm.DB {
 			return db.
 				Select("DISTINCT ON (message_id) *").
@@ -104,7 +104,7 @@ func GetLatestMessagesForEachUser(
 }
 
 func CountConversations(
-	mpcId uuid.UUID, // Id of messaging product contact
+	mpcID uuid.UUID, // ID of messaging product contact
 	entity message_entity.Message,
 	order database_model.Orderable,
 	whereable database_model.Whereable,
@@ -115,7 +115,7 @@ func CountConversations(
 		db = database.DB
 	}
 	// Add the condition to filter messages sent or received by the messaging product contact
-	db = db.Where("from_id = ? OR to_id = ?", mpcId, mpcId)
+	db = db.Where("from_id = ? OR to_id = ?", mpcID, mpcID)
 
 	return repository.Count(entity, order, whereable, prefix, db)
 }
@@ -139,7 +139,7 @@ func CountDistinctConversations(
 
 // Query for messages with a specific content checking if sender_data, receiver_data, or product_data contains the likeText.
 func ConversationContentLike(
-	mpcId uuid.UUID, // Id of messaging product contact
+	mpcID uuid.UUID, // ID of messaging product contact
 	likeText string,
 	entity message_entity.Message,
 	pagination database_model.Paginable,
@@ -171,7 +171,7 @@ func ConversationContentLike(
                 `)
 		}).
 		Where(`CAST(sender_data AS TEXT) ~ ? OR CAST(receiver_data AS TEXT) ~ ? OR CAST(product_data AS TEXT) ~ ?`, likeText, likeText, likeText).
-		Where("from_id = ? OR to_id = ?", mpcId, mpcId)
+		Where("from_id = ? OR to_id = ?", mpcID, mpcID)
 
 	messages, err := repository.GetPaginated(
 		entity,
@@ -185,7 +185,7 @@ func ConversationContentLike(
 }
 
 func CountConversationContentLike(
-	mpcId uuid.UUID, // Id of messaging product contact
+	mpcID uuid.UUID, // ID of messaging product contact
 	likeText string,
 	entity message_entity.Message,
 	order database_model.Orderable,
@@ -203,7 +203,7 @@ func CountConversationContentLike(
 		Joins("From.Contact").
 		Joins("To.Contact").
 		Where(`CAST(sender_data AS TEXT) ~ ? OR CAST(receiver_data AS TEXT) ~ ? OR CAST(product_data AS TEXT) ~ ?`, likeText, likeText, likeText).
-		Where("from_id = ? OR to_id = ?", mpcId, mpcId)
+		Where("from_id = ? OR to_id = ?", mpcID, mpcID)
 
 	messages, err := repository.Count(
 		entity,

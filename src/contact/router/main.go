@@ -16,5 +16,5 @@ func mainRoutes(group fiber.Router) {
 	group.Get("/", auth_middleware.UserMiddleware, contact_handler.Get)
 	group.Post("/", auth_middleware.UserMiddleware, contact_handler.CreateContact)
 	group.Put("/", auth_middleware.UserMiddleware, contact_handler.UpdateContact)
-	group.Delete("/", auth_middleware.UserMiddleware, contact_handler.DeleteContactById) // Route for deleting by ID
+	group.Delete("/", auth_middleware.UserMiddleware, contact_handler.DeleteContactByID) // Route for deleting by ID
 }

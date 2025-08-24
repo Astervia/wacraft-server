@@ -3,9 +3,9 @@ module github.com/Astervia/wacraft-server
 go 1.23.0
 
 require (
-	github.com/Astervia/wacraft-core v0.1.9
-	github.com/Rfluid/whatsapp-cloud-api v0.1.53
-	github.com/Rfluid/whatsapp-webhook-server v0.1.54
+	github.com/Astervia/wacraft-core v0.1.10
+	github.com/Rfluid/whatsapp-cloud-api v0.1.54
+	github.com/Rfluid/whatsapp-webhook-server v0.1.55
 	github.com/go-playground/validator/v10 v10.27.0
 	github.com/gofiber/contrib/websocket v1.3.4
 	github.com/gofiber/fiber/v2 v2.52.9
@@ -14,7 +14,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
-	github.com/pressly/goose/v3 v3.24.3
+	github.com/pressly/goose/v3 v3.25.0
 	github.com/pterm/pterm v0.12.81
 	github.com/swaggo/swag v1.16.6
 	golang.org/x/sync v0.16.0
@@ -59,7 +59,6 @@ require (
 	github.com/swaggo/files/v2 v2.0.2 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.65.0 // indirect
-	github.com/valyala/tcplisten v1.0.0 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.41.0 // indirect

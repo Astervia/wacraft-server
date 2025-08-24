@@ -3,16 +3,16 @@ package message_service
 import (
 	"errors"
 
-	common_model "github.com/Rfluid/whatsapp-cloud-api/src/common/model"
-	message_model "github.com/Rfluid/whatsapp-cloud-api/src/message/model"
-	message_service "github.com/Rfluid/whatsapp-cloud-api/src/message/service"
-	"github.com/Astervia/wacraft-server/src/database"
 	database_model "github.com/Astervia/wacraft-core/src/database/model"
-	"github.com/Astervia/wacraft-server/src/integration/whatsapp"
 	message_entity "github.com/Astervia/wacraft-core/src/message/entity"
 	messaging_product_entity "github.com/Astervia/wacraft-core/src/messaging-product/entity"
 	messaging_product_model "github.com/Astervia/wacraft-core/src/messaging-product/model"
 	"github.com/Astervia/wacraft-core/src/repository"
+	"github.com/Astervia/wacraft-server/src/database"
+	"github.com/Astervia/wacraft-server/src/integration/whatsapp"
+	common_model "github.com/Rfluid/whatsapp-cloud-api/src/common/model"
+	message_model "github.com/Rfluid/whatsapp-cloud-api/src/message/model"
+	message_service "github.com/Rfluid/whatsapp-cloud-api/src/message/service"
 	"gorm.io/gorm"
 )
 
@@ -33,7 +33,7 @@ func MarkWhatsAppMessageAsReadToUser(
 	if err := database.DB.Model(&mp).Where(&mp).First(&mp).Error; err != nil {
 		return common_model.SuccessResponse{Success: false}, err
 	}
-	entity.MessagingProductId = mp.Id
+	entity.MessagingProductID = mp.ID
 
 	messages, err := repository.GetPaginated(entity, pagination, order, whereable, prefix, db)
 	if err != nil {
@@ -48,11 +48,11 @@ func MarkWhatsAppMessageAsReadToUser(
 	if msg.ReceiverData == nil {
 		return common_model.SuccessResponse{Success: false}, errors.New("receiver data not found for latest message")
 	}
-	msgWamId := msg.ReceiverData.Id
+	msgWamID := msg.ReceiverData.ID
 	response, err := message_service.MarkAsRead(
 		whatsapp.WabaApi,
 		message_model.MarkAsRead{
-			MessageId:        msgWamId,
+			MessageID:        msgWamID,
 			Status:           message_model.Read,
 			MessagingProduct: common_model.MessagingProduct{MessagingProduct: "whatsapp"},
 		},

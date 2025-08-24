@@ -8,7 +8,7 @@ import (
 )
 
 func AddSendError(
-	campaignMessageId uuid.UUID,
+	campaignMessageID uuid.UUID,
 	err error,
 ) (campaign_entity.CampaignMessageSendError, error) {
 	if err == nil {
@@ -16,7 +16,7 @@ func AddSendError(
 	}
 	return repository.Create(
 		campaign_entity.CampaignMessageSendError{
-			CampaignMessageId: campaignMessageId,
+			CampaignMessageID: campaignMessageID,
 			ErrorData:         err.Error(),
 		}, database.DB,
 	)

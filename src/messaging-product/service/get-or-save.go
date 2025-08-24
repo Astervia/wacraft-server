@@ -2,8 +2,8 @@ package messaging_product_service
 
 import (
 	contact_entity "github.com/Astervia/wacraft-core/src/contact/entity"
-	"github.com/Astervia/wacraft-server/src/database"
 	messaging_product_entity "github.com/Astervia/wacraft-core/src/messaging-product/entity"
+	"github.com/Astervia/wacraft-server/src/database"
 	"gorm.io/gorm"
 )
 
@@ -28,7 +28,7 @@ func GetContactOrSave(
 	}
 
 	// Create the mp contact
-	mpContact.ContactId = contact.Id
+	mpContact.ContactID = contact.ID
 	if err := db.Model(&mpContact).Create(&mpContact).Error; err != nil {
 		return mpContact, err
 	}

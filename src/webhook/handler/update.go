@@ -47,7 +47,7 @@ func UpdateWebhook(c *fiber.Ctx) error {
 		},
 		&webhook_entity.Webhook{
 			Audit: common_model.Audit{
-				Id: editWebhook.Id,
+				ID: editWebhook.ID,
 			},
 		}, database.DB,
 	)

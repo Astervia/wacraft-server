@@ -40,11 +40,11 @@ func Update(c *fiber.Ctx) error {
 	campaign, err := repository.Updates(
 		campaign_entity.Campaign{
 			Name:               updateData.Name,
-			MessagingProductId: updateData.MessagingProductId,
-			Audit:              common_model.Audit{Id: updateData.Id},
+			MessagingProductID: updateData.MessagingProductID,
+			Audit:              common_model.Audit{ID: updateData.ID},
 		},
 		&campaign_entity.Campaign{
-			Audit: common_model.Audit{Id: updateData.Id},
+			Audit: common_model.Audit{ID: updateData.ID},
 		}, database.DB,
 	)
 	if err != nil {

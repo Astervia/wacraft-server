@@ -17,13 +17,13 @@ type MessageStatusSynchronizer struct {
 
 // Used to signal that a message is waiting for a status to be saved to db.
 // You must call MessageSaved after this function to avoid undefined behaviors.
-func (m *MessageStatusSynchronizer) AddMessage(wamId string, timeout time.Duration) error {
+func (m *MessageStatusSynchronizer) AddMessage(wamID string, timeout time.Duration) error {
 	m.mu.Lock()
-	ch, ok := m.channels[wamId]
+	ch, ok := m.channels[wamID]
 	if !ok {
 		chToP := make(chan string)
 		ch = &chToP
-		m.channels[wamId] = ch
+		m.channels[wamID] = ch
 	}
 	m.mu.Unlock()
 
@@ -33,7 +33,7 @@ func (m *MessageStatusSynchronizer) AddMessage(wamId string, timeout time.Durati
 	case <-time.After(timeout):
 		// Remove the channel from the map to prevent leaks
 		m.mu.Lock()
-		delete(m.channels, wamId)
+		delete(m.channels, wamID)
 		m.mu.Unlock()
 		return fmt.Errorf(
 			"timeout waiting for whatsapp message status update. Waited %s for WhatsApp to update the message status and did not receive any updates",
@@ -41,14 +41,14 @@ func (m *MessageStatusSynchronizer) AddMessage(wamId string, timeout time.Durati
 	}
 }
 
-func (m *MessageStatusSynchronizer) RollbackMessage(wamId string, timeout time.Duration) error {
+func (m *MessageStatusSynchronizer) RollbackMessage(wamID string, timeout time.Duration) error {
 	defer func() {
 		m.mu.Lock()
-		delete(m.channels, wamId)
+		delete(m.channels, wamID)
 		m.mu.Unlock()
 	}()
 	m.mu.Lock()
-	ch := m.channels[wamId]
+	ch := m.channels[wamID]
 	m.mu.Unlock()
 	select {
 	case *ch <- "": // Signal that message was rolledback and propagate empty string
@@ -61,17 +61,17 @@ func (m *MessageStatusSynchronizer) RollbackMessage(wamId string, timeout time.D
 }
 
 // Signals that a message was saved to db and propagates its id.
-func (m *MessageStatusSynchronizer) MessageSaved(wamId string, messageId uuid.UUID, timeout time.Duration) error {
+func (m *MessageStatusSynchronizer) MessageSaved(wamID string, messageID uuid.UUID, timeout time.Duration) error {
 	defer func() {
 		m.mu.Lock()
-		delete(m.channels, wamId)
+		delete(m.channels, wamID)
 		m.mu.Unlock()
 	}()
 	m.mu.Lock()
-	ch := m.channels[wamId]
+	ch := m.channels[wamID]
 	m.mu.Unlock()
 	select {
-	case *ch <- messageId.String(): // Signal that message was saved and propagate its id
+	case *ch <- messageID.String(): // Signal that message was saved and propagate its id
 		return nil
 	case <-time.After(timeout):
 		return fmt.Errorf(
@@ -81,17 +81,17 @@ func (m *MessageStatusSynchronizer) MessageSaved(wamId string, messageId uuid.UU
 }
 
 // Used to signal that a status is waiting for a message to be saved to db.
-func (m *MessageStatusSynchronizer) AddStatus(wamId string, status *message_model.SendingStatus, timeout time.Duration) (uuid.UUID, error) {
+func (m *MessageStatusSynchronizer) AddStatus(wamID string, status *message_model.SendingStatus, timeout time.Duration) (uuid.UUID, error) {
 	if status == nil {
 		return uuid.Nil, errors.New("status is nil")
 	}
 
 	m.mu.Lock()
-	ch, ok := m.channels[wamId]
+	ch, ok := m.channels[wamID]
 	if !ok {
 		chToP := make(chan string)
 		ch = &chToP
-		m.channels[wamId] = ch
+		m.channels[wamID] = ch
 	}
 	m.mu.Unlock()
 
@@ -101,7 +101,7 @@ func (m *MessageStatusSynchronizer) AddStatus(wamId string, status *message_mode
 	case <-time.After(timeout):
 		// Remove the channel from the map to prevent leaks
 		m.mu.Lock()
-		delete(m.channels, wamId)
+		delete(m.channels, wamID)
 		m.mu.Unlock()
 		return uuid.Nil,
 			fmt.Errorf(
@@ -110,12 +110,12 @@ func (m *MessageStatusSynchronizer) AddStatus(wamId string, status *message_mode
 	}
 
 	// Wait for message to be added and get the message ID
-	var messageId string
+	var messageID string
 	select {
-	case messageId = <-*ch:
+	case messageID = <-*ch:
 	case <-time.After(timeout):
 		m.mu.Lock()
-		delete(m.channels, wamId)
+		delete(m.channels, wamID)
 		m.mu.Unlock()
 		return uuid.Nil,
 			fmt.Errorf(
@@ -123,15 +123,15 @@ func (m *MessageStatusSynchronizer) AddStatus(wamId string, status *message_mode
 				timeout.String())
 	}
 
-	if messageId == "" {
+	if messageID == "" {
 		return uuid.Nil, errors.New("message rolled back")
 	}
-	messageIdAsUuid, err := uuid.Parse(messageId)
+	messageIDAsUuid, err := uuid.Parse(messageID)
 	if err != nil {
 		return uuid.Nil, err
 	}
 
-	return messageIdAsUuid, nil
+	return messageIDAsUuid, nil
 }
 
 func CreateMessageStatusSynchronizer() *MessageStatusSynchronizer {

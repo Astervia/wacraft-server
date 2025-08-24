@@ -11,7 +11,7 @@ func Route(app fiber.Router) {
 
 	// This route must handle the registering, broadcasting, and unregistering of the connections.
 	group.Get(
-		"/whatsapp/send/:campaignId",
+		"/whatsapp/send/:campaignID",
 		websocket.New(campaign_handler.SendWhatsAppCampaignSubscription),
 	)
 }

@@ -43,12 +43,12 @@ func Count(c *fiber.Ctx) error {
 	messages, err := repository.Count(
 		message_entity.Message{
 			MessageFields: message_model.MessageFields{
-				FromId:             query.FromId,
-				ToId:               query.ToId,
-				MessagingProductId: query.MessagingProductId,
+				FromID:             query.FromID,
+				ToID:               query.ToID,
+				MessagingProductID: query.MessagingProductID,
 				AuditWithDeleted: common_model.AuditWithDeleted{
 					Audit: common_model.Audit{
-						Id: query.Id,
+						ID: query.ID,
 					},
 				},
 			},
@@ -106,12 +106,12 @@ func CountContentLike(c *fiber.Ctx) error {
 		decodedText,
 		message_entity.Message{
 			MessageFields: message_model.MessageFields{
-				FromId:             query.FromId,
-				ToId:               query.ToId,
-				MessagingProductId: query.MessagingProductId,
+				FromID:             query.FromID,
+				ToID:               query.ToID,
+				MessagingProductID: query.MessagingProductID,
 				AuditWithDeleted: common_model.AuditWithDeleted{
 					Audit: common_model.Audit{
-						Id: query.Id,
+						ID: query.ID,
 					},
 				},
 			},

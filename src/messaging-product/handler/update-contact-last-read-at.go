@@ -18,14 +18,14 @@ import (
 //	@Tags			Messaging product contact
 //	@Accept			json
 //	@Produce		json
-//	@Param			messagingProductContactId	path		string												true	"Messaging product contact ID"
+//	@Param			messagingProductContactID	path		string												true	"Messaging product contact ID"
 //	@Success		200							{object}	messaging_product_entity.MessagingProductContact	"Updated messaging product contact"
 //	@Failure		400							{object}	common_model.DescriptiveError						"Invalid contact ID format"
 //	@Failure		500							{object}	common_model.DescriptiveError						"Failed to update last_read_at"
 //	@Security		ApiKeyAuth
-//	@Router			/messaging-product/contact/last-read-at/{messagingProductContactId} [put]
+//	@Router			/messaging-product/contact/last-read-at/{messagingProductContactID} [put]
 func UpdateContactLastReadAt(c *fiber.Ctx) error {
-	mpcId, err := uuid.Parse(c.Params("messagingProductContactId"))
+	mpcID, err := uuid.Parse(c.Params("messagingProductContactID"))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewApiError("unable to parse messaging product contact id string to UUID", err, "github.com/google/uuid"),
@@ -35,13 +35,13 @@ func UpdateContactLastReadAt(c *fiber.Ctx) error {
 	mps, err := repository.Updates(
 		messaging_product_entity.MessagingProductContact{
 			Audit: common_model.Audit{
-				Id: mpcId,
+				ID: mpcID,
 			},
 			LastReadAt: time.Now(),
 		},
 		&messaging_product_entity.MessagingProductContact{
 			Audit: common_model.Audit{
-				Id: mpcId,
+				ID: mpcID,
 			},
 		}, database.DB,
 	)

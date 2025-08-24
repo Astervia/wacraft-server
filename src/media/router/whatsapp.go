@@ -8,8 +8,8 @@ import (
 
 func whatsappRoutes(group fiber.Router) {
 	waGroup := group.Group("/whatsapp")
-	waGroup.Get("/:mediaId", auth_middleware.UserMiddleware, media_handler.GetWhatsAppMediaURL)
-	waGroup.Get("/download/:mediaId", auth_middleware.UserMiddleware, media_handler.DownloadWhatsAppMedia)
+	waGroup.Get("/:mediaID", auth_middleware.UserMiddleware, media_handler.GetWhatsAppMediaURL)
+	waGroup.Get("/download/:mediaID", auth_middleware.UserMiddleware, media_handler.DownloadWhatsAppMedia)
 	waGroup.Post("/media-info/download", auth_middleware.UserMiddleware, media_handler.DownloadFromMediaInfo)
 	waGroup.Post("/upload", auth_middleware.UserMiddleware, media_handler.UploadWhatsAppMedia)
 }

@@ -39,10 +39,10 @@ func GetContact(c *fiber.Ctx) error {
 	}
 
 	mpc := messaging_product_entity.MessagingProductContact{
-		ContactId:          query.ContactID,
-		MessagingProductId: query.MessagingProductID,
+		ContactID:          query.ContactID,
+		MessagingProductID: query.MessagingProductID,
 		Audit: common_model.Audit{
-			Id: query.Id,
+			ID: query.ID,
 		},
 	}
 
@@ -99,18 +99,18 @@ func GetWhatsAppContact(c *fiber.Ctx) error {
 	}
 
 	mpc := messaging_product_entity.MessagingProductContact{
-		ContactId: query.ContactID,
+		ContactID: query.ContactID,
 		ProductDetails: &messaging_product_model.ProductDetails{
 			WhatsAppProductDetails: &messaging_product_model.WhatsAppProductDetails{
 				PhoneNumber: query.PhoneNumber,
-				WaId:        query.WaId,
+				WaID:        query.WaID,
 			},
 		},
 		MessagingProduct: &messaging_product_entity.MessagingProduct{
 			Name: messaging_product_model.WhatsApp,
 		},
 		Audit: common_model.Audit{
-			Id: query.Id,
+			ID: query.ID,
 		},
 	}
 

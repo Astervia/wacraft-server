@@ -51,12 +51,12 @@ func ContentLike(c *fiber.Ctx) error {
 		decodedText,
 		message_entity.Message{
 			MessageFields: message_model.MessageFields{
-				FromId:             query.FromId,
-				ToId:               query.ToId,
-				MessagingProductId: query.MessagingProductId,
+				FromID:             query.FromID,
+				ToID:               query.ToID,
+				MessagingProductID: query.MessagingProductID,
 				AuditWithDeleted: common_model.AuditWithDeleted{
 					Audit: common_model.Audit{
-						Id: query.Id,
+						ID: query.ID,
 					},
 				},
 			},
@@ -125,12 +125,12 @@ func ContentKeyLike(c *fiber.Ctx) error {
 		decodedKey,
 		message_entity.Message{
 			MessageFields: message_model.MessageFields{
-				FromId:             query.FromId,
-				ToId:               query.ToId,
-				MessagingProductId: query.MessagingProductId,
+				FromID:             query.FromID,
+				ToID:               query.ToID,
+				MessagingProductID: query.MessagingProductID,
 				AuditWithDeleted: common_model.AuditWithDeleted{
 					Audit: common_model.Audit{
-						Id: query.Id,
+						ID: query.ID,
 					},
 				},
 			},

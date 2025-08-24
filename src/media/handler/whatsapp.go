@@ -21,21 +21,21 @@ import (
 //	@Tags			Media
 //	@Accept			json
 //	@Produce		json
-//	@Param			mediaId	path		string							true	"Media ID"
+//	@Param			mediaID	path		string							true	"Media ID"
 //	@Success		200		{object}	media_model.MediaInfo			"Media information with download URL"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Missing or invalid media ID"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Failed to retrieve media URL"
 //	@Security		ApiKeyAuth
-//	@Router			/media/whatsapp/{mediaId} [get]
+//	@Router			/media/whatsapp/{mediaID} [get]
 func GetWhatsAppMediaURL(ctx *fiber.Ctx) error {
-	mediaId := ctx.Params("mediaId")
-	if mediaId == "" {
+	mediaID := ctx.Params("mediaID")
+	if mediaID == "" {
 		return ctx.Status(fiber.StatusBadRequest).JSON(
 			cmn_model.NewApiError("media ID is required", errors.New("no media ID provided"), "handler").Send(),
 		)
 	}
 
-	mediaInfo, err := media_service.RetrieveURL(whatsapp.WabaApi, mediaId, media_model.RetrieveInfo{})
+	mediaInfo, err := media_service.RetrieveURL(whatsapp.WabaApi, mediaID, media_model.RetrieveInfo{})
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(
 			cmn_model.NewApiError("failed to retrieve media URL", err, "handler").Send(),
@@ -52,21 +52,21 @@ func GetWhatsAppMediaURL(ctx *fiber.Ctx) error {
 //	@Tags			Media
 //	@Accept			json
 //	@Produce		application/octet-stream
-//	@Param			mediaId	path		string							true	"Media ID"
+//	@Param			mediaID	path		string							true	"Media ID"
 //	@Success		200		{file}		binary							"Downloaded media file"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Missing or invalid media ID"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Failed to download media"
 //	@Security		ApiKeyAuth
-//	@Router			/media/whatsapp/download/{mediaId} [get]
+//	@Router			/media/whatsapp/download/{mediaID} [get]
 func DownloadWhatsAppMedia(ctx *fiber.Ctx) error {
-	mediaId := ctx.Params("mediaId")
-	if mediaId == "" {
+	mediaID := ctx.Params("mediaID")
+	if mediaID == "" {
 		return ctx.Status(fiber.StatusBadRequest).JSON(
 			cmn_model.NewApiError("media ID is required", errors.New("no media ID provided"), "handler").Send(),
 		)
 	}
 
-	mediaInfo, err := media_service.RetrieveURL(whatsapp.WabaApi, mediaId, media_model.RetrieveInfo{})
+	mediaInfo, err := media_service.RetrieveURL(whatsapp.WabaApi, mediaID, media_model.RetrieveInfo{})
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(
 			cmn_model.NewApiError("failed to retrieve media URL", err, "service").Send(),
@@ -81,7 +81,7 @@ func DownloadWhatsAppMedia(ctx *fiber.Ctx) error {
 	}
 
 	ctx.Set("Content-Type", mediaInfo.MimeType)
-	ctx.Set("Content-Disposition", "attachment; filename="+mediaId+"."+common_service.GetExtensionFromMimeType(mediaInfo.MimeType))
+	ctx.Set("Content-Disposition", "attachment; filename="+mediaID+"."+common_service.GetExtensionFromMimeType(mediaInfo.MimeType))
 	ctx.Set("Content-Length", strconv.FormatInt(mediaInfo.FileSize, 10))
 
 	return ctx.Send(mediaBytes)
@@ -122,7 +122,7 @@ func DownloadFromMediaInfo(ctx *fiber.Ctx) error {
 	}
 
 	ctx.Set("Content-Type", mediaInfo.MimeType)
-	ctx.Set("Content-Disposition", "attachment; filename="+mediaInfo.Id.Id+"."+common_service.GetExtensionFromMimeType(mediaInfo.MimeType))
+	ctx.Set("Content-Disposition", "attachment; filename="+mediaInfo.ID.ID+"."+common_service.GetExtensionFromMimeType(mediaInfo.MimeType))
 	ctx.Set("Content-Length", strconv.FormatInt(mediaInfo.FileSize, 10))
 
 	return ctx.Send(mediaBytes)
@@ -137,7 +137,7 @@ func DownloadFromMediaInfo(ctx *fiber.Ctx) error {
 //	@Produce		json
 //	@Param			file	formData	file							true	"Media file"
 //	@Param			type	formData	string							true	"MIME type of the media file"
-//	@Success		200		{object}	common_model.Id					"Media ID returned from WhatsApp"
+//	@Success		200		{object}	common_model.ID					"Media ID returned from WhatsApp"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Missing file or MIME type"
 //	@Failure		415		{object}	common_model.DescriptiveError	"Unsupported media type"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Failed to upload media"
@@ -180,12 +180,12 @@ func UploadWhatsAppMedia(ctx *fiber.Ctx) error {
 	}
 	uploadData.SetDefault()
 
-	mediaId, err := media_service.Upload(whatsapp.WabaApi, uploadData)
+	mediaID, err := media_service.Upload(whatsapp.WabaApi, uploadData)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(
 			cmn_model.NewApiError("failed to upload media", err, "handler").Send(),
 		)
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(mediaId)
+	return ctx.Status(fiber.StatusOK).JSON(mediaID)
 }

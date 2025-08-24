@@ -16,14 +16,14 @@ import (
 //	@Tags			Campaign
 //	@Accept			json
 //	@Produce		json
-//	@Param			body	body		common_model.RequiredId			true	"Campaign ID to delete"
+//	@Param			body	body		common_model.RequiredID			true	"Campaign ID to delete"
 //	@Success		204		{string}	string							"Campaign deleted successfully"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
 //	@Router			/campaign [delete]
 func Delete(c *fiber.Ctx) error {
-	var body common_model.RequiredId
+	var body common_model.RequiredID
 	if err := c.BodyParser(&body); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
@@ -36,7 +36,7 @@ func Delete(c *fiber.Ctx) error {
 		)
 	}
 
-	if err := repository.DeleteById[campaign_entity.Campaign](body.Id, database.DB); err != nil {
+	if err := repository.DeleteByID[campaign_entity.Campaign](body.ID, database.DB); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("unable to delete campaign", err, "repository").Send(),
 		)
@@ -52,14 +52,14 @@ func Delete(c *fiber.Ctx) error {
 //	@Tags			Campaign Message
 //	@Accept			json
 //	@Produce		json
-//	@Param			body	body		common_model.RequiredId			true	"Campaign message ID to delete"
+//	@Param			body	body		common_model.RequiredID			true	"Campaign message ID to delete"
 //	@Success		204		{string}	string							"Campaign message deleted successfully"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
 //	@Router			/campaign/message [delete]
 func DeleteMessage(c *fiber.Ctx) error {
-	var body common_model.RequiredId
+	var body common_model.RequiredID
 	if err := c.BodyParser(&body); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
@@ -72,7 +72,7 @@ func DeleteMessage(c *fiber.Ctx) error {
 		)
 	}
 
-	if err := repository.DeleteById[campaign_entity.CampaignMessage](body.Id, database.DB); err != nil {
+	if err := repository.DeleteByID[campaign_entity.CampaignMessage](body.ID, database.DB); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("unable to delete campaign message", err, "repository").Send(),
 		)

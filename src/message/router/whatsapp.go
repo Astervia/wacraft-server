@@ -11,6 +11,6 @@ func whatsappRoutes(group fiber.Router) {
 
 	wppGroup.Get("", auth_middleware.UserMiddleware)
 	wppGroup.Post("", auth_middleware.UserMiddleware, message_handler.SendMessage)
-	wppGroup.Get("/wam-id/:wamId", auth_middleware.UserMiddleware, message_handler.GetWamId)
+	wppGroup.Get("/wam-id/:wamID", auth_middleware.UserMiddleware, message_handler.GetWamID)
 	wppGroup.Post("/mark-as-read", auth_middleware.UserMiddleware, message_handler.MarkWhatsAppMessageAsReadToUser)
 }

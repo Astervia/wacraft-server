@@ -12,7 +12,7 @@ import (
 // newMessageClientPool maintains all WebSocket clients connected for new messages
 var (
 	newMessageClientPool = websocket_model.CreateClientPool()
-	NewMessageChannel    = websocket_model.CreateChannel[websocket_model.ClientId, message_entity.Message, string]()
+	NewMessageChannel    = websocket_model.CreateChannel[websocket_model.ClientID, message_entity.Message, string]()
 )
 
 // NewMessageSubscription upgrades the connection to WebSocket and streams new WhatsApp messages.
@@ -32,12 +32,12 @@ func NewMessageSubscription(ctx *websocket.Conn) {
 
 	// Registering user
 	user := ctx.Locals("user").(*user_entity.User) // This must be paired with the UserMiddleware. Otherwise will panic.
-	clientId := newMessageClientPool.CreateId(user.Id)
-	client := websocket_model.Client[websocket_model.ClientId]{
+	clientID := newMessageClientPool.CreateID(user.ID)
+	client := websocket_model.Client[websocket_model.ClientID]{
 		Connection: ctx,
-		Data:       *clientId,
+		Data:       *clientID,
 	}
-	NewMessageChannel.AppendClient(client, clientId.String())
+	NewMessageChannel.AppendClient(client, clientID.String())
 
 	// Configuring disconnection
 	defer func() {
@@ -46,7 +46,7 @@ func NewMessageSubscription(ctx *websocket.Conn) {
 		deleteWg.Add(1)
 		go func() {
 			defer deleteWg.Done()
-			newMessageClientPool.DeleteId(*clientId)
+			newMessageClientPool.DeleteID(*clientID)
 		}()
 
 		deleteWg.Add(1)

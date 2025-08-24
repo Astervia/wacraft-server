@@ -11,26 +11,26 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// GetWamId returns a paginated list of messages matching the given wamId.
+// GetWamID returns a paginated list of messages matching the given wamID.
 //
-//	@Summary		Search messages by wamId
-//	@Description	Fetches a paginated list of messages where the wamId matches and filters are applied.
+//	@Summary		Search messages by wamID
+//	@Description	Fetches a paginated list of messages where the wamID matches and filters are applied.
 //	@Tags			WhatsApp message
 //	@Accept			json
 //	@Produce		json
 //	@Param			message	query		message_model.QueryPaginated	true	"Pagination and query parameters"
-//	@Param			wamId	path		string							true	"wamId value to search for"
+//	@Param			wamID	path		string							true	"wamID value to search for"
 //	@Success		200		{array}		message_entity.Message			"List of matching messages"
-//	@Failure		400		{object}	common_model.DescriptiveError	"Invalid wamId or query parameters"
+//	@Failure		400		{object}	common_model.DescriptiveError	"Invalid wamID or query parameters"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Failed to retrieve messages"
 //	@Security		ApiKeyAuth
-//	@Router			/message/whatsapp/wam-id/{wamId} [get]
-func GetWamId(c *fiber.Ctx) error {
-	encodedText := c.Params("wamId")
+//	@Router			/message/whatsapp/wam-id/{wamID} [get]
+func GetWamID(c *fiber.Ctx) error {
+	encodedText := c.Params("wamID")
 	decodedText, err := url.QueryUnescape(encodedText)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
-			common_model.NewApiError("unable to decode wamId", err, "net/url").Send(),
+			common_model.NewApiError("unable to decode wamID", err, "net/url").Send(),
 		)
 	}
 
@@ -47,16 +47,16 @@ func GetWamId(c *fiber.Ctx) error {
 		)
 	}
 
-	messages, err := message_service.GetWamId(
+	messages, err := message_service.GetWamID(
 		decodedText,
 		message_entity.Message{
 			MessageFields: message_model.MessageFields{
-				FromId:             query.FromId,
-				ToId:               query.ToId,
-				MessagingProductId: query.MessagingProductId,
+				FromID:             query.FromID,
+				ToID:               query.ToID,
+				MessagingProductID: query.MessagingProductID,
 				AuditWithDeleted: common_model.AuditWithDeleted{
 					Audit: common_model.Audit{
-						Id: query.Id,
+						ID: query.ID,
 					},
 				},
 			},

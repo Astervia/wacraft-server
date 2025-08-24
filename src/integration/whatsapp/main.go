@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Astervia/wacraft-server/src/config/env"
 	bootstrap_module "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap/model"
 	bootstrap_service "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap/service"
-	"github.com/Astervia/wacraft-server/src/config/env"
 	"github.com/pterm/pterm"
 )
 
@@ -25,22 +25,22 @@ func Load() {
 		os.Exit(1)
 	}
 	WabaApi = *wabaApi
-	_, err = WabaApi.SetWABAId(env.WabaId)
+	_, err = WabaApi.SetWABAID(env.WabaID)
 	if err != nil {
 		pterm.DefaultLogger.Error(
 			fmt.Sprintf("Unable to set WABA id: %v", err),
 		)
 		os.Exit(1)
 	}
-	_, err = WabaApi.SetWABAAccountId(env.WabaAccountId)
+	_, err = WabaApi.SetWABAAccountID(env.WabaAccountID)
 	if err != nil {
 		pterm.DefaultLogger.Error(
 			fmt.Sprintf("Unable to set WABA account id: %v", err),
 		)
 		os.Exit(1)
 	}
-	WabaApi.SetJSONHeaders().SetFormHeaders().SetWABAIdURL(nil)
-	WabaApi.SetWABAAccountIdURL(nil)
+	WabaApi.SetJSONHeaders().SetFormHeaders().SetWABAIDURL(nil)
+	WabaApi.SetWABAAccountIDURL(nil)
 
 	pterm.DefaultLogger.Info("WhatsApp integration loaded")
 }

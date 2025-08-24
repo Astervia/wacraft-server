@@ -171,7 +171,7 @@ definitions:
         description: Used to paginate.
         type: string
     type: object
-  common_model.Id:
+  common_model.ID:
     properties:
       id:
         type: string
@@ -218,7 +218,7 @@ definitions:
     - Utility
     - Service
     - ReferralConversation
-  common_model.RequiredId:
+  common_model.RequiredID:
     properties:
       id:
         description: The unique identifier.
@@ -416,7 +416,7 @@ definitions:
   message_model.Context:
     properties:
       message_id:
-        description: Id of the message you want to answer.
+        description: ID of the message you want to answer.
         type: string
     type: object
   message_model.Message:
@@ -551,7 +551,7 @@ definitions:
           $ref: '#/definitions/message_model.ResponseContact'
         type: array
       messages:
-        description: Ids of sent messages.
+        description: IDs of sent messages.
         items:
           $ref: '#/definitions/message_model.MessageResponse'
         type: array
@@ -700,6 +700,9 @@ definitions:
       to_id:
         description: Messaging product contact id to send message.
         type: string
+    required:
+    - sender_data
+    - to_id
     type: object
   message_model.SenderData:
     properties:
@@ -878,7 +881,7 @@ definitions:
         description: The emoji encoding. Something like "\uD83D\uDE00"
         type: string
       message_id:
-        description: Id of the message to react to. Something like "wamid.HBgLM..."
+        description: ID of the message to react to. Something like "wamid.HBgLM..."
         type: string
     type: object
   message_type_common_model.ReceiveType:
@@ -1637,7 +1640,7 @@ definitions:
     - Language
     - TemplateStatus
     - Category
-    - Id
+    - ID
   template_model.TemplateSummary:
     enum:
     - total_count
@@ -1700,7 +1703,7 @@ definitions:
       role:
         type: string
     type: object
-  user_model.UpdateWithId:
+  user_model.UpdateWithID:
     properties:
       email:
         type: string
@@ -2003,7 +2006,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/common_model.RequiredId'
+          $ref: '#/definitions/common_model.RequiredID'
       produces:
       - application/json
       responses:
@@ -2350,7 +2353,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/common_model.RequiredId'
+          $ref: '#/definitions/common_model.RequiredID'
       produces:
       - application/json
       responses:
@@ -2861,7 +2864,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/common_model.RequiredId'
+          $ref: '#/definitions/common_model.RequiredID'
       produces:
       - application/json
       responses:
@@ -3028,7 +3031,7 @@ paths:
       summary: Update contact
       tags:
       - Contact
-  /media/whatsapp/{mediaId}:
+  /media/whatsapp/{mediaID}:
     get:
       consumes:
       - application/json
@@ -3037,7 +3040,7 @@ paths:
       parameters:
       - description: Media ID
         in: path
-        name: mediaId
+        name: mediaID
         required: true
         type: string
       produces:
@@ -3060,7 +3063,7 @@ paths:
       summary: Get WhatsApp media URL
       tags:
       - Media
-  /media/whatsapp/download/{mediaId}:
+  /media/whatsapp/download/{mediaID}:
     get:
       consumes:
       - application/json
@@ -3069,7 +3072,7 @@ paths:
       parameters:
       - description: Media ID
         in: path
-        name: mediaId
+        name: mediaID
         required: true
         type: string
       produces:
@@ -3148,7 +3151,7 @@ paths:
         "200":
           description: Media ID returned from WhatsApp
           schema:
-            $ref: '#/definitions/common_model.Id'
+            $ref: '#/definitions/common_model.ID'
         "400":
           description: Missing file or MIME type
           schema:
@@ -3668,7 +3671,7 @@ paths:
       summary: Count distinct conversations
       tags:
       - Message conversation
-  /message/conversation/count/messaging-product-contact/{messagingProductContactId}:
+  /message/conversation/count/messaging-product-contact/{messagingProductContactID}:
     get:
       consumes:
       - application/json
@@ -3738,7 +3741,7 @@ paths:
         type: string
       - description: Messaging product contact ID
         in: path
-        name: messagingProductContactId
+        name: messagingProductContactID
         required: true
         type: string
       produces:
@@ -3761,7 +3764,7 @@ paths:
       summary: Count messages by contact
       tags:
       - Message conversation
-  /message/conversation/count/messaging-product-contact/{messagingProductContactId}/content/like/{likeText}:
+  /message/conversation/count/messaging-product-contact/{messagingProductContactID}/content/like/{likeText}:
     get:
       consumes:
       - application/json
@@ -3831,7 +3834,7 @@ paths:
         type: string
       - description: Messaging product contact ID
         in: path
-        name: messagingProductContactId
+        name: messagingProductContactID
         required: true
         type: string
       - description: Substring to match against sender, receiver, or product data
@@ -3859,7 +3862,7 @@ paths:
       summary: Count messages by content
       tags:
       - Message conversation
-  /message/conversation/messaging-product-contact/{messagingProductContactId}:
+  /message/conversation/messaging-product-contact/{messagingProductContactID}:
     get:
       consumes:
       - application/json
@@ -3939,7 +3942,7 @@ paths:
         type: string
       - description: Messaging product contact ID
         in: path
-        name: messagingProductContactId
+        name: messagingProductContactID
         required: true
         type: string
       produces:
@@ -3964,7 +3967,7 @@ paths:
       summary: Get conversation messages
       tags:
       - Message conversation
-  /message/conversation/messaging-product-contact/{messagingProductContactId}/content/like/{likeText}:
+  /message/conversation/messaging-product-contact/{messagingProductContactID}/content/like/{likeText}:
     get:
       consumes:
       - application/json
@@ -4044,7 +4047,7 @@ paths:
         type: string
       - description: Messaging product contact ID
         in: path
-        name: messagingProductContactId
+        name: messagingProductContactID
         required: true
         type: string
       - description: Substring to match against sender, receiver, or product data
@@ -4405,11 +4408,11 @@ paths:
       summary: Mark last message as read
       tags:
       - WhatsApp message
-  /message/whatsapp/wam-id/{wamId}:
+  /message/whatsapp/wam-id/{wamID}:
     get:
       consumes:
       - application/json
-      description: Fetches a paginated list of messages where the wamId matches and
+      description: Fetches a paginated list of messages where the wamID matches and
         filters are applied.
       parameters:
       - default: desc
@@ -4483,9 +4486,9 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
-      - description: wamId value to search for
+      - description: wamID value to search for
         in: path
-        name: wamId
+        name: wamID
         required: true
         type: string
       produces:
@@ -4498,7 +4501,7 @@ paths:
               $ref: '#/definitions/message_entity.Message'
             type: array
         "400":
-          description: Invalid wamId or query parameters
+          description: Invalid wamID or query parameters
           schema:
             $ref: '#/definitions/common_model.DescriptiveError'
         "500":
@@ -4507,7 +4510,7 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Search messages by wamId
+      summary: Search messages by wamID
       tags:
       - WhatsApp message
   /messaging-product:
@@ -4602,7 +4605,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/common_model.RequiredId'
+          $ref: '#/definitions/common_model.RequiredID'
       produces:
       - application/json
       responses:
@@ -4763,7 +4766,7 @@ paths:
         name: contact
         required: true
         schema:
-          $ref: '#/definitions/common_model.RequiredId'
+          $ref: '#/definitions/common_model.RequiredID'
       produces:
       - application/json
       responses:
@@ -4795,7 +4798,7 @@ paths:
         name: contact
         required: true
         schema:
-          $ref: '#/definitions/common_model.RequiredId'
+          $ref: '#/definitions/common_model.RequiredID'
       produces:
       - application/json
       responses:
@@ -5015,7 +5018,7 @@ paths:
       summary: Count contacts by content
       tags:
       - Messaging product contact
-  /messaging-product/contact/last-read-at/{messagingProductContactId}:
+  /messaging-product/contact/last-read-at/{messagingProductContactID}:
     put:
       consumes:
       - application/json
@@ -5024,7 +5027,7 @@ paths:
       parameters:
       - description: Messaging product contact ID
         in: path
-        name: messagingProductContactId
+        name: messagingProductContactID
         required: true
         type: string
       produces:
@@ -5567,12 +5570,12 @@ paths:
       summary: Count statuses
       tags:
       - Status
-  /status/whatsapp/wam-id/{wamId}:
+  /status/whatsapp/wam-id/{wamID}:
     get:
       consumes:
       - application/json
       description: Returns a paginated list of statuses filtered by WhatsApp message
-        ID (wamId) and other query parameters.
+        ID (wamID) and other query parameters.
       parameters:
       - default: desc
         enum:
@@ -5639,9 +5642,9 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
-      - description: Desired wamId
+      - description: Desired wamID
         in: path
-        name: wamId
+        name: wamID
         required: true
         type: string
       produces:
@@ -5654,7 +5657,7 @@ paths:
               $ref: '#/definitions/status_entity.Status'
             type: array
         "400":
-          description: Invalid wamId or query parameters
+          description: Invalid wamID or query parameters
           schema:
             $ref: '#/definitions/common_model.DescriptiveError'
         "500":
@@ -5663,7 +5666,7 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Retrieve statuses by wamId
+      summary: Retrieve statuses by wamID
       tags:
       - WhatsApp status
   /user:
@@ -5677,7 +5680,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/common_model.RequiredId'
+          $ref: '#/definitions/common_model.RequiredID'
       produces:
       - application/json
       responses:
@@ -5826,7 +5829,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/user_model.UpdateWithId'
+          $ref: '#/definitions/user_model.UpdateWithID'
       produces:
       - application/json
       responses:
@@ -6061,7 +6064,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/common_model.RequiredId'
+          $ref: '#/definitions/common_model.RequiredID'
       produces:
       - application/json
       responses:
@@ -6482,7 +6485,7 @@ paths:
       summary: Authenticates websocket handshake
       tags:
       - Websocket
-  /websocket/campaign/whatsapp/send/{campaignId}:
+  /websocket/campaign/whatsapp/send/{campaignID}:
     get:
       consumes:
       - application/json
@@ -6492,7 +6495,7 @@ paths:
       parameters:
       - description: Campaign ID (UUID format)
         in: path
-        name: campaignId
+        name: campaignID
         required: true
         type: string
       - description: 'Optional: customize message sending behavior (currently not

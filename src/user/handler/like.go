@@ -60,7 +60,7 @@ func ContentKeyLike(c *fiber.Ctx) error {
 		decodedText,
 		decodedKey,
 		user_entity.User{
-			Audit: common_model.Audit{Id: query.Id},
+			Audit: common_model.Audit{ID: query.ID},
 			Email: query.Email,
 			Name:  query.Name,
 			Role:  query.Role,

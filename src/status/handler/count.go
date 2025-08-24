@@ -40,9 +40,9 @@ func Count(c *fiber.Ctx) error {
 	statuses, err := repository.Count(
 		status_entity.Status{
 			StatusFields: status_model.StatusFields{
-				MessageId: query.MessageId,
+				MessageID: query.MessageID,
 				Audit: common_model.Audit{
-					Id: query.Id,
+					ID: query.ID,
 				},
 			},
 		},

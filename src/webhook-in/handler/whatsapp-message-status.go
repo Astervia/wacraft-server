@@ -3,17 +3,17 @@ package webhook_handler
 import (
 	"sync"
 
-	wh_model "github.com/Rfluid/whatsapp-cloud-api/src/webhook/model"
-	"github.com/Astervia/wacraft-server/src/config/env"
 	database_model "github.com/Astervia/wacraft-core/src/database/model"
 	message_entity "github.com/Astervia/wacraft-core/src/message/entity"
 	message_model "github.com/Astervia/wacraft-core/src/message/model"
-	message_service "github.com/Astervia/wacraft-server/src/message/service"
 	"github.com/Astervia/wacraft-core/src/repository"
 	status_entity "github.com/Astervia/wacraft-core/src/status/entity"
 	status_model "github.com/Astervia/wacraft-core/src/status/model"
 	synch_service "github.com/Astervia/wacraft-core/src/synch/service"
+	"github.com/Astervia/wacraft-server/src/config/env"
+	message_service "github.com/Astervia/wacraft-server/src/message/service"
 	whk_service "github.com/Astervia/wacraft-server/src/webhook-in/service"
+	wh_model "github.com/Rfluid/whatsapp-cloud-api/src/webhook/model"
 	"github.com/google/uuid"
 	"golang.org/x/sync/errgroup"
 	"gorm.io/gorm"
@@ -24,7 +24,7 @@ var statusSynchronizer *synch_service.MutexSwapper[string] = whk_service.CreateS
 
 // Returns status updates from unblocked contacts
 func handleStatuses(
-	value wh_model.Value, tx *gorm.DB, mpId uuid.UUID,
+	value wh_model.Value, tx *gorm.DB, mpID uuid.UUID,
 ) ([]status_entity.Status, error) {
 	var statuses []status_entity.Status
 	var statMu sync.Mutex
@@ -33,15 +33,15 @@ func handleStatuses(
 	for _, status := range *value.Statuses {
 		eg.Go(func() error {
 			ascending := database_model.Asc
-			wamId := status.Id
+			wamID := status.ID
 
-			statusSynchronizer.Lock(wamId)
+			statusSynchronizer.Lock(wamID)
 
-			msgs, err := message_service.GetWamId(
-				wamId,
+			msgs, err := message_service.GetWamID(
+				wamID,
 				message_entity.Message{
 					MessageFields: message_model.MessageFields{
-						MessagingProductId: mpId,
+						MessagingProductID: mpID,
 					},
 				},
 				&database_model.Paginate{
@@ -55,42 +55,42 @@ func handleStatuses(
 				tx,
 			)
 			if err != nil {
-				statusSynchronizer.Unlock(wamId)
+				statusSynchronizer.Unlock(wamID)
 				return err
 			}
-			var msgId uuid.UUID
+			var msgID uuid.UUID
 			if len(msgs) == 0 {
-				msgId, err = message_service.StatusSynchronizer.AddStatus(
-					wamId,
+				msgID, err = message_service.StatusSynchronizer.AddStatus(
+					wamID,
 					status.Status,
 					env.MessageStatusSyncTimeout,
 				)
-				statusSynchronizer.Unlock(wamId)
+				statusSynchronizer.Unlock(wamID)
 				if err != nil {
 					// Err adding status means that the message will not be added and is irreversible. Must not return error to WhatsApp API
 					// This is important to avoid creating unnecessary connections to the database. And for saving resources in general.
 					return nil
 				}
 			} else {
-				statusSynchronizer.Unlock(wamId)
+				statusSynchronizer.Unlock(wamID)
 				msg := msgs[0]
 
 				blocked := false
-				if msg.From.Id != uuid.Nil {
+				if msg.From.ID != uuid.Nil {
 					blocked = msg.From.Blocked
-				} else if msg.To.Id != uuid.Nil {
+				} else if msg.To.ID != uuid.Nil {
 					blocked = msg.To.Blocked
 				}
 				if blocked {
 					return nil
 				}
-				msgId = msg.Id
+				msgID = msg.ID
 			}
 
 			s, err := repository.Create(
 				status_entity.Status{
 					StatusFields: status_model.StatusFields{
-						MessageId: msgId,
+						MessageID: msgID,
 						ProductData: &status_model.ProductData{
 							Status: &status,
 						},

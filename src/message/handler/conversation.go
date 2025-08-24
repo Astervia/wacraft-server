@@ -20,14 +20,14 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Param			message						query		message_model.QueryPaginated	true	"Pagination and filter parameters"
-//	@Param			messagingProductContactId	path		string							true	"Messaging product contact ID"
+//	@Param			messagingProductContactID	path		string							true	"Messaging product contact ID"
 //	@Success		200							{array}		message_entity.Message			"Conversation messages"
 //	@Failure		400							{object}	common_model.DescriptiveError	"Invalid query or ID"
 //	@Failure		500							{object}	common_model.DescriptiveError	"Failed to retrieve messages"
 //	@Security		ApiKeyAuth
-//	@Router			/message/conversation/messaging-product-contact/{messagingProductContactId} [get]
+//	@Router			/message/conversation/messaging-product-contact/{messagingProductContactID} [get]
 func GetConversation(c *fiber.Ctx) error {
-	mpcId, err := uuid.Parse(c.Params("messagingProductContactId"))
+	mpcID, err := uuid.Parse(c.Params("messagingProductContactID"))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewApiError("unable to parse messaging product contact id string to UUID", err, "github.com/google/uuid"),
@@ -48,15 +48,15 @@ func GetConversation(c *fiber.Ctx) error {
 	}
 
 	messages, err := message_service.GetConversation(
-		mpcId,
+		mpcID,
 		message_entity.Message{
 			MessageFields: message_model.MessageFields{
-				FromId:             query.FromId,
-				ToId:               query.ToId,
-				MessagingProductId: query.MessagingProductId,
+				FromID:             query.FromID,
+				ToID:               query.ToID,
+				MessagingProductID: query.MessagingProductID,
 				AuditWithDeleted: common_model.AuditWithDeleted{
 					Audit: common_model.Audit{
-						Id: query.Id,
+						ID: query.ID,
 					},
 				},
 			},
@@ -106,12 +106,12 @@ func GetConversations(c *fiber.Ctx) error {
 	messages, err := message_service.GetLatestMessagesForEachUser(
 		message_entity.Message{
 			MessageFields: message_model.MessageFields{
-				FromId:             query.FromId,
-				ToId:               query.ToId,
-				MessagingProductId: query.MessagingProductId,
+				FromID:             query.FromID,
+				ToID:               query.ToID,
+				MessagingProductID: query.MessagingProductID,
 				AuditWithDeleted: common_model.AuditWithDeleted{
 					Audit: common_model.Audit{
-						Id: query.Id,
+						ID: query.ID,
 					},
 				},
 			},
@@ -138,14 +138,14 @@ func GetConversations(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Param			message						query		message_model.Query	true	"Filter parameters"
-//	@Param			messagingProductContactId	path		string					true	"Messaging product contact ID"
+//	@Param			messagingProductContactID	path		string					true	"Messaging product contact ID"
 //	@Success		200							{integer}	int						"Count of messages"
 //	@Failure		400							{object}	common_model.DescriptiveError	"Invalid query or ID"
 //	@Failure		500							{object}	common_model.DescriptiveError	"Failed to count messages"
 //	@Security		ApiKeyAuth
-//	@Router			/message/conversation/count/messaging-product-contact/{messagingProductContactId} [get]
+//	@Router			/message/conversation/count/messaging-product-contact/{messagingProductContactID} [get]
 func CountConversationsByMessagingProductContact(c *fiber.Ctx) error {
-	mpcId, err := uuid.Parse(c.Params("messagingProductContactId"))
+	mpcID, err := uuid.Parse(c.Params("messagingProductContactID"))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewApiError("unable to parse messaging product contact id string to UUID", err, "github.com/google/uuid"),
@@ -166,15 +166,15 @@ func CountConversationsByMessagingProductContact(c *fiber.Ctx) error {
 	}
 
 	messages, err := message_service.CountConversations(
-		mpcId,
+		mpcID,
 		message_entity.Message{
 			MessageFields: message_model.MessageFields{
-				FromId:             query.FromId,
-				ToId:               query.ToId,
-				MessagingProductId: query.MessagingProductId,
+				FromID:             query.FromID,
+				ToID:               query.ToID,
+				MessagingProductID: query.MessagingProductID,
 				AuditWithDeleted: common_model.AuditWithDeleted{
 					Audit: common_model.Audit{
-						Id: query.Id,
+						ID: query.ID,
 					},
 				},
 			},
@@ -223,12 +223,12 @@ func CountDistinctConversations(c *fiber.Ctx) error {
 	messages, err := message_service.CountDistinctConversations(
 		message_entity.Message{
 			MessageFields: message_model.MessageFields{
-				FromId:             query.FromId,
-				ToId:               query.ToId,
-				MessagingProductId: query.MessagingProductId,
+				FromID:             query.FromID,
+				ToID:               query.ToID,
+				MessagingProductID: query.MessagingProductID,
 				AuditWithDeleted: common_model.AuditWithDeleted{
 					Audit: common_model.Audit{
-						Id: query.Id,
+						ID: query.ID,
 					},
 				},
 			},
@@ -255,15 +255,15 @@ func CountDistinctConversations(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Param			message						query		message_model.QueryPaginated	true	"Filter parameters"
-//	@Param			messagingProductContactId	path		string							true	"Messaging product contact ID"
+//	@Param			messagingProductContactID	path		string							true	"Messaging product contact ID"
 //	@Param			likeText					path		string							true	"Substring to match against sender, receiver, or product data"
 //	@Success		200							{array}		message_entity.Message			"Filtered conversation messages"
 //	@Failure		400							{object}	common_model.DescriptiveError	"Invalid ID, query, or likeText"
 //	@Failure		500							{object}	common_model.DescriptiveError	"Failed to retrieve messages"
 //	@Security		ApiKeyAuth
-//	@Router			/message/conversation/messaging-product-contact/{messagingProductContactId}/content/like/{likeText} [get]
+//	@Router			/message/conversation/messaging-product-contact/{messagingProductContactID}/content/like/{likeText} [get]
 func ConversationContentLikeByMessagingProductContact(c *fiber.Ctx) error {
-	mpcId, err := uuid.Parse(c.Params("messagingProductContactId"))
+	mpcID, err := uuid.Parse(c.Params("messagingProductContactID"))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewApiError("unable to parse messaging product contact id string to UUID", err, "github.com/google/uuid").Send(),
@@ -292,16 +292,16 @@ func ConversationContentLikeByMessagingProductContact(c *fiber.Ctx) error {
 	}
 
 	messages, err := message_service.ConversationContentLike(
-		mpcId,
+		mpcID,
 		decodedText,
 		message_entity.Message{
 			MessageFields: message_model.MessageFields{
-				FromId:             query.FromId,
-				ToId:               query.ToId,
-				MessagingProductId: query.MessagingProductId,
+				FromID:             query.FromID,
+				ToID:               query.ToID,
+				MessagingProductID: query.MessagingProductID,
 				AuditWithDeleted: common_model.AuditWithDeleted{
 					Audit: common_model.Audit{
-						Id: query.Id,
+						ID: query.ID,
 					},
 				},
 			},
@@ -328,15 +328,15 @@ func ConversationContentLikeByMessagingProductContact(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Param			message						query		message_model.Query	true	"Filter parameters"
-//	@Param			messagingProductContactId	path		string					true	"Messaging product contact ID"
+//	@Param			messagingProductContactID	path		string					true	"Messaging product contact ID"
 //	@Param			likeText					path		string					true	"Substring to match against sender, receiver, or product data"
 //	@Success		200							{integer}	int						"Count of matched messages"
 //	@Failure		400							{object}	common_model.DescriptiveError	"Invalid query or likeText"
 //	@Failure		500							{object}	common_model.DescriptiveError	"Failed to count messages"
 //	@Security		ApiKeyAuth
-//	@Router			/message/conversation/count/messaging-product-contact/{messagingProductContactId}/content/like/{likeText} [get]
+//	@Router			/message/conversation/count/messaging-product-contact/{messagingProductContactID}/content/like/{likeText} [get]
 func CountConversationContentLike(c *fiber.Ctx) error {
-	mpcId, err := uuid.Parse(c.Params("messagingProductContactId"))
+	mpcID, err := uuid.Parse(c.Params("messagingProductContactID"))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewApiError("unable to parse messaging product contact id string to UUID", err, "github.com/google/uuid").Send(),
@@ -365,16 +365,16 @@ func CountConversationContentLike(c *fiber.Ctx) error {
 	}
 
 	count, err := message_service.CountConversationContentLike(
-		mpcId,
+		mpcID,
 		decodedText,
 		message_entity.Message{
 			MessageFields: message_model.MessageFields{
-				FromId:             query.FromId,
-				ToId:               query.ToId,
-				MessagingProductId: query.MessagingProductId,
+				FromID:             query.FromID,
+				ToID:               query.ToID,
+				MessagingProductID: query.MessagingProductID,
 				AuditWithDeleted: common_model.AuditWithDeleted{
 					Audit: common_model.Audit{
-						Id: query.Id,
+						ID: query.ID,
 					},
 				},
 			},
