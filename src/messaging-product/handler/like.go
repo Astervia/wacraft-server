@@ -20,7 +20,7 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Param			paginate	query		messaging_product_model.QueryContactPaginated		true	"Query and pagination parameters"
-//	@Param			likeText	path		string												true	"Text to apply like (~) operator"
+//	@Param			likeText	path		string												true	"Text to apply like ILIKE"
 //	@Success		200			{array}		messaging_product_entity.MessagingProductContact	"List of matching contacts"
 //	@Failure		400			{object}	common_model.DescriptiveError						"Invalid query or likeText"
 //	@Failure		500			{object}	common_model.DescriptiveError						"Failed to retrieve contacts"

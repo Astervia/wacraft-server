@@ -4825,7 +4825,7 @@ paths:
       - application/json
       description: Returns a paginated list of messaging product contacts where the
         provided text matches contact name, email, or product_details fields using
-        regex (~).
+        ILIKE.
       parameters:
       - in: query
         name: blocked
@@ -4898,7 +4898,7 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
-      - description: Text to apply like (~) operator
+      - description: Text to apply like ILIKE
         in: path
         name: likeText
         required: true
@@ -4930,7 +4930,7 @@ paths:
       consumes:
       - application/json
       description: Returns the number of messaging product contacts that match the
-        provided text (regex ~) in fields like name, email, and product_details.
+        provided text (with ILIKE operator) in fields like name, email, and product_details.
       parameters:
       - in: query
         name: blocked
@@ -4993,7 +4993,7 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
-      - description: Text to match using regex (~)
+      - description: Text to match using ILIKE
         in: path
         name: likeText
         required: true

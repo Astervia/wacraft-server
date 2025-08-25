@@ -4346,7 +4346,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns a paginated list of messaging product contacts where the provided text matches contact name, email, or product_details fields using regex (~).",
+                "description": "Returns a paginated list of messaging product contacts where the provided text matches contact name, email, or product_details fields using ILIKE.",
                 "consumes": [
                     "application/json"
                 ],
@@ -4467,7 +4467,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Text to apply like (~) operator",
+                        "description": "Text to apply like ILIKE",
                         "name": "likeText",
                         "in": "path",
                         "required": true
@@ -4505,7 +4505,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns the number of messaging product contacts that match the provided text (regex ~) in fields like name, email, and product_details.",
+                "description": "Returns the number of messaging product contacts that match the provided text (with ILIKE operator) in fields like name, email, and product_details.",
                 "consumes": [
                     "application/json"
                 ],
@@ -4612,7 +4612,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Text to match using regex (~)",
+                        "description": "Text to match using ILIKE",
                         "name": "likeText",
                         "in": "path",
                         "required": true
