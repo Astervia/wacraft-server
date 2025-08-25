@@ -12,7 +12,7 @@ import (
 // ContentKeyLike searches users by a given key and a partial text pattern.
 //
 //	@Summary		Search users by key and text
-//	@Description	Returns a paginated list of users where the specified key matches a partial value using regex (~ operator).
+//	@Description	Returns a paginated list of users where the specified key matches a partial value using ILIKE operator.
 //	@Tags			User
 //	@Accept			json
 //	@Produce		json

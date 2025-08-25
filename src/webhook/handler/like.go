@@ -12,7 +12,7 @@ import (
 // ContentKeyLike returns webhooks filtered by a specific key using a partial text match.
 //
 //	@Summary		Query webhooks by key and partial value
-//	@Description	Filters webhooks using the ~ operator on a specified field and partial value.
+//	@Description	Filters webhooks using the ILIKE operator on a specified field and partial value.
 //	@Tags			Webhook
 //	@Accept			json
 //	@Produce		json

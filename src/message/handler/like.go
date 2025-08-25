@@ -14,7 +14,7 @@ import (
 // ContentLike returns messages where text matches sender, receiver, or product data fields.
 //
 //	@Summary		Search messages by content text
-//	@Description	Matches the given text using regex (~) against `sender_data`, `receiver_data`, and `product_data` fields.
+//	@Description	Matches the given text using ILIKE against `sender_data`, `receiver_data`, and `product_data` fields.
 //	@Tags			Message
 //	@Accept			json
 //	@Produce		json
@@ -78,7 +78,7 @@ func ContentLike(c *fiber.Ctx) error {
 // ContentKeyLike returns messages matching text in a specific field.
 //
 //	@Summary		Search messages by content field
-//	@Description	Uses regex (~) to match the given text in the specified key field. The fields `from` and `to` are populated in the result.
+//	@Description	Uses ILIKE to match the given text in the specified key field. The fields `from` and `to` are populated in the result.
 //	@Tags			Message
 //	@Accept			json
 //	@Produce		json

@@ -12,7 +12,7 @@ import (
 // ContentKeyLike searches campaigns using a "like" pattern on a specific field.
 //
 //	@Summary		Search campaigns with regex-like operator
-//	@Description	Applies a case-insensitive regex-like (~) filter on the specified key field and returns paginated results.
+//	@Description	Applies a ILIKE filter on the specified key field and returns paginated results.
 //	@Tags			Campaign
 //	@Accept			json
 //	@Produce		json

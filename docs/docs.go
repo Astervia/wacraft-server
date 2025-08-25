@@ -392,14 +392,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Field name to apply the like operator (e.g., 'name')",
                         "name": "keyName",
                         "in": "path",
                         "required": true
                     },
                     {
+                        "maxLength": 512,
+                        "minLength": 1,
                         "type": "string",
-                        "description": "Value to search using the like operator",
                         "name": "likeText",
                         "in": "path",
                         "required": true
@@ -2263,14 +2263,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Field name to apply the like operator",
                         "name": "keyName",
                         "in": "path",
                         "required": true
                     },
                     {
+                        "maxLength": 512,
+                        "minLength": 1,
                         "type": "string",
-                        "description": "Text to apply like operator",
                         "name": "likeText",
                         "in": "path",
                         "required": true
@@ -6016,14 +6016,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "The field name to apply the like operator",
                         "name": "keyName",
                         "in": "path",
                         "required": true
                     },
                     {
+                        "maxLength": 512,
+                        "minLength": 1,
                         "type": "string",
-                        "description": "The text to search with regex (~)",
                         "name": "likeText",
                         "in": "path",
                         "required": true
@@ -6690,15 +6690,15 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Text to apply like operator on the given key",
-                        "name": "likeText",
+                        "name": "keyName",
                         "in": "path",
                         "required": true
                     },
                     {
+                        "maxLength": 512,
+                        "minLength": 1,
                         "type": "string",
-                        "description": "The key to apply like operator",
-                        "name": "keyName",
+                        "name": "likeText",
                         "in": "path",
                         "required": true
                     }
