@@ -300,7 +300,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Applies a case-insensitive regex-like (~) filter on the specified key field and returns paginated results.",
+                "description": "Applies a ILIKE filter on the specified key field and returns paginated results.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1983,7 +1983,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Matches the given text using regex (~) against ` + "`" + `sender_data` + "`" + `, ` + "`" + `receiver_data` + "`" + `, and ` + "`" + `product_data` + "`" + ` fields.",
+                "description": "Matches the given text using ILIKE against ` + "`" + `sender_data` + "`" + `, ` + "`" + `receiver_data` + "`" + `, and ` + "`" + `product_data` + "`" + ` fields.",
                 "consumes": [
                     "application/json"
                 ],
@@ -2142,7 +2142,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Uses regex (~) to match the given text in the specified key field. The fields ` + "`" + `from` + "`" + ` and ` + "`" + `to` + "`" + ` are populated in the result.",
+                "description": "Uses ILIKE to match the given text in the specified key field. The fields ` + "`" + `from` + "`" + ` and ` + "`" + `to` + "`" + ` are populated in the result.",
                 "consumes": [
                     "application/json"
                 ],
@@ -5919,7 +5919,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns a paginated list of users where the specified key matches a partial value using regex (~ operator).",
+                "description": "Returns a paginated list of users where the specified key matches a partial value using ILIKE operator.",
                 "consumes": [
                     "application/json"
                 ],
@@ -6585,7 +6585,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Filters webhooks using the ~ operator on a specified field and partial value.",
+                "description": "Filters webhooks using the ILIKE operator on a specified field and partial value.",
                 "consumes": [
                     "application/json"
                 ],

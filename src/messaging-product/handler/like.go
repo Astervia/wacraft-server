@@ -15,7 +15,7 @@ import (
 // ContactContentLike returns a paginated list of messaging product contacts matching a text pattern.
 //
 //	@Summary		Search contacts by content
-//	@Description	Returns a paginated list of messaging product contacts where the provided text matches contact name, email, or product_details fields using regex (~).
+//	@Description	Returns a paginated list of messaging product contacts where the provided text matches contact name, email, or product_details fields using ILIKE.
 //	@Tags			Messaging product contact
 //	@Accept			json
 //	@Produce		json

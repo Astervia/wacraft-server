@@ -2173,8 +2173,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Applies a case-insensitive regex-like (~) filter on the specified
-        key field and returns paginated results.
+      description: Applies a ILIKE filter on the specified key field and returns paginated
+        results.
       parameters:
       - default: desc
         enum:
@@ -3273,7 +3273,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Uses regex (~) to match the given text in the specified key field.
+      description: Uses ILIKE to match the given text in the specified key field.
         The fields `from` and `to` are populated in the result.
       parameters:
       - default: desc
@@ -3383,7 +3383,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Matches the given text using regex (~) against `sender_data`, `receiver_data`,
+      description: Matches the given text using ILIKE against `sender_data`, `receiver_data`,
         and `product_data` fields.
       parameters:
       - default: desc
@@ -5859,7 +5859,7 @@ paths:
       consumes:
       - application/json
       description: Returns a paginated list of users where the specified key matches
-        a partial value using regex (~ operator).
+        a partial value using ILIKE operator.
       parameters:
       - default: desc
         enum:
@@ -6292,8 +6292,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Filters webhooks using the ~ operator on a specified field and
-        partial value.
+      description: Filters webhooks using the ILIKE operator on a specified field
+        and partial value.
       parameters:
       - default: desc
         enum:
