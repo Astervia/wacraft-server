@@ -170,7 +170,7 @@ func ConversationContentLike(
                     END ASC
                 `)
 		}).
-		Where(`CAST(sender_data AS TEXT) ~ ? OR CAST(receiver_data AS TEXT) ~ ? OR CAST(product_data AS TEXT) ~ ?`, likeText, likeText, likeText).
+		Where(searchableExpr+" ILIKE immutable_unaccent(?)", likeText).
 		Where("from_id = ? OR to_id = ?", mpcID, mpcID)
 
 	messages, err := repository.GetPaginated(
@@ -202,7 +202,7 @@ func CountConversationContentLike(
 		Joins("To").
 		Joins("From.Contact").
 		Joins("To.Contact").
-		Where(`CAST(sender_data AS TEXT) ~ ? OR CAST(receiver_data AS TEXT) ~ ? OR CAST(product_data AS TEXT) ~ ?`, likeText, likeText, likeText).
+		Where(searchableExpr+" ILIKE immutable_unaccent(?)", likeText).
 		Where("from_id = ? OR to_id = ?", mpcID, mpcID)
 
 	messages, err := repository.Count(

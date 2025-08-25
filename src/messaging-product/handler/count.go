@@ -15,12 +15,12 @@ import (
 // ContactContentLikeCount returns the number of messaging product contacts matching a text pattern.
 //
 //	@Summary		Count contacts by content
-//	@Description	Returns the number of messaging product contacts that match the provided text (regex ~) in fields like name, email, and product_details.
+//	@Description	Returns the number of messaging product contacts that match the provided text (with ILIKE operator) in fields like name, email, and product_details.
 //	@Tags			Messaging product contact
 //	@Accept			json
 //	@Produce		json
 //	@Param			paginate	query		messaging_product_model.QueryContact	true	"Query parameters"
-//	@Param			likeText	path		string									true	"Text to match using regex (~)"
+//	@Param			likeText	path		string									true	"Text to match using ILIKE"
 //	@Success		200			{integer}	int										"Count of matching contacts"
 //	@Failure		400			{object}	common_model.DescriptiveError			"Invalid query or likeText"
 //	@Failure		500			{object}	common_model.DescriptiveError			"Failed to count contacts"

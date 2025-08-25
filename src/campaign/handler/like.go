@@ -1,8 +1,6 @@
 package campaign_handler
 
 import (
-	"net/url"
-
 	campaign_entity "github.com/Astervia/wacraft-core/src/campaign/entity"
 	campaign_model "github.com/Astervia/wacraft-core/src/campaign/model"
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
@@ -14,32 +12,27 @@ import (
 // ContentKeyLike searches campaigns using a "like" pattern on a specific field.
 //
 //	@Summary		Search campaigns with regex-like operator
-//	@Description	Applies a case-insensitive regex-like (~) filter on the specified key field and returns paginated results.
+//	@Description	Applies a ILIKE filter on the specified key field and returns paginated results.
 //	@Tags			Campaign
 //	@Accept			json
 //	@Produce		json
-//	@Param			campaign	query		campaign_model.QueryPaginated	true	"Pagination and filtering options"
-//	@Param			keyName		path		string							true	"Field name to apply the like operator (e.g., 'name')"
-//	@Param			likeText	path		string							true	"Value to search using the like operator"
-//	@Success		200			{array}		campaign_entity.Campaign		"List of matching campaigns"
-//	@Failure		400			{object}	common_model.DescriptiveError	"Invalid input (e.g., decoding or query error)"
-//	@Failure		500			{object}	common_model.DescriptiveError	"Internal server error"
+//	@Param			campaign	query		campaign_model.QueryPaginated		true	"Pagination and filtering options"
+//	@Param			contentLike	path		campaign_model.ContentKeyLikeParams	true	"Params to query content like key"
+//	@Success		200			{array}		campaign_entity.Campaign			"List of matching campaigns"
+//	@Failure		400			{object}	common_model.DescriptiveError		"Invalid input (e.g., decoding or query error)"
+//	@Failure		500			{object}	common_model.DescriptiveError		"Internal server error"
 //	@Security		ApiKeyAuth
 //	@Router			/campaign/content/{keyName}/like/{likeText} [get]
 func ContentKeyLike(c *fiber.Ctx) error {
-	encodedText := c.Params("likeText")
-	decodedText, err := url.QueryUnescape(encodedText)
-	if err != nil {
+	params := new(campaign_model.ContentKeyLikeParams)
+	if err := c.ParamsParser(params); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
-			common_model.NewApiError("unable to decode likeText", err, "net/url").Send(),
+			common_model.NewParseJsonError(err).Send(),
 		)
 	}
-
-	encodedKey := c.Params("keyName")
-	decodedKey, err := url.QueryUnescape(encodedKey)
-	if err != nil {
+	if err := validators.Validator().Struct(params); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
-			common_model.NewApiError("unable to decode keyName", err, "net/url").Send(),
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 
@@ -57,8 +50,8 @@ func ContentKeyLike(c *fiber.Ctx) error {
 	}
 
 	messages, err := campaign_service.ContentKeyLike(
-		decodedText,
-		decodedKey,
+		params.LikeText,
+		params.KeyName,
 		campaign_entity.Campaign{
 			Audit:              common_model.Audit{ID: query.ID},
 			MessagingProductID: query.MessagingProductID,

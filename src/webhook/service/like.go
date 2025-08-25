@@ -3,16 +3,17 @@ package webhook_service
 import (
 	"fmt"
 
-	"github.com/Astervia/wacraft-server/src/database"
 	database_model "github.com/Astervia/wacraft-core/src/database/model"
 	"github.com/Astervia/wacraft-core/src/repository"
 	webhook_entity "github.com/Astervia/wacraft-core/src/webhook/entity"
+	webhook_model "github.com/Astervia/wacraft-core/src/webhook/model"
+	"github.com/Astervia/wacraft-server/src/database"
 	"gorm.io/gorm"
 )
 
 func ContentKeyLike(
 	likeText string,
-	key string,
+	key webhook_model.SearchableWebhookColumn,
 	entity webhook_entity.Webhook,
 	pagination database_model.Paginable,
 	order database_model.Orderable,
@@ -26,7 +27,7 @@ func ContentKeyLike(
 	// Construct the LIKE query for sender_data, receiver_data, or product_data
 	db = db.
 		Where(
-			fmt.Sprintf("CAST(%s AS TEXT) ~ ?", key),
+			fmt.Sprintf("CAST(%s AS TEXT) ILIKE ?", key),
 			likeText,
 		)
 

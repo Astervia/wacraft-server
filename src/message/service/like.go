@@ -5,12 +5,25 @@ import (
 
 	database_model "github.com/Astervia/wacraft-core/src/database/model"
 	message_entity "github.com/Astervia/wacraft-core/src/message/entity"
+	message_model "github.com/Astervia/wacraft-core/src/message/model"
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
 	"gorm.io/gorm"
 )
 
-// Query for messages with a specific content checking if sender_data, receiver_data, or product_data contains the likeText.
+// Expression MUST match the functional GIN index:
+// idx_messages_search_trgm_unaccent ON immutable_unaccent(
+//
+//	COALESCE(sender_data::text, '') || ' ' || COALESCE(receiver_data::text, '') || ' ' || COALESCE(product_data::text, '')
+//
+// ) gin_trgm_ops
+const searchableExpr = "immutable_unaccent((" +
+	"COALESCE(sender_data::text, '') || ' ' || " +
+	"COALESCE(receiver_data::text, '') || ' ' || " +
+	"COALESCE(product_data::text, '')" +
+	"))"
+
+// Query for messages with content across sender/receiver/product using trigram GIN.
 func ContentLike(
 	likeText string,
 	entity message_entity.Message,
@@ -23,28 +36,21 @@ func ContentLike(
 		db = database.DB.Model(&entity)
 	}
 
-	// Construct the LIKE query for sender_data, receiver_data, or product_data
 	db = db.
 		Joins("From").
 		Joins("To").
 		Joins("From.Contact").
 		Joins("To.Contact").
-		Where(`CAST(sender_data AS TEXT) ~ ? OR CAST(receiver_data AS TEXT) ~ ? OR CAST(product_data AS TEXT) ~ ?`, likeText, likeText, likeText)
+		// IMPORTANT: apply immutable_unaccent to BOTH sides so the index can be used
+		Where(searchableExpr+" ILIKE immutable_unaccent(?)", likeText)
 
-	messages, err := repository.GetPaginated(
-		entity,
-		pagination,
-		order,
-		whereable,
-		"",
-		db,
-	)
-	return messages, err
+	return repository.GetPaginated(entity, pagination, order, whereable, "", db)
 }
 
+// Query for messages with content on a specific column (sender_data / receiver_data / product_data).
 func ContentKeyLike(
-	likeText string,
-	key string,
+	pattern string, // caller may pass "%term%" or we can build it externally
+	key message_model.JsonMessageKey,
 	entity message_entity.Message,
 	pagination database_model.Paginable,
 	order database_model.Orderable,
@@ -55,29 +61,20 @@ func ContentKeyLike(
 		db = database.DB.Model(&entity)
 	}
 
-	// Construct the LIKE query for sender_data, receiver_data, or product_data
+	// Build expression: immutable_unaccent(COALESCE(<key>::text,''))
+	expr := fmt.Sprintf("immutable_unaccent(COALESCE(%s::text, ''))", key)
+
 	db = db.
 		Joins("From").
 		Joins("To").
 		Joins("From.Contact").
 		Joins("To.Contact").
-		Where(
-			fmt.Sprintf("CAST(%s AS TEXT) ~ ?", string(key)),
-			likeText,
-		)
+		Where(expr+" ILIKE immutable_unaccent(?)", pattern)
 
-	messages, err := repository.GetPaginated(
-		entity,
-		pagination,
-		order,
-		whereable,
-		"messages",
-		db,
-	)
-	return messages, err
+	return repository.GetPaginated(entity, pagination, order, whereable, "messages", db)
 }
 
-// Query for messages with a specific content checking if sender_data, receiver_data, or product_data contains the likeText.
+// Count version of ContentLike (uses the same indexed expression)
 func CountContentLike(
 	likeText string,
 	entity message_entity.Message,
@@ -89,20 +86,12 @@ func CountContentLike(
 		db = database.DB
 	}
 
-	// Construct the LIKE query for sender_data, receiver_data, or product_data
 	db = db.
 		Joins("From").
 		Joins("To").
 		Joins("From.Contact").
 		Joins("To.Contact").
-		Where(`CAST(sender_data AS TEXT) ~ ? OR CAST(receiver_data AS TEXT) ~ ? OR CAST(product_data AS TEXT) ~ ?`, likeText, likeText, likeText)
+		Where(searchableExpr+" ILIKE immutable_unaccent(?)", likeText)
 
-	messages, err := repository.Count(
-		entity,
-		order,
-		whereable,
-		"",
-		db,
-	)
-	return messages, err
+	return repository.Count(entity, order, whereable, "", db)
 }

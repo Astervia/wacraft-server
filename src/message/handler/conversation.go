@@ -137,9 +137,9 @@ func GetConversations(c *fiber.Ctx) error {
 //	@Tags			Message conversation
 //	@Accept			json
 //	@Produce		json
-//	@Param			message						query		message_model.Query	true	"Filter parameters"
-//	@Param			messagingProductContactID	path		string					true	"Messaging product contact ID"
-//	@Success		200							{integer}	int						"Count of messages"
+//	@Param			message						query		message_model.Query				true	"Filter parameters"
+//	@Param			messagingProductContactID	path		string							true	"Messaging product contact ID"
+//	@Success		200							{integer}	int								"Count of messages"
 //	@Failure		400							{object}	common_model.DescriptiveError	"Invalid query or ID"
 //	@Failure		500							{object}	common_model.DescriptiveError	"Failed to count messages"
 //	@Security		ApiKeyAuth
@@ -200,8 +200,8 @@ func CountConversationsByMessagingProductContact(c *fiber.Ctx) error {
 //	@Tags			Message conversation
 //	@Accept			json
 //	@Produce		json
-//	@Param			message	query		message_model.Query	true	"Filter parameters"
-//	@Success		200		{integer}	int						"Count of distinct conversations"
+//	@Param			message	query		message_model.Query				true	"Filter parameters"
+//	@Success		200		{integer}	int								"Count of distinct conversations"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid query"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Failed to count conversations"
 //	@Security		ApiKeyAuth
@@ -327,10 +327,10 @@ func ConversationContentLikeByMessagingProductContact(c *fiber.Ctx) error {
 //	@Tags			Message conversation
 //	@Accept			json
 //	@Produce		json
-//	@Param			message						query		message_model.Query	true	"Filter parameters"
-//	@Param			messagingProductContactID	path		string					true	"Messaging product contact ID"
-//	@Param			likeText					path		string					true	"Substring to match against sender, receiver, or product data"
-//	@Success		200							{integer}	int						"Count of matched messages"
+//	@Param			message						query		message_model.Query				true	"Filter parameters"
+//	@Param			messagingProductContactID	path		string							true	"Messaging product contact ID"
+//	@Param			likeText					path		string							true	"Substring to match against sender, receiver, or product data"
+//	@Success		200							{integer}	int								"Count of matched messages"
 //	@Failure		400							{object}	common_model.DescriptiveError	"Invalid query or likeText"
 //	@Failure		500							{object}	common_model.DescriptiveError	"Failed to count messages"
 //	@Security		ApiKeyAuth

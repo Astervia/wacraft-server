@@ -18,9 +18,9 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Param			campaign_message	query		campaign_model.QueryMessages	true	"Filtering options"
-//	@Success		200	{integer}	int								"Number of campaign messages"
-//	@Failure		400	{object}	common_model.DescriptiveError	"Invalid query"
-//	@Failure		500	{object}	common_model.DescriptiveError	"Internal server error"
+//	@Success		200					{integer}	int								"Number of campaign messages"
+//	@Failure		400					{object}	common_model.DescriptiveError	"Invalid query"
+//	@Failure		500					{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
 //	@Router			/campaign/message/count [get]
 func CountMessages(c *fiber.Ctx) error {
@@ -66,9 +66,9 @@ func CountMessages(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Param			campaign_message	query		campaign_model.QueryMessages	true	"Filtering options"
-//	@Success		200	{integer}	int								"Number of unsent campaign messages"
-//	@Failure		400	{object}	common_model.DescriptiveError	"Invalid query"
-//	@Failure		500	{object}	common_model.DescriptiveError	"Internal server error"
+//	@Success		200					{integer}	int								"Number of unsent campaign messages"
+//	@Failure		400					{object}	common_model.DescriptiveError	"Invalid query"
+//	@Failure		500					{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
 //	@Router			/campaign/message/count/unsent [get]
 func CountUnsentMessages(c *fiber.Ctx) error {
@@ -118,9 +118,9 @@ func CountUnsentMessages(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Param			campaign_message	query		campaign_model.QueryMessages	true	"Filtering options"
-//	@Success		200	{integer}	int								"Number of sent campaign messages"
-//	@Failure		400	{object}	common_model.DescriptiveError	"Invalid query"
-//	@Failure		500	{object}	common_model.DescriptiveError	"Internal server error"
+//	@Success		200					{integer}	int								"Number of sent campaign messages"
+//	@Failure		400					{object}	common_model.DescriptiveError	"Invalid query"
+//	@Failure		500					{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
 //	@Router			/campaign/message/count/sent [get]
 func CountSentMessages(c *fiber.Ctx) error {

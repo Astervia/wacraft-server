@@ -300,7 +300,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Applies a case-insensitive regex-like (~) filter on the specified key field and returns paginated results.",
+                "description": "Applies a ILIKE filter on the specified key field and returns paginated results.",
                 "consumes": [
                     "application/json"
                 ],
@@ -392,14 +392,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Field name to apply the like operator (e.g., 'name')",
                         "name": "keyName",
                         "in": "path",
                         "required": true
                     },
                     {
+                        "maxLength": 512,
+                        "minLength": 1,
                         "type": "string",
-                        "description": "Value to search using the like operator",
                         "name": "likeText",
                         "in": "path",
                         "required": true
@@ -1983,7 +1983,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Matches the given text using regex (~) against ` + "`" + `sender_data` + "`" + `, ` + "`" + `receiver_data` + "`" + `, and ` + "`" + `product_data` + "`" + ` fields.",
+                "description": "Matches the given text using ILIKE against ` + "`" + `sender_data` + "`" + `, ` + "`" + `receiver_data` + "`" + `, and ` + "`" + `product_data` + "`" + ` fields.",
                 "consumes": [
                     "application/json"
                 ],
@@ -2142,7 +2142,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Uses regex (~) to match the given text in the specified key field. The fields ` + "`" + `from` + "`" + ` and ` + "`" + `to` + "`" + ` are populated in the result.",
+                "description": "Uses ILIKE to match the given text in the specified key field. The fields ` + "`" + `from` + "`" + ` and ` + "`" + `to` + "`" + ` are populated in the result.",
                 "consumes": [
                     "application/json"
                 ],
@@ -2263,14 +2263,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Field name to apply the like operator",
                         "name": "keyName",
                         "in": "path",
                         "required": true
                     },
                     {
+                        "maxLength": 512,
+                        "minLength": 1,
                         "type": "string",
-                        "description": "Text to apply like operator",
                         "name": "likeText",
                         "in": "path",
                         "required": true
@@ -4346,7 +4346,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns a paginated list of messaging product contacts where the provided text matches contact name, email, or product_details fields using regex (~).",
+                "description": "Returns a paginated list of messaging product contacts where the provided text matches contact name, email, or product_details fields using ILIKE.",
                 "consumes": [
                     "application/json"
                 ],
@@ -4467,7 +4467,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Text to apply like (~) operator",
+                        "description": "Text to apply like ILIKE",
                         "name": "likeText",
                         "in": "path",
                         "required": true
@@ -4505,7 +4505,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns the number of messaging product contacts that match the provided text (regex ~) in fields like name, email, and product_details.",
+                "description": "Returns the number of messaging product contacts that match the provided text (with ILIKE operator) in fields like name, email, and product_details.",
                 "consumes": [
                     "application/json"
                 ],
@@ -4612,7 +4612,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Text to match using regex (~)",
+                        "description": "Text to match using ILIKE",
                         "name": "likeText",
                         "in": "path",
                         "required": true
@@ -5919,7 +5919,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns a paginated list of users where the specified key matches a partial value using regex (~ operator).",
+                "description": "Returns a paginated list of users where the specified key matches a partial value using ILIKE operator.",
                 "consumes": [
                     "application/json"
                 ],
@@ -6016,14 +6016,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "The field name to apply the like operator",
                         "name": "keyName",
                         "in": "path",
                         "required": true
                     },
                     {
+                        "maxLength": 512,
+                        "minLength": 1,
                         "type": "string",
-                        "description": "The text to search with regex (~)",
                         "name": "likeText",
                         "in": "path",
                         "required": true
@@ -6585,7 +6585,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Filters webhooks using the ~ operator on a specified field and partial value.",
+                "description": "Filters webhooks using the ILIKE operator on a specified field and partial value.",
                 "consumes": [
                     "application/json"
                 ],
@@ -6690,15 +6690,15 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Text to apply like operator on the given key",
-                        "name": "likeText",
+                        "name": "keyName",
                         "in": "path",
                         "required": true
                     },
                     {
+                        "maxLength": 512,
+                        "minLength": 1,
                         "type": "string",
-                        "description": "The key to apply like operator",
-                        "name": "keyName",
+                        "name": "likeText",
                         "in": "path",
                         "required": true
                     }

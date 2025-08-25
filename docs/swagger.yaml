@@ -2173,8 +2173,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Applies a case-insensitive regex-like (~) filter on the specified
-        key field and returns paginated results.
+      description: Applies a ILIKE filter on the specified key field and returns paginated
+        results.
       parameters:
       - default: desc
         enum:
@@ -2228,13 +2228,13 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
-      - description: Field name to apply the like operator (e.g., 'name')
-        in: path
+      - in: path
         name: keyName
         required: true
         type: string
-      - description: Value to search using the like operator
-        in: path
+      - in: path
+        maxLength: 512
+        minLength: 1
         name: likeText
         required: true
         type: string
@@ -3273,7 +3273,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Uses regex (~) to match the given text in the specified key field.
+      description: Uses ILIKE to match the given text in the specified key field.
         The fields `from` and `to` are populated in the result.
       parameters:
       - default: desc
@@ -3347,13 +3347,13 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
-      - description: Field name to apply the like operator
-        in: path
+      - in: path
         name: keyName
         required: true
         type: string
-      - description: Text to apply like operator
-        in: path
+      - in: path
+        maxLength: 512
+        minLength: 1
         name: likeText
         required: true
         type: string
@@ -3383,7 +3383,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Matches the given text using regex (~) against `sender_data`, `receiver_data`,
+      description: Matches the given text using ILIKE against `sender_data`, `receiver_data`,
         and `product_data` fields.
       parameters:
       - default: desc
@@ -4825,7 +4825,7 @@ paths:
       - application/json
       description: Returns a paginated list of messaging product contacts where the
         provided text matches contact name, email, or product_details fields using
-        regex (~).
+        ILIKE.
       parameters:
       - in: query
         name: blocked
@@ -4898,7 +4898,7 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
-      - description: Text to apply like (~) operator
+      - description: Text to apply like ILIKE
         in: path
         name: likeText
         required: true
@@ -4930,7 +4930,7 @@ paths:
       consumes:
       - application/json
       description: Returns the number of messaging product contacts that match the
-        provided text (regex ~) in fields like name, email, and product_details.
+        provided text (with ILIKE operator) in fields like name, email, and product_details.
       parameters:
       - in: query
         name: blocked
@@ -4993,7 +4993,7 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
-      - description: Text to match using regex (~)
+      - description: Text to match using ILIKE
         in: path
         name: likeText
         required: true
@@ -5859,7 +5859,7 @@ paths:
       consumes:
       - application/json
       description: Returns a paginated list of users where the specified key matches
-        a partial value using regex (~ operator).
+        a partial value using ILIKE operator.
       parameters:
       - default: desc
         enum:
@@ -5916,13 +5916,13 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
-      - description: The field name to apply the like operator
-        in: path
+      - in: path
         name: keyName
         required: true
         type: string
-      - description: The text to search with regex (~)
-        in: path
+      - in: path
+        maxLength: 512
+        minLength: 1
         name: likeText
         required: true
         type: string
@@ -6292,8 +6292,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Filters webhooks using the ~ operator on a specified field and
-        partial value.
+      description: Filters webhooks using the ILIKE operator on a specified field
+        and partial value.
       parameters:
       - default: desc
         enum:
@@ -6356,14 +6356,14 @@ paths:
         in: query
         name: url
         type: string
-      - description: Text to apply like operator on the given key
-        in: path
-        name: likeText
+      - in: path
+        name: keyName
         required: true
         type: string
-      - description: The key to apply like operator
-        in: path
-        name: keyName
+      - in: path
+        maxLength: 512
+        minLength: 1
+        name: likeText
         required: true
         type: string
       produces:

@@ -14,7 +14,7 @@ import (
 // ContentLike returns messages where text matches sender, receiver, or product data fields.
 //
 //	@Summary		Search messages by content text
-//	@Description	Matches the given text using regex (~) against `sender_data`, `receiver_data`, and `product_data` fields.
+//	@Description	Matches the given text using ILIKE against `sender_data`, `receiver_data`, and `product_data` fields.
 //	@Tags			Message
 //	@Accept			json
 //	@Produce		json
@@ -78,32 +78,27 @@ func ContentLike(c *fiber.Ctx) error {
 // ContentKeyLike returns messages matching text in a specific field.
 //
 //	@Summary		Search messages by content field
-//	@Description	Uses regex (~) to match the given text in the specified key field. The fields `from` and `to` are populated in the result.
+//	@Description	Uses ILIKE to match the given text in the specified key field. The fields `from` and `to` are populated in the result.
 //	@Tags			Message
 //	@Accept			json
 //	@Produce		json
-//	@Param			message		query		message_model.QueryPaginated	true	"Pagination and filter parameters"
-//	@Param			keyName		path		string							true	"Field name to apply the like operator"
-//	@Param			likeText	path		string							true	"Text to apply like operator"
-//	@Success		200			{array}		message_entity.Message			"List of matched messages"
-//	@Failure		400			{object}	common_model.DescriptiveError	"Invalid keyName, likeText, or query"
-//	@Failure		500			{object}	common_model.DescriptiveError	"Failed to query messages"
+//	@Param			message		query		message_model.QueryPaginated		true	"Pagination and filter parameters"
+//	@Param			contentLike	path		message_model.ContentKeyLikeParams	true	"Params to query content like key"
+//	@Success		200			{array}		message_entity.Message				"List of matched messages"
+//	@Failure		400			{object}	common_model.DescriptiveError		"Invalid keyName, likeText, or query"
+//	@Failure		500			{object}	common_model.DescriptiveError		"Failed to query messages"
 //	@Security		ApiKeyAuth
 //	@Router			/message/content/{keyName}/like/{likeText} [get]
 func ContentKeyLike(c *fiber.Ctx) error {
-	encodedText := c.Params("likeText")
-	decodedText, err := url.QueryUnescape(encodedText)
-	if err != nil {
+	params := new(message_model.ContentKeyLikeParams)
+	if err := c.ParamsParser(params); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
-			common_model.NewApiError("unable to decode likeText", err, "net/url").Send(),
+			common_model.NewParseJsonError(err).Send(),
 		)
 	}
-
-	encodedKey := c.Params("keyName")
-	decodedKey, err := url.QueryUnescape(encodedKey)
-	if err != nil {
+	if err := validators.Validator().Struct(params); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
-			common_model.NewApiError("unable to decode keyName", err, "net/url").Send(),
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 
@@ -121,8 +116,8 @@ func ContentKeyLike(c *fiber.Ctx) error {
 	}
 
 	messages, err := message_service.ContentKeyLike(
-		decodedText,
-		decodedKey,
+		params.LikeText,
+		params.KeyName,
 		message_entity.Message{
 			MessageFields: message_model.MessageFields{
 				FromID:             query.FromID,

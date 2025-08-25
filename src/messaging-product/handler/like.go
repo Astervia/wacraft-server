@@ -15,12 +15,12 @@ import (
 // ContactContentLike returns a paginated list of messaging product contacts matching a text pattern.
 //
 //	@Summary		Search contacts by content
-//	@Description	Returns a paginated list of messaging product contacts where the provided text matches contact name, email, or product_details fields using regex (~).
+//	@Description	Returns a paginated list of messaging product contacts where the provided text matches contact name, email, or product_details fields using ILIKE.
 //	@Tags			Messaging product contact
 //	@Accept			json
 //	@Produce		json
 //	@Param			paginate	query		messaging_product_model.QueryContactPaginated		true	"Query and pagination parameters"
-//	@Param			likeText	path		string												true	"Text to apply like (~) operator"
+//	@Param			likeText	path		string												true	"Text to apply like ILIKE"
 //	@Success		200			{array}		messaging_product_entity.MessagingProductContact	"List of matching contacts"
 //	@Failure		400			{object}	common_model.DescriptiveError						"Invalid query or likeText"
 //	@Failure		500			{object}	common_model.DescriptiveError						"Failed to retrieve contacts"
