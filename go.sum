@@ -12,6 +12,8 @@ github.com/Astervia/wacraft-core v0.1.11 h1:wUp700titAz2uAMd3OXm+wuz4BE5Jhog3U+2
 github.com/Astervia/wacraft-core v0.1.11/go.mod h1:uSMIWvKHMak8k0lTuPNbdU+BX+LBA4Rap4gCUnqWrDQ=
 github.com/Astervia/wacraft-core v0.1.12 h1:iIgiReSs1ijH6QVkKYcUc9KRS2EaU0M7w/XfneXG9os=
 github.com/Astervia/wacraft-core v0.1.12/go.mod h1:uSMIWvKHMak8k0lTuPNbdU+BX+LBA4Rap4gCUnqWrDQ=
+github.com/Astervia/wacraft-core v0.1.13 h1:IcfPVOwQCJIWAkXbicHXhZppxA/U9OvZ/9TCdNSj5Dk=
+github.com/Astervia/wacraft-core v0.1.13/go.mod h1:uSMIWvKHMak8k0lTuPNbdU+BX+LBA4Rap4gCUnqWrDQ=
 github.com/KyleBanks/depth v1.2.1 h1:5h8fQADFrWtarTdtDudMmGsC7GPbOAu6RVB3ffsVFHc=
 github.com/KyleBanks/depth v1.2.1/go.mod h1:jzSb9d0L43HxTQfT+oSA1EEp2q+ne2uh6XgeJcm8brE=
 github.com/MarvinJWendt/testza v0.1.0/go.mod h1:7AxNvlfeHP7Z/hDQ5JtE3OKYT3XFUeLCDE2DQninSqs=

@@ -1,6 +1,8 @@
 package user_handler
 
 import (
+	"net/url"
+
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	user_entity "github.com/Astervia/wacraft-core/src/user/entity"
 	user_model "github.com/Astervia/wacraft-core/src/user/model"
@@ -35,6 +37,12 @@ func ContentKeyLike(c *fiber.Ctx) error {
 			common_model.NewValidationError(err).Send(),
 		)
 	}
+	likeText, err := url.QueryUnescape(string(params.LikeText))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewApiError("unable to decode likeText", err, "net/url").Send(),
+		)
+	}
 
 	query := new(user_model.QueryPaginated)
 	if err := c.QueryParser(query); err != nil {
@@ -50,7 +58,7 @@ func ContentKeyLike(c *fiber.Ctx) error {
 	}
 
 	messages, err := user_service.ContentKeyLike(
-		params.LikeText,
+		likeText,
 		params.KeyName,
 		user_entity.User{
 			Audit: common_model.Audit{ID: query.ID},

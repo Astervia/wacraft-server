@@ -24,11 +24,11 @@ func ContentKeyLike(
 		db = database.DB.Model(&entity)
 	}
 
+	expr := fmt.Sprintf("immutable_unaccent(COALESCE(%s::text, ''))", key)
+
+	// Construct the LIKE query for sender_data, receiver_data, or product_data
 	db = db.
-		Where(
-			fmt.Sprintf("CAST(%s AS TEXT) ILIKE ?", key),
-			likeText,
-		)
+		Where(expr+" ILIKE immutable_unaccent(?)", likeText)
 
 	messages, err := repository.GetPaginated(
 		entity,

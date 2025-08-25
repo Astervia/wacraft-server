@@ -1,6 +1,8 @@
 package campaign_handler
 
 import (
+	"net/url"
+
 	campaign_entity "github.com/Astervia/wacraft-core/src/campaign/entity"
 	campaign_model "github.com/Astervia/wacraft-core/src/campaign/model"
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
@@ -35,6 +37,12 @@ func ContentKeyLike(c *fiber.Ctx) error {
 			common_model.NewValidationError(err).Send(),
 		)
 	}
+	likeText, err := url.QueryUnescape(string(params.LikeText))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewApiError("unable to decode likeText", err, "net/url").Send(),
+		)
+	}
 
 	query := new(campaign_model.QueryPaginated)
 	if err := c.QueryParser(query); err != nil {
@@ -50,7 +58,7 @@ func ContentKeyLike(c *fiber.Ctx) error {
 	}
 
 	messages, err := campaign_service.ContentKeyLike(
-		params.LikeText,
+		likeText,
 		params.KeyName,
 		campaign_entity.Campaign{
 			Audit:              common_model.Audit{ID: query.ID},

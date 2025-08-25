@@ -1,6 +1,8 @@
 package webhook_handler
 
 import (
+	"net/url"
+
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	webhook_entity "github.com/Astervia/wacraft-core/src/webhook/entity"
 	webhook_model "github.com/Astervia/wacraft-core/src/webhook/model"
@@ -35,6 +37,12 @@ func ContentKeyLike(c *fiber.Ctx) error {
 			common_model.NewValidationError(err).Send(),
 		)
 	}
+	likeText, err := url.QueryUnescape(string(params.LikeText))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewApiError("unable to decode likeText", err, "net/url").Send(),
+		)
+	}
 
 	query := new(webhook_model.QueryPaginated)
 	if err := c.QueryParser(query); err != nil {
@@ -50,7 +58,7 @@ func ContentKeyLike(c *fiber.Ctx) error {
 	}
 
 	webhooks, err := webhook_service.ContentKeyLike(
-		params.LikeText,
+		likeText,
 		params.KeyName,
 		webhook_entity.Webhook{
 			Audit:      common_model.Audit{ID: query.ID},
