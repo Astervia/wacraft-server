@@ -1,8 +1,6 @@
 package user_handler
 
 import (
-	"net/url"
-
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	user_entity "github.com/Astervia/wacraft-core/src/user/entity"
 	user_model "github.com/Astervia/wacraft-core/src/user/model"
@@ -19,27 +17,22 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Param			user		query		user_model.QueryPaginated		true	"Pagination and query parameters"
-//	@Param			keyName		path		string							true	"The field name to apply the like operator"
-//	@Param			likeText	path		string							true	"The text to search with regex (~)"
+//	@Param			contentLike	path		user_model.ContentKeyLikeParams	true	"Params to query content like key"
 //	@Success		200			{array}		user_entity.User				"List of users"
 //	@Failure		400			{object}	common_model.DescriptiveError	"Invalid path or query parameters"
 //	@Failure		500			{object}	common_model.DescriptiveError	"Internal server error"
 //	@Router			/user/content/{keyName}/like/{likeText} [get]
 //	@Security		ApiKeyAuth
 func ContentKeyLike(c *fiber.Ctx) error {
-	encodedText := c.Params("likeText")
-	decodedText, err := url.QueryUnescape(encodedText)
-	if err != nil {
+	params := new(user_model.ContentKeyLikeParams)
+	if err := c.ParamsParser(params); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
-			common_model.NewApiError("unable to decode likeText", err, "net/url").Send(),
+			common_model.NewParseJsonError(err).Send(),
 		)
 	}
-
-	encodedKey := c.Params("keyName")
-	decodedKey, err := url.QueryUnescape(encodedKey)
-	if err != nil {
+	if err := validators.Validator().Struct(params); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
-			common_model.NewApiError("unable to decode keyName", err, "net/url").Send(),
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 
@@ -57,8 +50,8 @@ func ContentKeyLike(c *fiber.Ctx) error {
 	}
 
 	messages, err := user_service.ContentKeyLike(
-		decodedText,
-		decodedKey,
+		params.LikeText,
+		params.KeyName,
 		user_entity.User{
 			Audit: common_model.Audit{ID: query.ID},
 			Email: query.Email,

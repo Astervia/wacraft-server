@@ -36,7 +36,7 @@ func DeleteCurrentUser(c *fiber.Ctx) error {
 //	@Tags			User
 //	@Accept			json
 //	@Produce		json
-//	@Param			body	body	common_model.RequiredID			true	"User ID to delete"
+//	@Param			body	body		common_model.RequiredID			true	"User ID to delete"
 //	@Success		204		{string}	string							"No content"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		401		{object}	common_model.DescriptiveError	"Cannot delete su@sudo user"

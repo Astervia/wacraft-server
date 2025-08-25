@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	campaign_entity "github.com/Astervia/wacraft-core/src/campaign/entity"
+	campaign_model "github.com/Astervia/wacraft-core/src/campaign/model"
 	database_model "github.com/Astervia/wacraft-core/src/database/model"
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
@@ -12,7 +13,7 @@ import (
 
 func ContentKeyLike(
 	likeText string,
-	key string,
+	key campaign_model.SearchableCampaignColumn,
 	entity campaign_entity.Campaign,
 	pagination database_model.Paginable,
 	order database_model.Orderable,

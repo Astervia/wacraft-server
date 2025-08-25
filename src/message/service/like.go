@@ -5,6 +5,7 @@ import (
 
 	database_model "github.com/Astervia/wacraft-core/src/database/model"
 	message_entity "github.com/Astervia/wacraft-core/src/message/entity"
+	message_model "github.com/Astervia/wacraft-core/src/message/model"
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
 	"gorm.io/gorm"
@@ -49,7 +50,7 @@ func ContentLike(
 // Query for messages with content on a specific column (sender_data / receiver_data / product_data).
 func ContentKeyLike(
 	pattern string, // caller may pass "%term%" or we can build it externally
-	key string,
+	key message_model.JsonMessageKey,
 	entity message_entity.Message,
 	pagination database_model.Paginable,
 	order database_model.Orderable,

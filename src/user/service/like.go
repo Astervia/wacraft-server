@@ -6,13 +6,14 @@ import (
 	database_model "github.com/Astervia/wacraft-core/src/database/model"
 	"github.com/Astervia/wacraft-core/src/repository"
 	user_entity "github.com/Astervia/wacraft-core/src/user/entity"
+	user_model "github.com/Astervia/wacraft-core/src/user/model"
 	"github.com/Astervia/wacraft-server/src/database"
 	"gorm.io/gorm"
 )
 
 func ContentKeyLike(
 	likeText string,
-	key string,
+	key user_model.SearchableUserColumn,
 	entity user_entity.User,
 	pagination database_model.Paginable,
 	order database_model.Orderable,

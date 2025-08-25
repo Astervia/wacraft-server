@@ -16,7 +16,7 @@ import (
 //	@Tags			Webhook
 //	@Accept			json
 //	@Produce		json
-//	@Param			body	body		common_model.RequiredID			true	"Webhook ID to delete"
+//	@Param			body	body	common_model.RequiredID	true	"Webhook ID to delete"
 //	@Success		204		"Webhook deleted successfully"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
