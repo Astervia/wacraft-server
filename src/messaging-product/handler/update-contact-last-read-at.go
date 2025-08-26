@@ -32,12 +32,13 @@ func UpdateContactLastReadAt(c *fiber.Ctx) error {
 		)
 	}
 
+	now := time.Now()
 	mps, err := repository.Updates(
 		messaging_product_entity.MessagingProductContact{
 			Audit: common_model.Audit{
 				ID: mpcID,
 			},
-			LastReadAt: time.Now(),
+			LastReadAt: &now,
 		},
 		&messaging_product_entity.MessagingProductContact{
 			Audit: common_model.Audit{
