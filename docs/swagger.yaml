@@ -4408,6 +4408,108 @@ paths:
       summary: Mark last message as read
       tags:
       - WhatsApp message
+  /message/whatsapp/send-typing:
+    post:
+      consumes:
+      - application/json
+      description: Queries for messages and uses the message.id value to mark the
+        message as read and display a typing indicator so the WhatsApp user knows
+        you are preparing a response. This is good practice if it will take you a
+        few seconds to respond. The typing indicator will be dismissed once you respond,
+        or after 25 seconds, whichever comes first. To prevent a poor user experience,
+        only display a typing indicator if you are going to respond.
+      parameters:
+      - default: desc
+        enum:
+        - asc
+        - desc
+        in: query
+        name: created_at
+        type: string
+        x-enum-varnames:
+        - Asc
+        - Desc
+      - in: query
+        name: created_at_geq
+        type: string
+      - in: query
+        name: created_at_leq
+        type: string
+      - default: desc
+        enum:
+        - asc
+        - desc
+        in: query
+        name: deleted_at
+        type: string
+        x-enum-varnames:
+        - Asc
+        - Desc
+      - in: query
+        name: deleted_at_geq
+        type: string
+      - in: query
+        name: deleted_at_leq
+        type: string
+      - in: query
+        name: from_id
+        type: string
+      - description: The unique identifier
+        in: query
+        name: id
+        type: string
+      - default: 10
+        description: Number of items to return
+        in: query
+        name: limit
+        type: integer
+      - in: query
+        name: messaging_product_id
+        type: string
+      - default: 0
+        description: The offset from where to start the items
+        in: query
+        name: offset
+        type: integer
+      - in: query
+        name: to_id
+        type: string
+      - default: desc
+        enum:
+        - asc
+        - desc
+        in: query
+        name: updated_at
+        type: string
+        x-enum-varnames:
+        - Asc
+        - Desc
+      - in: query
+        name: updated_at_geq
+        type: string
+      - in: query
+        name: updated_at_leq
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response
+          schema:
+            $ref: '#/definitions/common_model.SuccessResponse'
+        "400":
+          description: Invalid query parameters
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "500":
+          description: Failed to send typing
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: Mark last message as read and starts typing
+      tags:
+      - WhatsApp message
   /message/whatsapp/wam-id/{wamID}:
     get:
       consumes:

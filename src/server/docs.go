@@ -13,6 +13,6 @@ import (
 func makeDocs(app *fiber.App) {
 	app.Get("/docs/*", swagger.HandlerDefault)
 	pterm.DefaultLogger.Info(
-		fmt.Sprintf("Docs available at %s:%s/docs", env.ServerHost, env.ServerPort),
+		fmt.Sprintf("Docs available at %s/docs", env.ServerHost),
 	)
 }
