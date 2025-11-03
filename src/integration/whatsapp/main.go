@@ -16,7 +16,7 @@ func Load() {
 	pterm.DefaultLogger.Info("Loading WhatsApp integration...")
 	var err error
 	var wabaApi *bootstrap_module.WhatsAppAPI
-	version := "v20.0"
+	version := "v24.0"
 	wabaApi, err = bootstrap_service.GenerateWhatsAppAPI(env.WabaAccessToken, &version, nil)
 	if err != nil {
 		pterm.DefaultLogger.Error(
