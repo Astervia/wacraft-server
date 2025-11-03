@@ -3706,6 +3706,155 @@
                 }
             }
         },
+        "/message/whatsapp/send-typing": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "When you get a messages webhook indicating a received message, you can use the message.id value to mark the message as read and display a typing indicator so the WhatsApp user knows you are preparing a response. This is good practice if it will take you a few seconds to respond. The typing indicator will be dismissed once you respond, or after 25 seconds, whichever comes first. To prevent a poor user experience, only display a typing indicator if you are going to respond.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WhatsApp message"
+                ],
+                "summary": "Mark last message as read and starts typing",
+                "parameters": [
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "desc",
+                        "x-enum-varnames": [
+                            "Asc",
+                            "Desc"
+                        ],
+                        "name": "created_at",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "created_at_geq",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "created_at_leq",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "desc",
+                        "x-enum-varnames": [
+                            "Asc",
+                            "Desc"
+                        ],
+                        "name": "deleted_at",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "deleted_at_geq",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "deleted_at_leq",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "from_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "The unique identifier",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Number of items to return",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "messaging_product_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "The offset from where to start the items",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "to_id",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "desc",
+                        "x-enum-varnames": [
+                            "Asc",
+                            "Desc"
+                        ],
+                        "name": "updated_at",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "updated_at_geq",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "updated_at_leq",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success response",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid query parameters",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to send typing",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    }
+                }
+            }
+        },
         "/message/whatsapp/wam-id/{wamID}": {
             "get": {
                 "security": [
