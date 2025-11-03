@@ -18,6 +18,7 @@ github.com/Astervia/wacraft-core v0.1.14-beta h1:xcbC3LHy5h+odsPOdL0GKHUD4ZjtAtu
 github.com/Astervia/wacraft-core v0.1.14-beta/go.mod h1:uSMIWvKHMak8k0lTuPNbdU+BX+LBA4Rap4gCUnqWrDQ=
 github.com/Astervia/wacraft-core v0.1.14 h1:ClaiaR0I9rG5zzhNPy5RRlfM8eLZASJ1gWahh3Q1BGw=
 github.com/Astervia/wacraft-core v0.1.14/go.mod h1:uSMIWvKHMak8k0lTuPNbdU+BX+LBA4Rap4gCUnqWrDQ=
+github.com/Astervia/wacraft-core v0.1.15/go.mod h1:oUBj3w0UOF1Lfx/Hl+IIhHFLT7VSqXph3WaJoYLKR5o=
 github.com/KyleBanks/depth v1.2.1 h1:5h8fQADFrWtarTdtDudMmGsC7GPbOAu6RVB3ffsVFHc=
 github.com/KyleBanks/depth v1.2.1/go.mod h1:jzSb9d0L43HxTQfT+oSA1EEp2q+ne2uh6XgeJcm8brE=
 github.com/MarvinJWendt/testza v0.1.0/go.mod h1:7AxNvlfeHP7Z/hDQ5JtE3OKYT3XFUeLCDE2DQninSqs=
@@ -31,8 +32,11 @@ github.com/MarvinJWendt/testza v0.5.2 h1:53KDo64C1z/h/d/stCYCPY69bt/OSwjq5KpFNwi
 github.com/MarvinJWendt/testza v0.5.2/go.mod h1:xu53QFE5sCdjtMCKk8YMQ2MnymimEctc4n3EjyIYvEY=
 github.com/Rfluid/whatsapp-cloud-api v0.1.54 h1:M2EBK3OXKp4cJAqywmrROM8ev1ouktTMRt+TP9Yji/s=
 github.com/Rfluid/whatsapp-cloud-api v0.1.54/go.mod h1:dzAjlsfGK9nqo3IumDPqoB/1ZoHcztKss1PLazo94LU=
+github.com/Rfluid/whatsapp-cloud-api v0.1.55 h1:amM4eSMu9awvV5tNyKMh0Je3IZT787ZNKTN7sizP2Wg=
+github.com/Rfluid/whatsapp-cloud-api v0.1.55/go.mod h1:dzAjlsfGK9nqo3IumDPqoB/1ZoHcztKss1PLazo94LU=
 github.com/Rfluid/whatsapp-webhook-server v0.1.55 h1:koPXLXdkfQj+c2swf7XRWCdQXz51CALn3t8ln1RmzLk=
 github.com/Rfluid/whatsapp-webhook-server v0.1.55/go.mod h1:d9jbGpZkUSTmLIMp9SnzN+gLwX1GYwL1FAvNVfJ1aXQ=
+github.com/Rfluid/whatsapp-webhook-server v0.1.56/go.mod h1:tE9ysaqvjUcN5YGYN0G5hSyQWqNVedgAKuhjNUgeTRc=
 github.com/andybalholm/brotli v1.2.0 h1:ukwgCxwYrmACq68yiUqwIWnGY0cTPox/M94sVwToPjQ=
 github.com/andybalholm/brotli v1.2.0/go.mod h1:rzTDkvFWvIrjDXZHkuS16NPggd91W3kUSvPlQ1pLaKY=
 github.com/atomicgo/cursor v0.0.1/go.mod h1:cBON2QmmrysudxNBFthvMtN32r3jxVRIvzkUiF/RuIk=
