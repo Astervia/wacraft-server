@@ -817,12 +817,28 @@ definitions:
     type: object
   message_type_common_model.ButtonSubType:
     enum:
-    - quick_reply
-    - call_to_action
+    - BOOKING_CONFIRMATION
+    - CATALOG
+    - COPY_CODE
+    - FLOW
+    - MPM
+    - ORDER_DETAILS
+    - QUICK_REPLY
+    - REMINDER
+    - URL
+    - VOICE_CALL
     type: string
     x-enum-varnames:
+    - BookingConfirmation
+    - Catalog
+    - CopyCode
+    - Flow
+    - Mpm
+    - OrderDetails
     - QuickReply
-    - CallToAction
+    - Reminder
+    - Url
+    - VoiceCall
   message_type_common_model.Currency:
     properties:
       amount_1000:
@@ -1570,13 +1586,27 @@ definitions:
   template_model.Status:
     enum:
     - APPROVED
+    - IN_APPEAL
     - PENDING
     - REJECTED
+    - PENDING_DELETION
+    - DELETED
+    - DISABLED
+    - PAUSED
+    - LIMIT_EXCEEDED
+    - ARCHIVED
     type: string
     x-enum-varnames:
     - Approved
+    - InAppeal
     - Pending
     - Rejected
+    - PendingDeletion
+    - Deleted
+    - Disabled
+    - Paused
+    - LimitExceeded
+    - Archived
   template_model.Template:
     properties:
       category:
@@ -1594,6 +1624,44 @@ definitions:
       status:
         $ref: '#/definitions/template_model.Status'
     type: object
+  template_model.TemplateCategory:
+    enum:
+    - ACCOUNT_UPDATE
+    - PAYMENT_UPDATE
+    - PERSONAL_FINANCE_UPDATE
+    - SHIPPING_UPDATE
+    - RESERVATION_UPDATE
+    - ISSUE_RESOLUTION
+    - APPOINTMENT_UPDATE
+    - TRANSPORTATION_UPDATE
+    - TICKET_UPDATE
+    - ALERT_UPDATE
+    - AUTO_REPLY
+    - TRANSACTIONAL
+    - OTP
+    - UTILITY
+    - MARKETING
+    - AUTHENTICATION
+    - FREE_SERVICE
+    type: string
+    x-enum-varnames:
+    - AccountUpdate
+    - PaymentUpdate
+    - PersonalFinanceUpdate
+    - ShippingUpdate
+    - ReservationUpdate
+    - IssueResolution
+    - AppointmentUpdate
+    - TransportationUpdate
+    - TicketUpdate
+    - AlertUpdate
+    - AutoReply
+    - Transactional
+    - OTP
+    - Utility
+    - Marketing
+    - Authentication
+    - FreeService
   template_model.TemplateComponent:
     properties:
       audio:
@@ -1625,34 +1693,18 @@ definitions:
     required:
     - type
     type: object
-  template_model.TemplateFields:
+  template_model.TemplateQualityScore:
     enum:
-    - name
-    - components
-    - language
-    - status
-    - category
-    - id
+    - GREEN
+    - YELLOW
+    - RED
+    - UNKNOWN
     type: string
     x-enum-varnames:
-    - Name
-    - Components
-    - Language
-    - TemplateStatus
-    - Category
-    - ID
-  template_model.TemplateSummary:
-    enum:
-    - total_count
-    - message_template_count
-    - message_template_limit
-    - are_translations_complete
-    type: string
-    x-enum-varnames:
-    - TotalCount
-    - MessageTemplateCount
-    - MessageTemplateLimit
-    - AreTranslationsComplete
+    - Green
+    - Yellow
+    - Red
+    - Unknown
   template_model.TemplateSummaryResponse:
     properties:
       are_translations_complete:
@@ -6697,26 +6749,48 @@ paths:
         in: query
         name: before
         type: string
-      - in: query
+      - enum:
+        - ACCOUNT_UPDATE
+        - PAYMENT_UPDATE
+        - PERSONAL_FINANCE_UPDATE
+        - SHIPPING_UPDATE
+        - RESERVATION_UPDATE
+        - ISSUE_RESOLUTION
+        - APPOINTMENT_UPDATE
+        - TRANSPORTATION_UPDATE
+        - TICKET_UPDATE
+        - ALERT_UPDATE
+        - AUTO_REPLY
+        - TRANSACTIONAL
+        - OTP
+        - UTILITY
+        - MARKETING
+        - AUTHENTICATION
+        - FREE_SERVICE
+        in: query
         name: category
         type: string
+        x-enum-varnames:
+        - AccountUpdate
+        - PaymentUpdate
+        - PersonalFinanceUpdate
+        - ShippingUpdate
+        - ReservationUpdate
+        - IssueResolution
+        - AppointmentUpdate
+        - TransportationUpdate
+        - TicketUpdate
+        - AlertUpdate
+        - AutoReply
+        - Transactional
+        - OTP
+        - Utility
+        - Marketing
+        - Authentication
+        - FreeService
       - in: query
         name: content
         type: string
-      - collectionFormat: csv
-        description: Fields to be returned.
-        in: query
-        items:
-          enum:
-          - name
-          - components
-          - language
-          - status
-          - category
-          - id
-          type: string
-        name: fields
-        type: array
       - in: query
         name: language
         type: string
@@ -6730,28 +6804,43 @@ paths:
         name: name_or_content
         type: string
       - enum:
+        - GREEN
+        - YELLOW
+        - RED
+        - UNKNOWN
+        in: query
+        name: quality_score
+        type: string
+        x-enum-varnames:
+        - Green
+        - Yellow
+        - Red
+        - Unknown
+      - enum:
         - APPROVED
+        - IN_APPEAL
         - PENDING
         - REJECTED
+        - PENDING_DELETION
+        - DELETED
+        - DISABLED
+        - PAUSED
+        - LIMIT_EXCEEDED
+        - ARCHIVED
         in: query
         name: status
         type: string
         x-enum-varnames:
         - Approved
+        - InAppeal
         - Pending
         - Rejected
-      - collectionFormat: csv
-        description: Summary to be returned.
-        in: query
-        items:
-          enum:
-          - total_count
-          - message_template_count
-          - message_template_limit
-          - are_translations_complete
-          type: string
-        name: summary
-        type: array
+        - PendingDeletion
+        - Deleted
+        - Disabled
+        - Paused
+        - LimitExceeded
+        - Archived
       produces:
       - application/json
       responses:

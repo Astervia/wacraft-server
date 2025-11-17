@@ -7200,31 +7200,51 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            "ACCOUNT_UPDATE",
+                            "PAYMENT_UPDATE",
+                            "PERSONAL_FINANCE_UPDATE",
+                            "SHIPPING_UPDATE",
+                            "RESERVATION_UPDATE",
+                            "ISSUE_RESOLUTION",
+                            "APPOINTMENT_UPDATE",
+                            "TRANSPORTATION_UPDATE",
+                            "TICKET_UPDATE",
+                            "ALERT_UPDATE",
+                            "AUTO_REPLY",
+                            "TRANSACTIONAL",
+                            "OTP",
+                            "UTILITY",
+                            "MARKETING",
+                            "AUTHENTICATION",
+                            "FREE_SERVICE"
+                        ],
                         "type": "string",
+                        "x-enum-varnames": [
+                            "AccountUpdate",
+                            "PaymentUpdate",
+                            "PersonalFinanceUpdate",
+                            "ShippingUpdate",
+                            "ReservationUpdate",
+                            "IssueResolution",
+                            "AppointmentUpdate",
+                            "TransportationUpdate",
+                            "TicketUpdate",
+                            "AlertUpdate",
+                            "AutoReply",
+                            "Transactional",
+                            "OTP",
+                            "Utility",
+                            "Marketing",
+                            "Authentication",
+                            "FreeService"
+                        ],
                         "name": "category",
                         "in": "query"
                     },
                     {
                         "type": "string",
                         "name": "content",
-                        "in": "query"
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "enum": [
-                                "name",
-                                "components",
-                                "language",
-                                "status",
-                                "category",
-                                "id"
-                            ],
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
-                        "description": "Fields to be returned.",
-                        "name": "fields",
                         "in": "query"
                     },
                     {
@@ -7249,33 +7269,48 @@ const docTemplate = `{
                     },
                     {
                         "enum": [
+                            "GREEN",
+                            "YELLOW",
+                            "RED",
+                            "UNKNOWN"
+                        ],
+                        "type": "string",
+                        "x-enum-varnames": [
+                            "Green",
+                            "Yellow",
+                            "Red",
+                            "Unknown"
+                        ],
+                        "name": "quality_score",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
                             "APPROVED",
+                            "IN_APPEAL",
                             "PENDING",
-                            "REJECTED"
+                            "REJECTED",
+                            "PENDING_DELETION",
+                            "DELETED",
+                            "DISABLED",
+                            "PAUSED",
+                            "LIMIT_EXCEEDED",
+                            "ARCHIVED"
                         ],
                         "type": "string",
                         "x-enum-varnames": [
                             "Approved",
+                            "InAppeal",
                             "Pending",
-                            "Rejected"
+                            "Rejected",
+                            "PendingDeletion",
+                            "Deleted",
+                            "Disabled",
+                            "Paused",
+                            "LimitExceeded",
+                            "Archived"
                         ],
                         "name": "status",
-                        "in": "query"
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "enum": [
-                                "total_count",
-                                "message_template_count",
-                                "message_template_limit",
-                                "are_translations_complete"
-                            ],
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
-                        "description": "Summary to be returned.",
-                        "name": "summary",
                         "in": "query"
                     }
                 ],
@@ -8484,12 +8519,28 @@ const docTemplate = `{
         "message_type_common_model.ButtonSubType": {
             "type": "string",
             "enum": [
-                "quick_reply",
-                "call_to_action"
+                "BOOKING_CONFIRMATION",
+                "CATALOG",
+                "COPY_CODE",
+                "FLOW",
+                "MPM",
+                "ORDER_DETAILS",
+                "QUICK_REPLY",
+                "REMINDER",
+                "URL",
+                "VOICE_CALL"
             ],
             "x-enum-varnames": [
+                "BookingConfirmation",
+                "Catalog",
+                "CopyCode",
+                "Flow",
+                "Mpm",
+                "OrderDetails",
                 "QuickReply",
-                "CallToAction"
+                "Reminder",
+                "Url",
+                "VoiceCall"
             ]
         },
         "message_type_common_model.Currency": {
@@ -9528,13 +9579,27 @@ const docTemplate = `{
             "type": "string",
             "enum": [
                 "APPROVED",
+                "IN_APPEAL",
                 "PENDING",
-                "REJECTED"
+                "REJECTED",
+                "PENDING_DELETION",
+                "DELETED",
+                "DISABLED",
+                "PAUSED",
+                "LIMIT_EXCEEDED",
+                "ARCHIVED"
             ],
             "x-enum-varnames": [
                 "Approved",
+                "InAppeal",
                 "Pending",
-                "Rejected"
+                "Rejected",
+                "PendingDeletion",
+                "Deleted",
+                "Disabled",
+                "Paused",
+                "LimitExceeded",
+                "Archived"
             ]
         },
         "template_model.Template": {
@@ -9562,6 +9627,47 @@ const docTemplate = `{
                     "$ref": "#/definitions/template_model.Status"
                 }
             }
+        },
+        "template_model.TemplateCategory": {
+            "type": "string",
+            "enum": [
+                "ACCOUNT_UPDATE",
+                "PAYMENT_UPDATE",
+                "PERSONAL_FINANCE_UPDATE",
+                "SHIPPING_UPDATE",
+                "RESERVATION_UPDATE",
+                "ISSUE_RESOLUTION",
+                "APPOINTMENT_UPDATE",
+                "TRANSPORTATION_UPDATE",
+                "TICKET_UPDATE",
+                "ALERT_UPDATE",
+                "AUTO_REPLY",
+                "TRANSACTIONAL",
+                "OTP",
+                "UTILITY",
+                "MARKETING",
+                "AUTHENTICATION",
+                "FREE_SERVICE"
+            ],
+            "x-enum-varnames": [
+                "AccountUpdate",
+                "PaymentUpdate",
+                "PersonalFinanceUpdate",
+                "ShippingUpdate",
+                "ReservationUpdate",
+                "IssueResolution",
+                "AppointmentUpdate",
+                "TransportationUpdate",
+                "TicketUpdate",
+                "AlertUpdate",
+                "AutoReply",
+                "Transactional",
+                "OTP",
+                "Utility",
+                "Marketing",
+                "Authentication",
+                "FreeService"
+            ]
         },
         "template_model.TemplateComponent": {
             "type": "object",
@@ -9610,38 +9716,19 @@ const docTemplate = `{
                 }
             }
         },
-        "template_model.TemplateFields": {
+        "template_model.TemplateQualityScore": {
             "type": "string",
             "enum": [
-                "name",
-                "components",
-                "language",
-                "status",
-                "category",
-                "id"
+                "GREEN",
+                "YELLOW",
+                "RED",
+                "UNKNOWN"
             ],
             "x-enum-varnames": [
-                "Name",
-                "Components",
-                "Language",
-                "TemplateStatus",
-                "Category",
-                "ID"
-            ]
-        },
-        "template_model.TemplateSummary": {
-            "type": "string",
-            "enum": [
-                "total_count",
-                "message_template_count",
-                "message_template_limit",
-                "are_translations_complete"
-            ],
-            "x-enum-varnames": [
-                "TotalCount",
-                "MessageTemplateCount",
-                "MessageTemplateLimit",
-                "AreTranslationsComplete"
+                "Green",
+                "Yellow",
+                "Red",
+                "Unknown"
             ]
         },
         "template_model.TemplateSummaryResponse": {
