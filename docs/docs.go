@@ -7312,6 +7312,22 @@ const docTemplate = `{
                         ],
                         "name": "status",
                         "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "enum": [
+                                "total_count",
+                                "message_template_count",
+                                "message_template_limit",
+                                "are_translations_complete"
+                            ],
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Summary to be returned.",
+                        "name": "summary",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -9729,6 +9745,21 @@ const docTemplate = `{
                 "Yellow",
                 "Red",
                 "Unknown"
+            ]
+        },
+        "template_model.TemplateSummary": {
+            "type": "string",
+            "enum": [
+                "total_count",
+                "message_template_count",
+                "message_template_limit",
+                "are_translations_complete"
+            ],
+            "x-enum-varnames": [
+                "TotalCount",
+                "MessageTemplateCount",
+                "MessageTemplateLimit",
+                "AreTranslationsComplete"
             ]
         },
         "template_model.TemplateSummaryResponse": {

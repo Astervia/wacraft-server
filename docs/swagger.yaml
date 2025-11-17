@@ -1705,6 +1705,18 @@ definitions:
     - Yellow
     - Red
     - Unknown
+  template_model.TemplateSummary:
+    enum:
+    - total_count
+    - message_template_count
+    - message_template_limit
+    - are_translations_complete
+    type: string
+    x-enum-varnames:
+    - TotalCount
+    - MessageTemplateCount
+    - MessageTemplateLimit
+    - AreTranslationsComplete
   template_model.TemplateSummaryResponse:
     properties:
       are_translations_complete:
@@ -6841,6 +6853,18 @@ paths:
         - Paused
         - LimitExceeded
         - Archived
+      - collectionFormat: csv
+        description: Summary to be returned.
+        in: query
+        items:
+          enum:
+          - total_count
+          - message_template_count
+          - message_template_limit
+          - are_translations_complete
+          type: string
+        name: summary
+        type: array
       produces:
       - application/json
       responses:
