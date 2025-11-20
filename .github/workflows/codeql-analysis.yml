@@ -1,0 +1,46 @@
+name: CodeQL Analysis
+
+on:
+    push:
+        branches: [main, develop]
+    pull_request:
+        branches: [main, develop]
+    schedule:
+        - cron: "0 6 * * 1"
+
+jobs:
+    analyze:
+        name: CodeQL SAST Scan
+        runs-on: ubuntu-latest
+
+        permissions:
+            actions: read
+            contents: read
+            security-events: write # Required to upload results to the Security tab
+
+        strategy:
+            fail-fast: false
+            matrix:
+                language: ["go"]
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v5
+
+            - name: Setup Go
+              uses: actions/setup-go@v5
+              with:
+                  go-version: "1.23"
+                  cache: true
+
+            - name: Initialize CodeQL
+              uses: github/codeql-action/init@v3
+              with:
+                  languages: ${{ matrix.language }}
+
+            - name: Build project
+              run: |
+                  go build -o ./bin/wacraft-server
+
+            - name: Perform CodeQL Analysis
+              uses: github/codeql-action/analyze@v3
