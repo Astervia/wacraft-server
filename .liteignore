@@ -1,0 +1,2 @@
+.github/workflows/codeql-analysis-lite.yml
+.github/workflows/release-lite.yml
