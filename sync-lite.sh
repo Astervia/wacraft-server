@@ -8,6 +8,8 @@ TMP_DIR="temp-lite"
 
 # List of files to delete (relative paths)
 FILES_TO_DELETE=(
+    ".github/workflows/codeql-analysis.yml" # Delete to set with upload: true
+    ".github/workflows/release.yml" # Delete to set with correct image name
 )
 
 # List of folders to delete (relative paths)
@@ -47,6 +49,14 @@ for d in "${FOLDERS_TO_DELETE[@]}"; do
     git rm -r "$d"
   fi
 done
+
+# === RUN GOFMT ON ALL GO FILES ===
+echo "Running gofmt..."
+GO_FILES=$(find . -name "*.go" -type f)
+
+if [ -n "$GO_FILES" ]; then
+  gofmt -s -w $GO_FILES
+fi
 
 # === REGENERATE FILES ===
 make build
