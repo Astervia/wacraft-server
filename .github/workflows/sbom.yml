@@ -37,16 +37,15 @@ jobs:
             - name: Generate SBOM (JSON)
               run: |
                   cyclonedx-gomod mod \
-                    -output sbom.json \
-                    -format json \
-                    -licenses # Adicionado -licenses como boa prática
+                    -json \
+                    -licenses \
+                    -output sbom.json
 
             - name: Generate SBOM (XML)
               run: |
                   cyclonedx-gomod mod \
-                    -output sbom.xml \
-                    -format xml \
-                    -licenses # Adicionado -licenses como boa prática
+                    -licenses \
+                    -output sbom.xml
 
             - name: Upload SBOM artifacts
               uses: actions/upload-artifact@v4
