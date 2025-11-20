@@ -29,21 +29,24 @@ jobs:
 
             - name: Install CycloneDX Go generator
               run: |
-                  go install github.com/CycloneDX/cyclonedx-go/cmd/cyclonedx-gomod@latest
+                  go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@latest
+
+            - name: Add Go bin to PATH (to simplify subsequent calls)
+              run: echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
             - name: Generate SBOM (JSON)
               run: |
-                  $(go env GOPATH)/bin/cyclonedx-gomod \
-                    mod \
+                  cyclonedx-gomod mod \
                     -output sbom.json \
-                    -format json
+                    -format json \
+                    -licenses # Adicionado -licenses como boa prática
 
             - name: Generate SBOM (XML)
               run: |
-                  $(go env GOPATH)/bin/cyclonedx-gomod \
-                    mod \
+                  cyclonedx-gomod mod \
                     -output sbom.xml \
-                    -format xml
+                    -format xml \
+                    -licenses # Adicionado -licenses como boa prática
 
             - name: Upload SBOM artifacts
               uses: actions/upload-artifact@v4
