@@ -3,8 +3,8 @@ package auth_service
 import (
 	"errors"
 
-	"github.com/Astervia/wacraft-server/src/database"
 	user_entity "github.com/Astervia/wacraft-core/src/user/entity"
+	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/golang-jwt/jwt/v4"
 )
 

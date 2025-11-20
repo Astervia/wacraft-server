@@ -3,9 +3,9 @@ package auth_websocket_middleware
 import (
 	"strings"
 
+	user_entity "github.com/Astervia/wacraft-core/src/user/entity"
 	auth_service "github.com/Astervia/wacraft-server/src/auth/service"
 	"github.com/Astervia/wacraft-server/src/database"
-	user_entity "github.com/Astervia/wacraft-core/src/user/entity"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"

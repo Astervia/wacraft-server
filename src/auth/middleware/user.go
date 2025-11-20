@@ -4,10 +4,10 @@ import (
 	"errors"
 	"strings"
 
-	auth_service "github.com/Astervia/wacraft-server/src/auth/service"
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
-	"github.com/Astervia/wacraft-server/src/database"
 	user_entity "github.com/Astervia/wacraft-core/src/user/entity"
+	auth_service "github.com/Astervia/wacraft-server/src/auth/service"
+	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
