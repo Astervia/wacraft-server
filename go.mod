@@ -6,20 +6,20 @@ require (
 	github.com/Astervia/wacraft-core v0.1.19
 	github.com/Rfluid/whatsapp-cloud-api v0.1.59
 	github.com/Rfluid/whatsapp-webhook-server v0.1.60
-	github.com/go-playground/validator/v10 v10.27.0
+	github.com/go-playground/validator/v10 v10.28.0
 	github.com/gofiber/contrib/websocket v1.3.4
-	github.com/gofiber/fiber/v2 v2.52.9
+	github.com/gofiber/fiber/v2 v2.52.10
 	github.com/gofiber/swagger v1.1.1
 	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
-	github.com/pressly/goose/v3 v3.25.0
-	github.com/pterm/pterm v0.12.81
+	github.com/pressly/goose/v3 v3.26.0
+	github.com/pterm/pterm v0.12.82
 	github.com/swaggo/swag v1.16.6
-	golang.org/x/sync v0.16.0
+	golang.org/x/sync v0.17.0
 	gorm.io/driver/postgres v1.6.0
-	gorm.io/gorm v1.30.1
+	gorm.io/gorm v1.31.1
 )
 
 require (
@@ -30,7 +30,7 @@ require (
 	github.com/andybalholm/brotli v1.2.0 // indirect
 	github.com/containerd/console v1.0.5 // indirect
 	github.com/fasthttp/websocket v1.5.12 // indirect
-	github.com/gabriel-vasile/mimetype v1.4.9 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.10 // indirect
 	github.com/go-openapi/jsonpointer v0.21.2 // indirect
 	github.com/go-openapi/jsonreference v0.21.0 // indirect
 	github.com/go-openapi/spec v0.21.0 // indirect
@@ -61,12 +61,12 @@ require (
 	github.com/valyala/fasthttp v1.65.0 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.41.0 // indirect
+	golang.org/x/crypto v0.42.0 // indirect
 	golang.org/x/mod v0.27.0 // indirect
 	golang.org/x/net v0.43.0 // indirect
-	golang.org/x/sys v0.35.0 // indirect
-	golang.org/x/term v0.34.0 // indirect
-	golang.org/x/text v0.28.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
+	golang.org/x/term v0.35.0 // indirect
+	golang.org/x/text v0.29.0 // indirect
 	golang.org/x/tools v0.36.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
