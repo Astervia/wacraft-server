@@ -9,18 +9,20 @@ RUN mkdir -p /app
 
 # Enable SSH authentication for private repositories
 ENV GOPRIVATE=github.com/Rfluid,github.com/Astervia
-RUN mkdir -p ~/.ssh && chmod 700 ~/.ssh
-RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
+# RUN mkdir -p ~/.ssh && chmod 700 ~/.ssh
+# RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 # Force Go to use SSH instead of HTTPS for private repositories
-RUN git config --global url."git@github.com:".insteadOf "https://github.com/"
+# RUN git config --global url."git@github.com:".insteadOf "https://github.com/"
 
 # Copy Go dependencies separately for better caching
 COPY go.mod go.sum /app/
 
 # Use SSH agent forwarding to authenticate private repos
 # 🚀 This allows Go modules to be downloaded without copying SSH keys
-RUN --mount=type=ssh go mod download
+# RUN --mount=type=ssh go mod download
+
+RUN go mod download
 
 # Copy the rest of the application code
 COPY . /app/
