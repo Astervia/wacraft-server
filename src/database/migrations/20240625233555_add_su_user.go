@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 
+	entity "github.com/Astervia/wacraft-core/src/user/entity"
 	"github.com/Astervia/wacraft-server/src/config/env"
 	"github.com/Astervia/wacraft-server/src/database"
-	entity "github.com/Astervia/wacraft-core/src/user/entity"
 	"github.com/pressly/goose/v3"
 	"github.com/pterm/pterm"
 	"gorm.io/gorm"

@@ -3,10 +3,10 @@ package status_service
 import (
 	"fmt"
 
-	"github.com/Astervia/wacraft-server/src/database"
 	database_model "github.com/Astervia/wacraft-core/src/database/model"
 	"github.com/Astervia/wacraft-core/src/repository"
 	status_entity "github.com/Astervia/wacraft-core/src/status/entity"
+	"github.com/Astervia/wacraft-server/src/database"
 	"gorm.io/gorm"
 )
 

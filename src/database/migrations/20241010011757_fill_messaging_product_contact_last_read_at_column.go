@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/Astervia/wacraft-server/src/database"
 	messaging_product_entity "github.com/Astervia/wacraft-core/src/messaging-product/entity"
+	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/pressly/goose/v3"
 )
 

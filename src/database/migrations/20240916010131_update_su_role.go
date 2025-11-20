@@ -5,10 +5,10 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/Astervia/wacraft-server/src/config/env"
-	"github.com/Astervia/wacraft-server/src/database"
 	user_entity "github.com/Astervia/wacraft-core/src/user/entity"
 	user_model "github.com/Astervia/wacraft-core/src/user/model"
+	"github.com/Astervia/wacraft-server/src/config/env"
+	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/pressly/goose/v3"
 	"github.com/pterm/pterm"
 	"gorm.io/gorm"

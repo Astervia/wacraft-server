@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-core/src/repository"
 	webhook_entity "github.com/Astervia/wacraft-core/src/webhook/entity"
+	"github.com/Astervia/wacraft-server/src/database"
 	"gorm.io/gorm"
 )
 
