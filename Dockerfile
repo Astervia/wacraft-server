@@ -35,7 +35,7 @@ ENV CGO_ENABLED=0 \
 RUN go build -o /bin/wacraft-server ./main.go
 
 # 2️⃣ Final lightweight image
-FROM alpine:latest
+FROM alpine:3.22
 
 # Set working directory inside the container
 WORKDIR /root/
