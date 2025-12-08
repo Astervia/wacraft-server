@@ -25,7 +25,7 @@ jobs:
             - name: Setup Go
               uses: actions/setup-go@v6
               with:
-                  go-version: "1.25"
+                  go-version: "1.25.5"
                   cache: true
 
             - name: Check gofmt (no files should change)
@@ -55,7 +55,7 @@ jobs:
             - name: Setup Go
               uses: actions/setup-go@v6
               with:
-                  go-version: "1.25"
+                  go-version: "1.25.5"
                   cache: true
 
             - name: Install govulncheck
@@ -74,8 +74,8 @@ jobs:
             - name: Run Conftest (OPA)
               uses: instrumenta/conftest-action@master
               with:
-                files: Dockerfile
-                policy: policy/
+                  files: Dockerfile
+                  policy: policy/
 
     build:
         name: Production Build Validation
@@ -89,7 +89,7 @@ jobs:
             - name: Setup Go
               uses: actions/setup-go@v6
               with:
-                  go-version: "1.25"
+                  go-version: "1.25.5"
                   cache: true
 
             - name: Build all packages
