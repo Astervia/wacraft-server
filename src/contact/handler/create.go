@@ -7,6 +7,7 @@ import (
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -24,6 +25,8 @@ import (
 //	@Security		ApiKeyAuth
 //	@Router			/contact [post]
 func CreateContact(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	var newContact contact_model.CreateContact
 	if err := c.BodyParser(&newContact); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -39,9 +42,10 @@ func CreateContact(c *fiber.Ctx) error {
 
 	contact, err := repository.Create(
 		contact_entity.Contact{
-			Name:      newContact.Name,
-			Email:     newContact.Email,
-			PhotoPath: newContact.PhotoPath,
+			Name:        newContact.Name,
+			Email:       newContact.Email,
+			PhotoPath:   newContact.PhotoPath,
+			WorkspaceID: &workspace.ID,
 		}, database.DB,
 	)
 	if err != nil {
@@ -67,6 +71,8 @@ func CreateContact(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/contact [put]
 func UpdateContact(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	var editContact contact_model.UpdateContact
 	if err := c.BodyParser(&editContact); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -90,6 +96,7 @@ func UpdateContact(c *fiber.Ctx) error {
 			Audit: common_model.Audit{
 				ID: editContact.ID,
 			},
+			WorkspaceID: &workspace.ID,
 		}, database.DB,
 	)
 	if err != nil {

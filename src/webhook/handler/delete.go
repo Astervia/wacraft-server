@@ -2,10 +2,10 @@ package webhook_handler
 
 import (
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
-	"github.com/Astervia/wacraft-core/src/repository"
 	webhook_entity "github.com/Astervia/wacraft-core/src/webhook/entity"
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -23,6 +23,8 @@ import (
 //	@Router			/webhook [delete]
 //	@Security		ApiKeyAuth
 func DeleteWebhookByID(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	var reqBody common_model.RequiredID
 	if err := c.BodyParser(&reqBody); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -36,8 +38,9 @@ func DeleteWebhookByID(c *fiber.Ctx) error {
 		)
 	}
 
-	err := repository.DeleteByID[webhook_entity.Webhook](reqBody.ID, database.DB)
-	if err != nil {
+	// Delete with workspace scoping
+	var webhook webhook_entity.Webhook
+	if err := database.DB.Where("id = ? AND workspace_id = ?", reqBody.ID, workspace.ID).Delete(&webhook).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("unable to delete webhook", err, "repository").Send(),
 		)

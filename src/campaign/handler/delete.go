@@ -3,9 +3,9 @@ package campaign_handler
 import (
 	campaign_entity "github.com/Astervia/wacraft-core/src/campaign/entity"
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
-	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -23,6 +23,8 @@ import (
 //	@Security		ApiKeyAuth
 //	@Router			/campaign [delete]
 func Delete(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	var body common_model.RequiredID
 	if err := c.BodyParser(&body); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -36,7 +38,9 @@ func Delete(c *fiber.Ctx) error {
 		)
 	}
 
-	if err := repository.DeleteByID[campaign_entity.Campaign](body.ID, database.DB); err != nil {
+	// Delete with workspace scoping
+	var campaign campaign_entity.Campaign
+	if err := database.DB.Where("id = ? AND workspace_id = ?", body.ID, workspace.ID).Delete(&campaign).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("unable to delete campaign", err, "repository").Send(),
 		)
@@ -59,6 +63,8 @@ func Delete(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/campaign/message [delete]
 func DeleteMessage(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	var body common_model.RequiredID
 	if err := c.BodyParser(&body); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -72,7 +78,13 @@ func DeleteMessage(c *fiber.Ctx) error {
 		)
 	}
 
-	if err := repository.DeleteByID[campaign_entity.CampaignMessage](body.ID, database.DB); err != nil {
+	// Delete with workspace scoping via campaign join
+	var campaignMessage campaign_entity.CampaignMessage
+	db := database.DB.
+		Joins("JOIN campaigns ON campaign_messages.campaign_id = campaigns.id AND campaigns.workspace_id = ?", workspace.ID).
+		Where("campaign_messages.id = ?", body.ID)
+
+	if err := db.Delete(&campaignMessage).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("unable to delete campaign message", err, "repository").Send(),
 		)

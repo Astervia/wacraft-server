@@ -11,14 +11,15 @@ import (
 
 // CreateUser registers a new user.
 //
-//	@Summary		Create a new user
-//	@Description	Creates a new user account with the provided information.
+//	@Summary		Create a new user (Admin only)
+//	@Description	Creates a new user account with the provided information. Restricted to admin users only.
 //	@Tags			User
 //	@Accept			json
 //	@Produce		json
 //	@Param			user	body		user_model.Create				true	"User data"
 //	@Success		201		{object}	user_entity.User				"Created user"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
+//	@Failure		403		{object}	common_model.DescriptiveError	"Forbidden - Admin role required"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Router			/user [post]
 //	@Security		ApiKeyAuth

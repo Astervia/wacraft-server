@@ -41,3 +41,22 @@ dev-down:
 	echo "Stopping and removing development containers"
 	docker compose -f docker-compose.dev.yml down --remove-orphans
 	echo "To remove all containers, volumes, and networks, use --volumes"
+
+# Roll back the last migration in development
+dev-migrate-down:
+	echo "Rolling back last migration"
+	docker compose -f docker-compose.dev.yml exec app go run main.go migrate:down
+
+# Roll back migrations to a specific version in development (usage: make dev-migrate-to VERSION=20240625233555)
+dev-migrate-to:
+	@if [ -z "$(VERSION)" ]; then \
+		echo "Error: VERSION is required. Usage: make dev-migrate-to VERSION=20240625233555"; \
+		exit 1; \
+	fi
+	echo "Rolling back to migration version $(VERSION)"
+	docker compose -f docker-compose.dev.yml exec app go run main.go migrate:down-to $(VERSION)
+
+# Check migration status in development
+dev-migrate-status:
+	echo "Checking migration status"
+	docker compose -f docker-compose.dev.yml exec app go run main.go migrate:status

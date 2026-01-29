@@ -1,8 +1,10 @@
 package message_router
 
 import (
+	workspace_model "github.com/Astervia/wacraft-core/src/workspace/model"
 	auth_middleware "github.com/Astervia/wacraft-server/src/auth/middleware"
 	message_handler "github.com/Astervia/wacraft-server/src/message/handler"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -16,17 +18,32 @@ func Route(app *fiber.App) {
 
 func mainRoutes(group fiber.Router) {
 	group.Get("",
-		auth_middleware.UserMiddleware, message_handler.Get)
+		auth_middleware.UserMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageRead),
+		message_handler.Get)
 
 	group.Get("/count",
-		auth_middleware.UserMiddleware, message_handler.Count)
+		auth_middleware.UserMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageRead),
+		message_handler.Count)
 
 	group.Get("/content/like/:likeText",
-		auth_middleware.UserMiddleware, message_handler.ContentLike)
+		auth_middleware.UserMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageRead),
+		message_handler.ContentLike)
 
 	group.Get("/count/content/like/:likeText",
-		auth_middleware.UserMiddleware, message_handler.CountContentLike)
+		auth_middleware.UserMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageRead),
+		message_handler.CountContentLike)
 
 	group.Get("/content/:keyName/like/:likeText",
-		auth_middleware.UserMiddleware, message_handler.ContentKeyLike)
+		auth_middleware.UserMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageRead),
+		message_handler.ContentKeyLike)
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -36,8 +37,11 @@ func DeleteContact(c *fiber.Ctx) error {
 		)
 	}
 
+	workspace := workspace_middleware.GetWorkspace(c)
+	db := database.DB.Joins("JOIN messaging_products ON messaging_product_contacts.messaging_product_id = messaging_products.id AND messaging_products.workspace_id = ?", workspace.ID)
+
 	err := repository.DeleteByID[messaging_product_entity.MessagingProductContact](
-		reqBody.ID, database.DB,
+		reqBody.ID, db,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(

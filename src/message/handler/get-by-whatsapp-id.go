@@ -6,8 +6,10 @@ import (
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	message_entity "github.com/Astervia/wacraft-core/src/message/entity"
 	message_model "github.com/Astervia/wacraft-core/src/message/model"
+	"github.com/Astervia/wacraft-server/src/database"
 	message_service "github.com/Astervia/wacraft-server/src/message/service"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -47,6 +49,9 @@ func GetWamID(c *fiber.Ctx) error {
 		)
 	}
 
+	workspace := workspace_middleware.GetWorkspace(c)
+	db := database.DB.Joins("JOIN messaging_products ON messages.messaging_product_id = messaging_products.id AND messaging_products.workspace_id = ?", workspace.ID)
+
 	messages, err := message_service.GetWamID(
 		decodedText,
 		message_entity.Message{
@@ -64,7 +69,7 @@ func GetWamID(c *fiber.Ctx) error {
 		&query.Paginate,
 		&query.DateOrder,
 		&query.DateWhereWithDeletedAt,
-		nil,
+		db,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(

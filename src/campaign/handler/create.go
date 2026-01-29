@@ -7,6 +7,7 @@ import (
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -24,6 +25,8 @@ import (
 //	@Security		ApiKeyAuth
 //	@Router			/campaign [post]
 func Create(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	var newCampaign campaign_model.CreateCampaign
 	if err := c.BodyParser(&newCampaign); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -41,6 +44,7 @@ func Create(c *fiber.Ctx) error {
 		campaign_entity.Campaign{
 			Name:               newCampaign.Name,
 			MessagingProductID: newCampaign.MessagingProductID,
+			WorkspaceID:        &workspace.ID,
 		}, database.DB,
 	)
 	if err != nil {
@@ -66,6 +70,8 @@ func Create(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/campaign/message [post]
 func CreateMessage(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	var newCampaign campaign_model.CreateCampaignMessage
 	if err := c.BodyParser(&newCampaign); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -76,6 +82,14 @@ func CreateMessage(c *fiber.Ctx) error {
 	if err := validators.Validator().Struct(&newCampaign); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewValidationError(err).Send(),
+		)
+	}
+
+	// Validate campaign belongs to workspace
+	var existingCampaign campaign_entity.Campaign
+	if err := database.DB.Where("id = ? AND workspace_id = ?", newCampaign.CampaignID, workspace.ID).First(&existingCampaign).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(
+			common_model.NewApiError("campaign not found or access denied", err, "handler").Send(),
 		)
 	}
 

@@ -7,6 +7,7 @@ import (
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -24,6 +25,8 @@ import (
 //	@Security		ApiKeyAuth
 //	@Router			/campaign [patch]
 func Update(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	var updateData campaign_model.UpdateCampaign
 	if err := c.BodyParser(&updateData); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -44,7 +47,8 @@ func Update(c *fiber.Ctx) error {
 			Audit:              common_model.Audit{ID: updateData.ID},
 		},
 		&campaign_entity.Campaign{
-			Audit: common_model.Audit{ID: updateData.ID},
+			Audit:       common_model.Audit{ID: updateData.ID},
+			WorkspaceID: &workspace.ID,
 		}, database.DB,
 	)
 	if err != nil {
