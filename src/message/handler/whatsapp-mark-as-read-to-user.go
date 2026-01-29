@@ -6,6 +6,7 @@ import (
 	message_model "github.com/Astervia/wacraft-core/src/message/model"
 	message_service "github.com/Astervia/wacraft-server/src/message/service"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	_ "github.com/Rfluid/whatsapp-cloud-api/src/common/model"
 	"github.com/gofiber/fiber/v2"
 )
@@ -24,6 +25,8 @@ import (
 //	@Security		ApiKeyAuth
 //	@Router			/message/whatsapp/mark-as-read [post]
 func MarkWhatsAppMessageAsReadToUser(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	query := new(message_model.QueryPaginated)
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -39,19 +42,23 @@ func MarkWhatsAppMessageAsReadToUser(c *fiber.Ctx) error {
 
 	query.Paginate.Limit = 1
 
-	r, err := message_service.MarkWhatsAppMessageAsReadToUser(
-		message_entity.Message{
-			MessageFields: message_model.MessageFields{
-				FromID:             query.FromID,
-				ToID:               query.ToID,
-				MessagingProductID: query.MessagingProductID,
-				AuditWithDeleted: common_model.AuditWithDeleted{
-					Audit: common_model.Audit{
-						ID: query.ID,
-					},
+	entity := message_entity.Message{
+		MessageFields: message_model.MessageFields{
+			FromID:             query.FromID,
+			ToID:               query.ToID,
+			MessagingProductID: query.MessagingProductID,
+			AuditWithDeleted: common_model.AuditWithDeleted{
+				Audit: common_model.Audit{
+					ID: query.ID,
 				},
 			},
 		},
+	}
+
+	// Try workspace-specific first, fall back to legacy
+	r, err := message_service.MarkWhatsAppMessageAsReadToUserByWorkspace(
+		entity,
+		workspace.ID,
 		&query.Paginate,
 		&query.DateOrder,
 		&query.DateWhereWithDeletedAt,
@@ -59,9 +66,19 @@ func MarkWhatsAppMessageAsReadToUser(c *fiber.Ctx) error {
 		nil,
 	)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(
-			common_model.NewApiError("unable to mark conversation as read to user", err, "message_service").Send(),
+		r, err = message_service.MarkWhatsAppMessageAsReadToUser(
+			entity,
+			&query.Paginate,
+			&query.DateOrder,
+			&query.DateWhereWithDeletedAt,
+			"",
+			nil,
 		)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(
+				common_model.NewApiError("unable to mark conversation as read to user", err, "message_service").Send(),
+			)
+		}
 	}
 
 	return c.Status(fiber.StatusOK).JSON(r)

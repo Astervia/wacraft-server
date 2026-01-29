@@ -6,6 +6,7 @@ import (
 	messaging_product_model "github.com/Astervia/wacraft-core/src/messaging-product/model"
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -33,6 +34,15 @@ func CreateContact(c *fiber.Ctx) error {
 	if err := validators.Validator().Struct(&data); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewValidationError(err).Send(),
+		)
+	}
+
+	// Validate messaging_product belongs to workspace
+	workspace := workspace_middleware.GetWorkspace(c)
+	var mp messaging_product_entity.MessagingProduct
+	if err := database.DB.Where("id = ? AND workspace_id = ?", data.MessagingProductID, workspace.ID).First(&mp).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(
+			common_model.NewApiError("messaging product not found or does not belong to workspace", err, "gorm.io/gorm").Send(),
 		)
 	}
 

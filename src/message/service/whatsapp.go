@@ -2,21 +2,26 @@ package message_service
 
 import (
 	"errors"
+	"fmt"
 
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	message_entity "github.com/Astervia/wacraft-core/src/message/entity"
 	message_model "github.com/Astervia/wacraft-core/src/message/model"
 	messaging_product_entity "github.com/Astervia/wacraft-core/src/messaging-product/entity"
 	messaging_product_model "github.com/Astervia/wacraft-core/src/messaging-product/model"
+	bootstrap_module "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap/model"
 	common_service "github.com/Astervia/wacraft-server/src/common/service"
 	"github.com/Astervia/wacraft-server/src/config/env"
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-server/src/integration/whatsapp"
+	phone_config_service "github.com/Astervia/wacraft-server/src/phone-config/service"
 	message_service "github.com/Rfluid/whatsapp-cloud-api/src/message/service"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
+// FindMessagingProductAndSendMessage finds the messaging product and sends a message.
+// This is the legacy function that uses the global WhatsApp API.
 func FindMessagingProductAndSendMessage(
 	body message_model.SendWhatsAppMessage,
 	propagateCallback func(message_entity.Message),
@@ -42,12 +47,63 @@ func FindMessagingProductAndSendMessage(
 	return msg, nil
 }
 
-// Sends whatsapp messages at transaction and adds message to status synchronizer.
+// FindMessagingProductByWorkspaceAndSendMessage finds the messaging product for a workspace and sends a message.
+// Uses the PhoneConfig associated with the messaging product.
+func FindMessagingProductByWorkspaceAndSendMessage(
+	body message_model.SendWhatsAppMessage,
+	workspaceID uuid.UUID,
+	propagateCallback func(message_entity.Message),
+) (message_entity.Message, error) {
+	mp := messaging_product_entity.MessagingProduct{
+		Name:        messaging_product_model.WhatsApp,
+		WorkspaceID: &workspaceID,
+	}
+	err := database.DB.Model(&mp).Where(&mp).First(&mp).Error
+	if err != nil {
+		return message_entity.Message{}, fmt.Errorf("no messaging product found for workspace: %w", err)
+	}
+
+	if mp.PhoneConfigID == nil {
+		return message_entity.Message{}, errors.New("messaging product has no phone config configured")
+	}
+
+	// Get WhatsApp API from phone config
+	wabaApi, err := phone_config_service.GetWhatsAppAPIByPhoneConfigID(*mp.PhoneConfigID)
+	if err != nil {
+		return message_entity.Message{}, fmt.Errorf("failed to get WhatsApp API: %w", err)
+	}
+
+	var msg message_entity.Message
+	if common_service.IsEnvLocal() {
+		msg, err = SendWhatsAppMessageWithAPIWithoutWaitingForStatus(body, mp.ID, wabaApi, nil)
+	} else {
+		msg, err = SendWhatsAppMessageWithAPI(body, mp.ID, wabaApi, nil)
+	}
+	if err != nil {
+		return msg, err
+	}
+
+	go propagateCallback(msg)
+
+	return msg, nil
+}
+
+// SendWhatsAppMessageAtTransaction sends a message using the global WhatsApp API (legacy).
 // Handles messages saved and rollback.
 func SendWhatsAppMessageAtTransaction(
 	body message_model.SendWhatsAppMessage,
 	messagingProductID uuid.UUID,
-	tx *gorm.DB, // Transaction. If nil will be executed without transaction.
+	tx *gorm.DB,
+) (message_entity.Message, error) {
+	return SendWhatsAppMessageWithAPI(body, messagingProductID, &whatsapp.WabaApi, tx)
+}
+
+// SendWhatsAppMessageWithAPI sends a message using a specific WhatsApp API instance.
+func SendWhatsAppMessageWithAPI(
+	body message_model.SendWhatsAppMessage,
+	messagingProductID uuid.UUID,
+	wabaApi *bootstrap_module.WhatsAppAPI,
+	tx *gorm.DB,
 ) (message_entity.Message, error) {
 	var message message_entity.Message
 	body.SenderData.SetDefault()
@@ -76,8 +132,8 @@ func SendWhatsAppMessageAtTransaction(
 		Message: &body.SenderData,
 	}
 
-	// Sending messsage
-	response, err := message_service.Send(whatsapp.WabaApi, body.SenderData)
+	// Sending message
+	response, err := message_service.Send(*wabaApi, body.SenderData)
 	if err != nil {
 		return message, err
 	}
@@ -120,11 +176,21 @@ func SendWhatsAppMessageAtTransaction(
 	return message, nil
 }
 
-// Same as above but does not lock at waiting for status
+// SendWhatsAppMessageAtTransactionWithoutWaitingForStatus sends a message without waiting for status (legacy).
 func SendWhatsAppMessageAtTransactionWithoutWaitingForStatus(
 	body message_model.SendWhatsAppMessage,
 	messagingProductID uuid.UUID,
-	tx *gorm.DB, // Transaction. If nil will be executed without transaction.
+	tx *gorm.DB,
+) (message_entity.Message, error) {
+	return SendWhatsAppMessageWithAPIWithoutWaitingForStatus(body, messagingProductID, &whatsapp.WabaApi, tx)
+}
+
+// SendWhatsAppMessageWithAPIWithoutWaitingForStatus sends a message without waiting for status.
+func SendWhatsAppMessageWithAPIWithoutWaitingForStatus(
+	body message_model.SendWhatsAppMessage,
+	messagingProductID uuid.UUID,
+	wabaApi *bootstrap_module.WhatsAppAPI,
+	tx *gorm.DB,
 ) (message_entity.Message, error) {
 	var message message_entity.Message
 	body.SenderData.SetDefault()
@@ -153,8 +219,8 @@ func SendWhatsAppMessageAtTransactionWithoutWaitingForStatus(
 		Message: &body.SenderData,
 	}
 
-	// Sending messsage
-	response, err := message_service.Send(whatsapp.WabaApi, body.SenderData)
+	// Sending message
+	response, err := message_service.Send(*wabaApi, body.SenderData)
 	if err != nil {
 		return message, err
 	}

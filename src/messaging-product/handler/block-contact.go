@@ -6,6 +6,7 @@ import (
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -36,13 +37,16 @@ func BlockContact(c *fiber.Ctx) error {
 		)
 	}
 
+	workspace := workspace_middleware.GetWorkspace(c)
+	db := database.DB.Joins("JOIN messaging_products ON messaging_product_contacts.messaging_product_id = messaging_products.id AND messaging_products.workspace_id = ?", workspace.ID)
+
 	updated, err := repository.Updates(
 		messaging_product_entity.MessagingProductContact{
 			Blocked: true,
 		},
 		&messaging_product_entity.MessagingProductContact{
 			Audit: common_model.Audit{ID: data.ID},
-		}, database.DB,
+		}, db,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
@@ -80,13 +84,16 @@ func UnblockContact(c *fiber.Ctx) error {
 		)
 	}
 
+	workspace := workspace_middleware.GetWorkspace(c)
+	db := database.DB.Joins("JOIN messaging_products ON messaging_product_contacts.messaging_product_id = messaging_products.id AND messaging_products.workspace_id = ?", workspace.ID)
+
 	updated, err := repository.Updates(
 		map[string]any{
 			"blocked": false,
 		},
 		&messaging_product_entity.MessagingProductContact{
 			Audit: common_model.Audit{ID: data.ID},
-		}, database.DB,
+		}, db,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(

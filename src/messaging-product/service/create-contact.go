@@ -6,11 +6,13 @@ import (
 	messaging_product_entity "github.com/Astervia/wacraft-core/src/messaging-product/entity"
 	messaging_product_model "github.com/Astervia/wacraft-core/src/messaging-product/model"
 	"github.com/Astervia/wacraft-server/src/database"
+	"github.com/google/uuid"
 )
 
 func CreateContactForMessagingProduct(
 	contact messaging_product_entity.MessagingProductContact,
 	messagingProductName messaging_product_model.MessagingProductName,
+	workspaceID uuid.UUID,
 ) (messaging_product_entity.MessagingProductContact, error) {
 	tx := database.DB.Begin()
 	if tx.Error != nil {
@@ -19,7 +21,7 @@ func CreateContactForMessagingProduct(
 
 	mp := messaging_product_entity.MessagingProduct{Name: messagingProductName}
 
-	if err := tx.Model(&mp).Where(&mp).First(&mp).Error; err != nil {
+	if err := tx.Model(&mp).Where("name = ? AND workspace_id = ?", messagingProductName, workspaceID).First(&mp).Error; err != nil {
 		tx.Rollback()
 		return contact, errors.New("unable to find messaging product")
 	}

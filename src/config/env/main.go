@@ -13,6 +13,8 @@ func init() {
 	loadDbEnv()
 	loadServerEnv()
 	loadWhatsAppEnv()
+	loadEmailEnv()
+	loadRegistrationEnv()
 }
 
 func loadEnv() {

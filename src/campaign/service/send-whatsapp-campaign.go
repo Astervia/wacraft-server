@@ -71,6 +71,19 @@ func SendWhatsAppCampaign(
 
 	result := campaign_model.CreateCampaignResults(messagesCount)
 
+	// Create broadcast callback for workspace-scoped WebSocket broadcasting
+	broadcastCallback := func(msg message_entity.Message) {
+		if campaign.WorkspaceID != nil {
+			go message_handler.NewMessageWorkspaceManager.BroadcastToWorkspace(*campaign.WorkspaceID, msg)
+		}
+		go webhook_service.SendAllByQuery(
+			webhook_entity.Webhook{
+				Event: webhook_model.SendWhatsAppMessage,
+			},
+			msg,
+		)
+	}
+
 	var wg sync.WaitGroup
 	errCh := make(chan error, messagesCount)
 
@@ -90,6 +103,7 @@ func SendWhatsAppCampaign(
 					*campaign.MessagingProductID,
 					&offset,
 					&offsetMu,
+					broadcastCallback,
 				)
 				errCh <- err
 			}
@@ -121,6 +135,7 @@ func SendWhatsAppCampaignMessage(
 	messagingProductID uuid.UUID,
 	offset *int,
 	offsetMu *sync.Mutex,
+	broadcastCallback func(message_entity.Message),
 ) error {
 	var err error
 
@@ -190,15 +205,9 @@ func SendWhatsAppCampaignMessage(
 		return err
 	}
 	// Propagating results
-	func(data message_entity.Message) {
-		go message_handler.NewMessageChannel.BroadcastJsonMultithread(data)
-		go webhook_service.SendAllByQuery(
-			webhook_entity.Webhook{
-				Event: webhook_model.SendWhatsAppMessage,
-			},
-			data,
-		)
-	}(msg)
+	if broadcastCallback != nil {
+		broadcastCallback(msg)
+	}
 
 	campaignMessageUpdateData := campaign_entity.CampaignMessage{
 		MessageID: msg.ID,

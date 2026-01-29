@@ -7,6 +7,7 @@ import (
 	webhook_model "github.com/Astervia/wacraft-core/src/webhook/model"
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -24,6 +25,8 @@ import (
 //	@Router			/webhook [post]
 //	@Security		ApiKeyAuth
 func CreateWebhook(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	var newWebhook webhook_model.CreateWebhook
 	if err := c.BodyParser(&newWebhook); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -44,6 +47,7 @@ func CreateWebhook(c *fiber.Ctx) error {
 			HttpMethod:    newWebhook.HttpMethod,
 			Timeout:       newWebhook.Timeout,
 			Event:         newWebhook.Event,
+			WorkspaceID:   &workspace.ID,
 		}, database.DB,
 	)
 	if err != nil {

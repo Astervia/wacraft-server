@@ -8,6 +8,7 @@ import (
 	webhook_model "github.com/Astervia/wacraft-core/src/webhook/model"
 	"github.com/Astervia/wacraft-server/src/validators"
 	webhook_service "github.com/Astervia/wacraft-server/src/webhook/service"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -26,6 +27,8 @@ import (
 //	@Router			/webhook/content/{keyName}/like/{likeText} [get]
 //	@Security		ApiKeyAuth
 func ContentKeyLike(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	params := new(webhook_model.ContentKeyLikeParams)
 	if err := c.ParamsParser(params); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -61,11 +64,12 @@ func ContentKeyLike(c *fiber.Ctx) error {
 		likeText,
 		params.KeyName,
 		webhook_entity.Webhook{
-			Audit:      common_model.Audit{ID: query.ID},
-			Url:        query.Url,
-			Event:      query.Event,
-			HttpMethod: query.HttpMethod,
-			Timeout:    query.Timeout,
+			Audit:       common_model.Audit{ID: query.ID},
+			Url:         query.Url,
+			Event:       query.Event,
+			HttpMethod:  query.HttpMethod,
+			Timeout:     query.Timeout,
+			WorkspaceID: &workspace.ID,
 		},
 		&query.Paginate,
 		&query.DateOrder,

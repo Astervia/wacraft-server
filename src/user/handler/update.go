@@ -14,11 +14,11 @@ import (
 // UpdateCurrentUser updates the details of the authenticated user.
 //
 //	@Summary		Update current user
-//	@Description	Updates the profile details of the authenticated user.
+//	@Description	Updates the profile details of the authenticated user. Users can update their name and password, but NOT their email address.
 //	@Tags			User
 //	@Accept			json
 //	@Produce		json
-//	@Param			body	body		user_model.UpdateWithPassword	true	"User data to update"
+//	@Param			body	body		user_model.UpdateWithPassword	true	"User data to update (email field is ignored)"
 //	@Success		200		{object}	user_entity.User				"User updated successfully"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
@@ -37,7 +37,6 @@ func UpdateCurrentUser(c *fiber.Ctx) error {
 	user := c.Locals("user").(*user_entity.User)
 	data := user_entity.User{
 		Name:     editUser.Name,
-		Email:    editUser.Email,
 		Password: editUser.Password,
 	}
 
@@ -67,8 +66,8 @@ func UpdateCurrentUser(c *fiber.Ctx) error {
 
 // UpdateUserByID updates a user by their ID.
 //
-//	@Summary		Update user by ID
-//	@Description	Updates user data by ID. Restricted to superusers. Cannot update su@sudo.
+//	@Summary		Update user by ID (Admin only)
+//	@Description	Updates user data by ID including email and role. Restricted to admin users only. Cannot update su@sudo.
 //	@Tags			User
 //	@Accept			json
 //	@Produce		json
@@ -76,6 +75,7 @@ func UpdateCurrentUser(c *fiber.Ctx) error {
 //	@Success		200		{object}	user_entity.User				"User updated successfully"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		401		{object}	common_model.DescriptiveError	"Unauthorized"
+//	@Failure		403		{object}	common_model.DescriptiveError	"Forbidden - Admin role required"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Router			/user [put]
 //	@Security		ApiKeyAuth

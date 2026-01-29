@@ -12,14 +12,15 @@ import (
 
 // Get retrieves a paginated list of users.
 //
-//	@Summary		Retrieve users
-//	@Description	Returns a paginated list of users based on optional filters.
+//	@Summary		Retrieve users (Admin only)
+//	@Description	Returns a paginated list of users based on optional filters. Restricted to admin users only.
 //	@Tags			User
 //	@Accept			json
 //	@Produce		json
 //	@Param			user	query		user_model.QueryPaginated		true	"Pagination and query parameters"
 //	@Success		200		{array}		user_entity.User				"List of users"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid query parameters"
+//	@Failure		403		{object}	common_model.DescriptiveError	"Forbidden - Admin role required"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Router			/user [get]
 //	@Security		ApiKeyAuth

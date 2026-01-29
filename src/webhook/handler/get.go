@@ -7,6 +7,7 @@ import (
 	webhook_model "github.com/Astervia/wacraft-core/src/webhook/model"
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -24,6 +25,8 @@ import (
 //	@Router			/webhook [get]
 //	@Security		ApiKeyAuth
 func GetWebhooks(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	query := new(webhook_model.QueryPaginated)
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -39,11 +42,12 @@ func GetWebhooks(c *fiber.Ctx) error {
 
 	webhooks, err := repository.GetPaginated(
 		webhook_entity.Webhook{
-			Audit:      common_model.Audit{ID: query.ID},
-			Url:        query.Url,
-			Event:      query.Event,
-			HttpMethod: query.HttpMethod,
-			Timeout:    query.Timeout,
+			Audit:       common_model.Audit{ID: query.ID},
+			Url:         query.Url,
+			Event:       query.Event,
+			HttpMethod:  query.HttpMethod,
+			Timeout:     query.Timeout,
+			WorkspaceID: &workspace.ID,
 		},
 		&query.Paginate,
 		&query.DateOrder,
@@ -73,6 +77,8 @@ func GetWebhooks(c *fiber.Ctx) error {
 //	@Router			/webhook/log [get]
 //	@Security		ApiKeyAuth
 func GetWebhookLogs(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	query := new(webhook_model.QueryLogsPaginated)
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -86,6 +92,8 @@ func GetWebhookLogs(c *fiber.Ctx) error {
 		)
 	}
 
+	db := database.DB.Joins("JOIN webhooks ON webhook_logs.webhook_id = webhooks.id AND webhooks.workspace_id = ?", workspace.ID)
+
 	webhooks, err := repository.GetPaginated(
 		webhook_entity.WebhookLog{
 			Audit:            common_model.Audit{ID: query.ID},
@@ -95,7 +103,7 @@ func GetWebhookLogs(c *fiber.Ctx) error {
 		&query.Paginate,
 		&query.DateOrder,
 		&query.DateWhere,
-		"", database.DB,
+		"", db,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(

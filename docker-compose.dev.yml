@@ -19,7 +19,7 @@ services:
         networks: [dev]
 
     db:
-        image: postgres:16-alpine
+        image: postgres:17-alpine
         restart: unless-stopped
         environment:
             POSTGRES_DB: postgres
@@ -28,7 +28,7 @@ services:
         volumes:
             - db_dev_data:/var/lib/postgresql/data
         ports:
-            - "${DATABASE_PORT}:5432"
+            - "${DATABASE_PORT:-5432}:5432"
         networks: [dev]
 
 volumes:

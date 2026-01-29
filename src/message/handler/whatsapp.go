@@ -9,6 +9,7 @@ import (
 	message_service "github.com/Astervia/wacraft-server/src/message/service"
 	"github.com/Astervia/wacraft-server/src/validators"
 	webhook_service "github.com/Astervia/wacraft-server/src/webhook/service"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -26,6 +27,8 @@ import (
 //	@Security		ApiKeyAuth
 //	@Router			/message/whatsapp [post]
 func SendMessage(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	var body message_model.SendWhatsAppMessage
 	if err := c.BodyParser(&body); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -39,22 +42,39 @@ func SendMessage(c *fiber.Ctx) error {
 		)
 	}
 
-	entity, err := message_service.FindMessagingProductAndSendMessage(
+	propagateCallback := func(data message_entity.Message) {
+		// Broadcast to workspace-scoped WebSocket clients
+		go NewMessageWorkspaceManager.BroadcastToWorkspace(workspace.ID, data)
+		go webhook_service.SendAllByQuery(
+			webhook_entity.Webhook{
+				Event:       webhook_model.SendWhatsAppMessage,
+				WorkspaceID: &workspace.ID,
+			},
+			data,
+		)
+	}
+
+	var entity message_entity.Message
+	var err error
+
+	// Use workspace-specific messaging if workspace has a phone config,
+	// otherwise fall back to legacy global API
+	entity, err = message_service.FindMessagingProductByWorkspaceAndSendMessage(
 		body,
-		func(data message_entity.Message) {
-			go NewMessageChannel.BroadcastJsonMultithread(data)
-			go webhook_service.SendAllByQuery(
-				webhook_entity.Webhook{
-					Event: webhook_model.SendWhatsAppMessage,
-				},
-				data,
-			)
-		},
+		workspace.ID,
+		propagateCallback,
 	)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(
-			common_model.NewApiError("unable to find messaging product and send message", err, "message_service").Send(),
+		// Fall back to legacy method if workspace-specific fails
+		entity, err = message_service.FindMessagingProductAndSendMessage(
+			body,
+			propagateCallback,
 		)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(
+				common_model.NewApiError("unable to find messaging product and send message", err, "message_service").Send(),
+			)
+		}
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(entity)

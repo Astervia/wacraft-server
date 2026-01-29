@@ -9,6 +9,7 @@ import (
 	"github.com/Astervia/wacraft-server/src/database"
 	messaging_product_service "github.com/Astervia/wacraft-server/src/messaging-product/service"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -56,7 +57,8 @@ func ContactContentLikeCount(c *fiber.Ctx) error {
 		},
 	}
 
-	db := database.DB.Model(&mpc)
+	workspace := workspace_middleware.GetWorkspace(c)
+	db := database.DB.Joins("JOIN messaging_products ON messaging_product_contacts.messaging_product_id = messaging_products.id AND messaging_products.workspace_id = ?", workspace.ID).Model(&mpc)
 
 	if mpc.ProductDetails != nil {
 		mpc.ProductDetails.ParseIndividualFieldQueries(&db)

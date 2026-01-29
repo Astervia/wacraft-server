@@ -13,8 +13,8 @@ import (
 
 // ContentKeyLike searches users by a given key and a partial text pattern.
 //
-//	@Summary		Search users by key and text
-//	@Description	Returns a paginated list of users where the specified key matches a partial value using ILIKE operator.
+//	@Summary		Search users by key and text (Admin only)
+//	@Description	Returns a paginated list of users where the specified key matches a partial value using ILIKE operator. Restricted to admin users only.
 //	@Tags			User
 //	@Accept			json
 //	@Produce		json
@@ -22,6 +22,7 @@ import (
 //	@Param			contentLike	path		user_model.ContentKeyLikeParams	true	"Params to query content like key"
 //	@Success		200			{array}		user_entity.User				"List of users"
 //	@Failure		400			{object}	common_model.DescriptiveError	"Invalid path or query parameters"
+//	@Failure		403			{object}	common_model.DescriptiveError	"Forbidden - Admin role required"
 //	@Failure		500			{object}	common_model.DescriptiveError	"Internal server error"
 //	@Router			/user/content/{keyName}/like/{likeText} [get]
 //	@Security		ApiKeyAuth

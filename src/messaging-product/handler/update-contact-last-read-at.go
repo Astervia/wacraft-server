@@ -7,6 +7,7 @@ import (
 	messaging_product_entity "github.com/Astervia/wacraft-core/src/messaging-product/entity"
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
@@ -32,6 +33,9 @@ func UpdateContactLastReadAt(c *fiber.Ctx) error {
 		)
 	}
 
+	workspace := workspace_middleware.GetWorkspace(c)
+	db := database.DB.Joins("JOIN messaging_products ON messaging_product_contacts.messaging_product_id = messaging_products.id AND messaging_products.workspace_id = ?", workspace.ID)
+
 	now := time.Now()
 	mps, err := repository.Updates(
 		messaging_product_entity.MessagingProductContact{
@@ -44,7 +48,7 @@ func UpdateContactLastReadAt(c *fiber.Ctx) error {
 			Audit: common_model.Audit{
 				ID: mpcID,
 			},
-		}, database.DB,
+		}, db,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(

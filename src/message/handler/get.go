@@ -7,6 +7,7 @@ import (
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -37,6 +38,9 @@ func Get(c *fiber.Ctx) error {
 		)
 	}
 
+	workspace := workspace_middleware.GetWorkspace(c)
+	db := database.DB.Joins("JOIN messaging_products ON messages.messaging_product_id = messaging_products.id AND messaging_products.workspace_id = ?", workspace.ID)
+
 	messages, err := repository.GetPaginated(
 		message_entity.Message{
 			MessageFields: message_model.MessageFields{
@@ -53,7 +57,7 @@ func Get(c *fiber.Ctx) error {
 		&query.Paginate,
 		&query.DateOrder,
 		&query.DateWhereWithDeletedAt,
-		"", database.DB,
+		"", db,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(

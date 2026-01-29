@@ -31,8 +31,8 @@ func DeleteCurrentUser(c *fiber.Ctx) error {
 
 // DeleteUserByID removes a user by their ID. Only admins can call this.
 //
-//	@Summary		Delete user by ID
-//	@Description	Deletes a user by ID. The special user su@sudo cannot be deleted.
+//	@Summary		Delete user by ID (Admin only)
+//	@Description	Deletes a user by ID. Restricted to admin users only. The special user su@sudo cannot be deleted.
 //	@Tags			User
 //	@Accept			json
 //	@Produce		json
@@ -40,6 +40,7 @@ func DeleteCurrentUser(c *fiber.Ctx) error {
 //	@Success		204		{string}	string							"No content"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		401		{object}	common_model.DescriptiveError	"Cannot delete su@sudo user"
+//	@Failure		403		{object}	common_model.DescriptiveError	"Forbidden - Admin role required"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Router			/user [delete]
 //	@Security		ApiKeyAuth
