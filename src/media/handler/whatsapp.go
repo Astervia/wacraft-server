@@ -6,13 +6,46 @@ import (
 
 	cmn_model "github.com/Astervia/wacraft-core/src/common/model"
 	common_service "github.com/Astervia/wacraft-core/src/common/service"
+	messaging_product_entity "github.com/Astervia/wacraft-core/src/messaging-product/entity"
+	messaging_product_model "github.com/Astervia/wacraft-core/src/messaging-product/model"
+	workspace_entity "github.com/Astervia/wacraft-core/src/workspace/entity"
+	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-server/src/integration/whatsapp"
+	phone_config_service "github.com/Astervia/wacraft-server/src/phone-config/service"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
+	bootstrap_module "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap/model"
 	common_model "github.com/Rfluid/whatsapp-cloud-api/src/common/model"
 	media_model "github.com/Rfluid/whatsapp-cloud-api/src/media/model"
 	media_service "github.com/Rfluid/whatsapp-cloud-api/src/media/service"
 	"github.com/gofiber/fiber/v2"
 )
+
+// getWorkspaceWhatsAppAPI retrieves the workspace-specific WhatsApp API client
+// Falls back to global API if no phone config is configured for the workspace
+func getWorkspaceWhatsAppAPI(workspace *workspace_entity.Workspace) *bootstrap_module.WhatsAppAPI {
+	// Find messaging product for workspace
+	mp := messaging_product_entity.MessagingProduct{
+		Name:        messaging_product_model.WhatsApp,
+		WorkspaceID: &workspace.ID,
+	}
+
+	if err := database.DB.Model(&mp).Where(&mp).First(&mp).Error; err != nil {
+		// No messaging product found, use global API
+		return &whatsapp.WabaApi
+	}
+
+	// If phone config is available, use workspace-specific API
+	if mp.PhoneConfigID != nil {
+		wabaApi, err := phone_config_service.GetWhatsAppAPIByPhoneConfigID(*mp.PhoneConfigID)
+		if err == nil {
+			return wabaApi
+		}
+	}
+
+	// Fallback to global API
+	return &whatsapp.WabaApi
+}
 
 // GetWhatsAppMediaURL retrieves a temporary download URL for a WhatsApp media item.
 //
@@ -23,11 +56,14 @@ import (
 //	@Produce		json
 //	@Param			mediaID	path		string							true	"Media ID"
 //	@Success		200		{object}	media_model.MediaInfo			"Media information with download URL"
-//	@Failure		400		{object}	common_model.DescriptiveError	"Missing or invalid media ID"
-//	@Failure		500		{object}	common_model.DescriptiveError	"Failed to retrieve media URL"
+//	@Failure		400		{object}	cmn_model.DescriptiveError	"Missing or invalid media ID"
+//	@Failure		500		{object}	cmn_model.DescriptiveError	"Failed to retrieve media URL"
 //	@Security		ApiKeyAuth
 //	@Router			/media/whatsapp/{mediaID} [get]
 func GetWhatsAppMediaURL(ctx *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(ctx)
+	wabaApi := getWorkspaceWhatsAppAPI(workspace)
+
 	mediaID := ctx.Params("mediaID")
 	if mediaID == "" {
 		return ctx.Status(fiber.StatusBadRequest).JSON(
@@ -35,7 +71,7 @@ func GetWhatsAppMediaURL(ctx *fiber.Ctx) error {
 		)
 	}
 
-	mediaInfo, err := media_service.RetrieveURL(whatsapp.WabaApi, mediaID, media_model.RetrieveInfo{})
+	mediaInfo, err := media_service.RetrieveURL(*wabaApi, mediaID, media_model.RetrieveInfo{})
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(
 			cmn_model.NewApiError("failed to retrieve media URL", err, "handler").Send(),
@@ -54,11 +90,14 @@ func GetWhatsAppMediaURL(ctx *fiber.Ctx) error {
 //	@Produce		application/octet-stream
 //	@Param			mediaID	path		string							true	"Media ID"
 //	@Success		200		{file}		binary							"Downloaded media file"
-//	@Failure		400		{object}	common_model.DescriptiveError	"Missing or invalid media ID"
-//	@Failure		500		{object}	common_model.DescriptiveError	"Failed to download media"
+//	@Failure		400		{object}	cmn_model.DescriptiveError	"Missing or invalid media ID"
+//	@Failure		500		{object}	cmn_model.DescriptiveError	"Failed to download media"
 //	@Security		ApiKeyAuth
 //	@Router			/media/whatsapp/download/{mediaID} [get]
 func DownloadWhatsAppMedia(ctx *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(ctx)
+	wabaApi := getWorkspaceWhatsAppAPI(workspace)
+
 	mediaID := ctx.Params("mediaID")
 	if mediaID == "" {
 		return ctx.Status(fiber.StatusBadRequest).JSON(
@@ -66,14 +105,14 @@ func DownloadWhatsAppMedia(ctx *fiber.Ctx) error {
 		)
 	}
 
-	mediaInfo, err := media_service.RetrieveURL(whatsapp.WabaApi, mediaID, media_model.RetrieveInfo{})
+	mediaInfo, err := media_service.RetrieveURL(*wabaApi, mediaID, media_model.RetrieveInfo{})
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(
 			cmn_model.NewApiError("failed to retrieve media URL", err, "service").Send(),
 		)
 	}
 
-	mediaBytes, err := media_service.Download(whatsapp.WabaApi, mediaInfo.URL)
+	mediaBytes, err := media_service.Download(*wabaApi, mediaInfo.URL)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(
 			cmn_model.NewApiError("failed to download media", err, "service").Send(),
@@ -96,11 +135,14 @@ func DownloadWhatsAppMedia(ctx *fiber.Ctx) error {
 //	@Produce		application/octet-stream
 //	@Param			mediaInfo	body		media_model.MediaInfo			true	"Media Info with URL and metadata"
 //	@Success		200			{file}		binary							"Downloaded media file"
-//	@Failure		400			{object}	common_model.DescriptiveError	"Invalid MediaInfo"
-//	@Failure		500			{object}	common_model.DescriptiveError	"Failed to download media"
+//	@Failure		400		{object}	cmn_model.DescriptiveError	"Invalid MediaInfo"
+//	@Failure		500		{object}	cmn_model.DescriptiveError	"Failed to download media"
 //	@Security		ApiKeyAuth
 //	@Router			/media/whatsapp/media-info/download [post]
 func DownloadFromMediaInfo(ctx *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(ctx)
+	wabaApi := getWorkspaceWhatsAppAPI(workspace)
+
 	var mediaInfo media_model.MediaInfo
 	if err := ctx.BodyParser(&mediaInfo); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(
@@ -114,7 +156,7 @@ func DownloadFromMediaInfo(ctx *fiber.Ctx) error {
 		)
 	}
 
-	mediaBytes, err := media_service.Download(whatsapp.WabaApi, mediaInfo.URL)
+	mediaBytes, err := media_service.Download(*wabaApi, mediaInfo.URL)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(
 			cmn_model.NewApiError("failed to download media", err, "handler").Send(),
@@ -138,12 +180,15 @@ func DownloadFromMediaInfo(ctx *fiber.Ctx) error {
 //	@Param			file	formData	file							true	"Media file"
 //	@Param			type	formData	string							true	"MIME type of the media file"
 //	@Success		200		{object}	common_model.ID					"Media ID returned from WhatsApp"
-//	@Failure		400		{object}	common_model.DescriptiveError	"Missing file or MIME type"
-//	@Failure		415		{object}	common_model.DescriptiveError	"Unsupported media type"
-//	@Failure		500		{object}	common_model.DescriptiveError	"Failed to upload media"
+//	@Failure		400		{object}	cmn_model.DescriptiveError	"Missing file or MIME type"
+//	@Failure		415		{object}	cmn_model.DescriptiveError	"Unsupported media type"
+//	@Failure		500		{object}	cmn_model.DescriptiveError	"Failed to upload media"
 //	@Security		ApiKeyAuth
 //	@Router			/media/whatsapp/upload [post]
 func UploadWhatsAppMedia(ctx *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(ctx)
+	wabaApi := getWorkspaceWhatsAppAPI(workspace)
+
 	fileHeader, err := ctx.FormFile("file")
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(
@@ -180,7 +225,7 @@ func UploadWhatsAppMedia(ctx *fiber.Ctx) error {
 	}
 	uploadData.SetDefault()
 
-	mediaID, err := media_service.Upload(whatsapp.WabaApi, uploadData)
+	mediaID, err := media_service.Upload(*wabaApi, uploadData)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(
 			cmn_model.NewApiError("failed to upload media", err, "handler").Send(),

@@ -7,6 +7,7 @@ import (
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -24,6 +25,8 @@ import (
 //	@Security		ApiKeyAuth
 //	@Router			/campaign/message/count [get]
 func CountMessages(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	query := new(campaign_model.QueryMessages)
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -37,6 +40,8 @@ func CountMessages(c *fiber.Ctx) error {
 		)
 	}
 
+	db := database.DB.Joins("JOIN campaigns ON campaign_messages.campaign_id = campaigns.id AND campaigns.workspace_id = ?", workspace.ID)
+
 	campaigns, err := repository.Count(
 		campaign_entity.CampaignMessage{
 			MessageID:  query.MessageID,
@@ -47,7 +52,7 @@ func CountMessages(c *fiber.Ctx) error {
 		},
 		&query.DateOrder,
 		&query.DateWhere,
-		"", database.DB,
+		"", db,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
@@ -72,6 +77,8 @@ func CountMessages(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/campaign/message/count/unsent [get]
 func CountUnsentMessages(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	query := new(campaign_model.QueryMessages)
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -85,8 +92,9 @@ func CountUnsentMessages(c *fiber.Ctx) error {
 		)
 	}
 
-	db := database.DB
-	db = db.Where("message_id IS NULL")
+	db := database.DB.
+		Joins("JOIN campaigns ON campaign_messages.campaign_id = campaigns.id AND campaigns.workspace_id = ?", workspace.ID).
+		Where("message_id IS NULL")
 
 	campaigns, err := repository.Count(
 		campaign_entity.CampaignMessage{
@@ -124,6 +132,8 @@ func CountUnsentMessages(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/campaign/message/count/sent [get]
 func CountSentMessages(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	query := new(campaign_model.QueryMessages)
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -137,8 +147,9 @@ func CountSentMessages(c *fiber.Ctx) error {
 		)
 	}
 
-	db := database.DB
-	db = db.Where("message_id IS NOT NULL")
+	db := database.DB.
+		Joins("JOIN campaigns ON campaign_messages.campaign_id = campaigns.id AND campaigns.workspace_id = ?", workspace.ID).
+		Where("message_id IS NOT NULL")
 
 	campaigns, err := repository.Count(
 		campaign_entity.CampaignMessage{

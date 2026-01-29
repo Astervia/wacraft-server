@@ -8,6 +8,7 @@ import (
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	campaign_service "github.com/Astervia/wacraft-server/src/campaign/service"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -26,6 +27,8 @@ import (
 //	@Security		ApiKeyAuth
 //	@Router			/campaign/content/{keyName}/like/{likeText} [get]
 func ContentKeyLike(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	params := new(campaign_model.ContentKeyLikeParams)
 	if err := c.ParamsParser(params); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -64,6 +67,7 @@ func ContentKeyLike(c *fiber.Ctx) error {
 			Audit:              common_model.Audit{ID: query.ID},
 			MessagingProductID: query.MessagingProductID,
 			Name:               query.Name,
+			WorkspaceID:        &workspace.ID,
 		},
 		&query.Paginate,
 		&query.DateOrder,

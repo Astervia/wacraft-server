@@ -48,25 +48,29 @@ func GetLatestMessagesForEachUser(
 	paginable database_model.Paginable,
 	order database_model.Orderable,
 	whereable database_model.Whereable,
-	db *gorm.DB,
+	workspaceID uuid.UUID,
 ) ([]message_entity.Message, error) {
 	var messages []message_entity.Message
-	if db == nil {
-		db = database.DB
-	}
 
-	subquery := db.
+	subquery := database.DB.
 		Model(&message_entity.Message{}).
-		Select("DISTINCT ON (COALESCE(from_id, to_id)) COALESCE(from_id, to_id) AS contact_id, *").
-		// Joins("From").
-		// Joins("To").
-		// Joins("From.Contact").
-		// Joins("To.Contact").
+		Select(`
+		    DISTINCT ON (COALESCE(from_id, to_id))
+			COALESCE(from_id, to_id) AS contact_id,
+			messages.*
+		`).
+		Joins(`
+		    JOIN messaging_products
+				ON messages.messaging_product_id = messaging_products.id
+				AND messaging_products.workspace_id = ?
+			`,
+			workspaceID,
+		).
 		Where(&message).
 		Order("COALESCE(from_id, to_id)").
 		Order(`"messages".created_at DESC`)
 
-	db = db.
+	db := database.DB.
 		Table("(?) AS sq", subquery).
 		Joins("From").
 		Joins("To").
@@ -125,13 +129,10 @@ func CountDistinctConversations(
 	order database_model.Orderable,
 	whereable database_model.Whereable,
 	prefix string,
-	db *gorm.DB,
+	workspaceID uuid.UUID,
 ) (int64, error) {
-	if db == nil {
-		db = database.DB
-	}
-	// Add the condition to filter messages sent or received by the messaging product contact
-	db = db.
+	db := database.DB.
+		Joins("JOIN messaging_products ON messages.messaging_product_id = messaging_products.id AND messaging_products.workspace_id = ?", workspaceID).
 		Group("COALESCE(from_id, to_id)")
 
 	return repository.Count(entity, order, whereable, prefix, db)
@@ -145,14 +146,10 @@ func ConversationContentLike(
 	pagination database_model.Paginable,
 	order database_model.Orderable,
 	whereable database_model.Whereable,
-	db *gorm.DB,
+	workspaceID uuid.UUID,
 ) ([]message_entity.Message, error) {
-	if db == nil {
-		db = database.DB.Model(&entity)
-	}
-
-	// Construct the LIKE query for sender_data, receiver_data, or product_data
-	db = db.
+	db := database.DB.Model(&entity).
+		Joins("JOIN messaging_products ON messages.messaging_product_id = messaging_products.id AND messaging_products.workspace_id = ?", workspaceID).
 		Joins("From").
 		Joins("To").
 		Joins("From.Contact").
@@ -190,14 +187,10 @@ func CountConversationContentLike(
 	entity message_entity.Message,
 	order database_model.Orderable,
 	whereable database_model.Whereable,
-	db *gorm.DB,
+	workspaceID uuid.UUID,
 ) (int64, error) {
-	if db == nil {
-		db = database.DB
-	}
-
-	// Construct the LIKE query for sender_data, receiver_data, or product_data
-	db = db.
+	db := database.DB.
+		Joins("JOIN messaging_products ON messages.messaging_product_id = messaging_products.id AND messaging_products.workspace_id = ?", workspaceID).
 		Joins("From").
 		Joins("To").
 		Joins("From.Contact").

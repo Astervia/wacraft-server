@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 
+	auth_router "github.com/Astervia/wacraft-server/src/auth/router"
 	// PREMIUM STARTS
 	campaign_router "github.com/Astervia/wacraft-server/src/campaign/router"
 	campaign_websocket "github.com/Astervia/wacraft-server/src/campaign/websocket-router"
@@ -21,6 +22,7 @@ import (
 	webhook_router "github.com/Astervia/wacraft-server/src/webhook/router"
 	"github.com/Astervia/wacraft-server/src/websocket"
 	whatsapp_template_router "github.com/Astervia/wacraft-server/src/whatsapp-template/router"
+	workspace_router "github.com/Astervia/wacraft-server/src/workspace/router"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/pterm/pterm"
@@ -37,7 +39,9 @@ func serve() {
 	// Serving http endpoints
 	webhook_config.ServeWebhook(app)
 	makeDocs(app)
+	auth_router.Route(app)
 	user_router.Route(app)
+	workspace_router.Route(app)
 	contact_router.Route(app)
 	messaging_product_router.Route(app)
 	message_router.Route(app)

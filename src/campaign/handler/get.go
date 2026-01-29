@@ -7,6 +7,7 @@ import (
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -24,6 +25,8 @@ import (
 //	@Security		ApiKeyAuth
 //	@Router			/campaign [get]
 func Get(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	query := new(campaign_model.QueryPaginated)
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -41,6 +44,7 @@ func Get(c *fiber.Ctx) error {
 		campaign_entity.Campaign{
 			Name:               query.Name,
 			MessagingProductID: query.MessagingProductID,
+			WorkspaceID:        &workspace.ID,
 			Audit: common_model.Audit{
 				ID: query.ID,
 			},
@@ -73,6 +77,8 @@ func Get(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/campaign/message [get]
 func GetMessages(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	query := new(campaign_model.QueryMessagesPaginated)
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -86,7 +92,8 @@ func GetMessages(c *fiber.Ctx) error {
 		)
 	}
 
-	db := database.DB.Model(&campaign_entity.CampaignMessage{}).Joins("Message")
+	db := database.DB.Model(&campaign_entity.CampaignMessage{}).Joins("Message").
+		Joins("JOIN campaigns ON campaign_messages.campaign_id = campaigns.id AND campaigns.workspace_id = ?", workspace.ID)
 
 	campaigns, err := repository.GetPaginated(
 		campaign_entity.CampaignMessage{
@@ -125,6 +132,8 @@ func GetMessages(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/campaign/message/unsent [get]
 func GetUnsentMessages(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	query := new(campaign_model.QueryMessagesPaginated)
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -138,7 +147,9 @@ func GetUnsentMessages(c *fiber.Ctx) error {
 		)
 	}
 
-	db := database.DB.Model(&campaign_entity.CampaignMessage{}).Joins("Message").Where("message_id IS NULL")
+	db := database.DB.Model(&campaign_entity.CampaignMessage{}).Joins("Message").
+		Joins("JOIN campaigns ON campaign_messages.campaign_id = campaigns.id AND campaigns.workspace_id = ?", workspace.ID).
+		Where("message_id IS NULL")
 
 	campaigns, err := repository.GetPaginated(
 		campaign_entity.CampaignMessage{
@@ -177,6 +188,8 @@ func GetUnsentMessages(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/campaign/message/sent [get]
 func GetSentMessages(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	query := new(campaign_model.QueryMessagesPaginated)
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -190,7 +203,9 @@ func GetSentMessages(c *fiber.Ctx) error {
 		)
 	}
 
-	db := database.DB.Model(&campaign_entity.CampaignMessage{}).Joins("Message").Where("message_id IS NOT NULL")
+	db := database.DB.Model(&campaign_entity.CampaignMessage{}).Joins("Message").
+		Joins("JOIN campaigns ON campaign_messages.campaign_id = campaigns.id AND campaigns.workspace_id = ?", workspace.ID).
+		Where("message_id IS NOT NULL")
 
 	campaigns, err := repository.GetPaginated(
 		campaign_entity.CampaignMessage{
@@ -229,6 +244,8 @@ func GetSentMessages(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/campaign/error [get]
 func GetErrors(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	query := new(campaign_model.QueryErrorsPaginated)
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -241,6 +258,10 @@ func GetErrors(c *fiber.Ctx) error {
 			common_model.NewValidationError(err).Send(),
 		)
 	}
+
+	db := database.DB.
+		Joins("JOIN campaign_messages ON campaign_message_send_errors.campaign_message_id = campaign_messages.id").
+		Joins("JOIN campaigns ON campaign_messages.campaign_id = campaigns.id AND campaigns.workspace_id = ?", workspace.ID)
 
 	campaigns, err := repository.GetPaginated(
 		campaign_entity.CampaignMessageSendError{
@@ -255,7 +276,7 @@ func GetErrors(c *fiber.Ctx) error {
 		&query.Paginate,
 		&query.DateOrder,
 		&query.DateWhere,
-		"", database.DB,
+		"", db,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(

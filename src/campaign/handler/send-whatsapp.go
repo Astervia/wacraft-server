@@ -4,11 +4,14 @@ import (
 	"errors"
 	"sync"
 
+	campaign_entity "github.com/Astervia/wacraft-core/src/campaign/entity"
 	campaign_model "github.com/Astervia/wacraft-core/src/campaign/model"
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	user_entity "github.com/Astervia/wacraft-core/src/user/entity"
 	websocket_model "github.com/Astervia/wacraft-core/src/websocket/model"
+	workspace_entity "github.com/Astervia/wacraft-core/src/workspace/entity"
 	campaign_service "github.com/Astervia/wacraft-server/src/campaign/service"
+	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/google/uuid"
 )
@@ -41,7 +44,16 @@ func SendWhatsAppCampaignSubscription(ctx *websocket.Conn) {
 		return
 	}
 
+	workspace := ctx.Locals("workspace").(*workspace_entity.Workspace)
 	user := ctx.Locals("user").(*user_entity.User)
+
+	// Validate campaign belongs to workspace
+	var campaign campaign_entity.Campaign
+	if err := database.DB.Where("id = ? AND workspace_id = ?", campaignID, workspace.ID).First(&campaign).Error; err != nil {
+		ctx.WriteJSON(common_model.NewApiError("campaign not found or access denied", err, "handler").Send())
+		return
+	}
+
 	clientID := sendCampaignClientPool.CreateID(user.ID)
 	client := websocket_model.CreateClient(*clientID, ctx)
 	campaignChannel := SendCampaignPool.AddUser(*client, clientID.String(), campaignID, nil)

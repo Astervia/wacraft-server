@@ -1,137 +1,11 @@
 basePath: /
 definitions:
-  auth_model.TokenRequest:
-    properties:
-      grant_type:
-        description: password | refresh_token
-        example: password
-        type: string
-      password:
-        example: "123456"
-        type: string
-      refresh_token:
-        type: string
-      username:
-        example: user@mail.com
-        type: string
-    type: object
-  auth_model.TokenResponse:
-    properties:
-      access_token:
-        description: JWT
-        example: eyJhbGciOi...
-        type: string
-      expires_in:
-        description: seconds
-        example: 3600
-        type: integer
-      refresh_token:
-        description: JWT
-        example: eyJhbGciOi...
-        type: string
-      token_type:
-        description: Always "bearer"
-        example: bearer
-        type: string
-    type: object
-  campaign_entity.Campaign:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: string
-      messaging_product:
-        allOf:
-        - $ref: '#/definitions/messaging_product_entity.MessagingProduct'
-        description: Null if manager received the message.
-      messaging_product_id:
-        type: string
-      name:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  campaign_entity.CampaignMessage:
-    properties:
-      campaign:
-        $ref: '#/definitions/campaign_entity.Campaign'
-      campaign_id:
-        type: string
-      created_at:
-        type: string
-      id:
-        type: string
-      message:
-        $ref: '#/definitions/message_entity.Message'
-      message_id:
-        type: string
-      sender_data:
-        allOf:
-        - $ref: '#/definitions/message_model.SenderData'
-        description: Specific data that allows to send message.
-      updated_at:
-        type: string
-    type: object
-  campaign_entity.CampaignMessageSendError:
-    properties:
-      campaign_message:
-        $ref: '#/definitions/campaign_entity.CampaignMessage'
-      campaign_message_id:
-        type: string
-      created_at:
-        type: string
-      error_data:
-        description: Error message.
-        type: string
-      id:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  campaign_model.CreateCampaign:
-    properties:
-      messaging_product_id:
-        type: string
-      name:
-        type: string
-    required:
-    - messaging_product_id
-    type: object
-  campaign_model.CreateCampaignMessage:
-    properties:
-      campaign_id:
-        type: string
-      sender_data:
-        allOf:
-        - $ref: '#/definitions/message_model.SenderData'
-        description: Specific data that allows to send message.
-    type: object
-  campaign_model.UpdateCampaign:
-    properties:
-      id:
-        description: The unique identifier.
-        type: string
-      messaging_product_id:
-        type: string
-      name:
-        type: string
-    type: object
   common_model.BusinessAccount:
     enum:
     - whatsapp_business_account
     type: string
     x-enum-varnames:
     - WhatsAppBusinessAccount
-  common_model.DescriptiveError:
-    properties:
-      content:
-        description: Additional information about the error provided by the service
-          that generated it. E. g. if an ORM returns an error, it will be propagated
-          here as the raw error.
-      message:
-        description: Short text describing the error as best as we can for humans.
-        type: string
-    type: object
   common_model.Error:
     properties:
       code:
@@ -218,18 +92,148 @@ definitions:
     - Utility
     - Service
     - ReferralConversation
-  common_model.RequiredID:
-    properties:
-      id:
-        description: The unique identifier.
-        type: string
-    type: object
   common_model.SuccessResponse:
     properties:
       success:
         type: boolean
     type: object
-  contact_entity.Contact:
+  github_com_Astervia_wacraft-core_src_auth_model.TokenRequest:
+    properties:
+      grant_type:
+        description: password | refresh_token
+        example: password
+        type: string
+      password:
+        example: "123456"
+        type: string
+      refresh_token:
+        type: string
+      username:
+        example: user@mail.com
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_auth_model.TokenResponse:
+    properties:
+      access_token:
+        description: JWT
+        example: eyJhbGciOi...
+        type: string
+      expires_in:
+        description: seconds
+        example: 3600
+        type: integer
+      refresh_token:
+        description: JWT
+        example: eyJhbGciOi...
+        type: string
+      token_type:
+        description: Always "bearer"
+        example: bearer
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_campaign_entity.Campaign:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      messaging_product:
+        allOf:
+        - $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProduct'
+        description: Null if manager received the message.
+      messaging_product_id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+      workspace:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace'
+      workspace_id:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_campaign_entity.CampaignMessage:
+    properties:
+      campaign:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.Campaign'
+      campaign_id:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      message:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message'
+      message_id:
+        type: string
+      sender_data:
+        allOf:
+        - $ref: '#/definitions/github_com_Astervia_wacraft-core_src_message_model.SenderData'
+        description: Specific data that allows to send message.
+      updated_at:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_campaign_entity.CampaignMessageSendError:
+    properties:
+      campaign_message:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.CampaignMessage'
+      campaign_message_id:
+        type: string
+      created_at:
+        type: string
+      error_data:
+        description: Error message.
+        type: string
+      id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_campaign_model.CreateCampaign:
+    properties:
+      messaging_product_id:
+        type: string
+      name:
+        type: string
+    required:
+    - messaging_product_id
+    type: object
+  github_com_Astervia_wacraft-core_src_campaign_model.CreateCampaignMessage:
+    properties:
+      campaign_id:
+        type: string
+      sender_data:
+        allOf:
+        - $ref: '#/definitions/github_com_Astervia_wacraft-core_src_message_model.SenderData'
+        description: Specific data that allows to send message.
+    type: object
+  github_com_Astervia_wacraft-core_src_campaign_model.UpdateCampaign:
+    properties:
+      id:
+        description: The unique identifier.
+        type: string
+      messaging_product_id:
+        type: string
+      name:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_common_model.DescriptiveError:
+    properties:
+      content:
+        description: Additional information about the error provided by the service
+          that generated it. E. g. if an ORM returns an error, it will be propagated
+          here as the raw error.
+      message:
+        description: Short text describing the error as best as we can for humans.
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_common_model.RequiredID:
+    properties:
+      id:
+        description: The unique identifier.
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_contact_entity.Contact:
     properties:
       created_at:
         type: string
@@ -243,8 +247,12 @@ definitions:
         type: string
       updated_at:
         type: string
+      workspace:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace'
+      workspace_id:
+        type: string
     type: object
-  contact_model.CreateContact:
+  github_com_Astervia_wacraft-core_src_contact_model.CreateContact:
     properties:
       email:
         type: string
@@ -253,7 +261,7 @@ definitions:
       photo_path:
         type: string
     type: object
-  contact_model.UpdateContact:
+  github_com_Astervia_wacraft-core_src_contact_model.UpdateContact:
     properties:
       email:
         type: string
@@ -265,7 +273,7 @@ definitions:
       photo_path:
         type: string
     type: object
-  database_model.DateOrderEnum:
+  github_com_Astervia_wacraft-core_src_database_model.DateOrderEnum:
     enum:
     - asc
     - desc
@@ -273,6 +281,775 @@ definitions:
     x-enum-varnames:
     - Asc
     - Desc
+  github_com_Astervia_wacraft-core_src_message_entity.Message:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      from:
+        allOf:
+        - $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact'
+        description: Null if manager sent the message.
+      from_id:
+        description: Null if manager sent the message.
+        type: string
+      id:
+        type: string
+      messaging_product:
+        allOf:
+        - $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProduct'
+        description: Null if manager received the message.
+      messaging_product_id:
+        type: string
+      product_data:
+        allOf:
+        - $ref: '#/definitions/github_com_Astervia_wacraft-core_src_message_model.ProductData'
+        description: Specific data about the product. For example, the webhook data
+          received.
+      receiver_data:
+        allOf:
+        - $ref: '#/definitions/github_com_Astervia_wacraft-core_src_message_model.ReceiverData'
+        description: Specific data about the product. For example, the webhook data
+          received.
+      sender_data:
+        allOf:
+        - $ref: '#/definitions/github_com_Astervia_wacraft-core_src_message_model.SenderData'
+        description: Specific data that allows to send message.
+      statuses:
+        items:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_status_model.StatusFields'
+        type: array
+      to:
+        allOf:
+        - $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact'
+        description: Null if manager received the message.
+      to_id:
+        description: Null if manager received the message.
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_message_model.ProductData:
+    properties:
+      contacts:
+        description: Contacts that received messages.
+        items:
+          $ref: '#/definitions/message_model.ResponseContact'
+        type: array
+      messages:
+        description: IDs of sent messages.
+        items:
+          $ref: '#/definitions/message_model.MessageResponse'
+        type: array
+      messaging_product:
+        description: Default is "whatsapp".
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_message_model.ReceiverData:
+    properties:
+      audio:
+        $ref: '#/definitions/media_model.UseMedia'
+      button:
+        $ref: '#/definitions/message_type_common_model.ButtonData'
+      contacts:
+        items:
+          $ref: '#/definitions/message_content_type_model.Contact'
+        type: array
+      context:
+        $ref: '#/definitions/message_model.ReceivedContext'
+      document:
+        $ref: '#/definitions/media_model.UseMedia'
+      errors:
+        items:
+          $ref: '#/definitions/common_model.Error'
+        type: array
+      from:
+        description: The customer's WhatsApp ID. A business can respond to a customer
+          using this ID. This ID may not match the customer's phone number, which
+          is returned by the API as input when sending a message to the customer.
+        type: string
+      id:
+        description: The ID for the message that was received by the business. You
+          could use messages endpoint to mark this specific message as read.
+        type: string
+      image:
+        $ref: '#/definitions/media_model.UseMedia'
+      interactive:
+        $ref: '#/definitions/message_content_type_model.ReceivedInteractive'
+      location:
+        $ref: '#/definitions/message_type_common_model.LocationData'
+      order:
+        $ref: '#/definitions/message_type_common_model.OrderData'
+      reaction:
+        $ref: '#/definitions/message_type_common_model.ReactionData'
+      referral:
+        $ref: '#/definitions/message_model.Referral'
+      sticker:
+        $ref: '#/definitions/media_model.UseMedia'
+      system:
+        $ref: '#/definitions/message_model.System'
+      template:
+        $ref: '#/definitions/template_model.UseTemplate'
+      text:
+        $ref: '#/definitions/message_type_common_model.TextData'
+      timestamp:
+        description: Unix timestamp indicating when the WhatsApp server received the
+          message from the customer.
+        type: string
+      type:
+        $ref: '#/definitions/message_type_common_model.ReceiveType'
+      video:
+        $ref: '#/definitions/media_model.UseMedia'
+    type: object
+  github_com_Astervia_wacraft-core_src_message_model.SendWhatsAppMessage:
+    properties:
+      sender_data:
+        allOf:
+        - $ref: '#/definitions/message_model.Message'
+        description: Specific data that allows to send message.
+      to_id:
+        description: Messaging product contact id to send message.
+        type: string
+    required:
+    - sender_data
+    - to_id
+    type: object
+  github_com_Astervia_wacraft-core_src_message_model.SenderData:
+    properties:
+      audio:
+        $ref: '#/definitions/media_model.UseMedia'
+      biz_opaque_callback_data:
+        description: Arbitrary string used for tracking messages, groups of messages,
+          you name it...
+        type: string
+      button:
+        $ref: '#/definitions/message_type_common_model.ButtonData'
+      contacts:
+        items:
+          $ref: '#/definitions/message_content_type_model.Contact'
+        type: array
+      context:
+        allOf:
+        - $ref: '#/definitions/message_model.Context'
+        description: Used to answer a message.
+      document:
+        $ref: '#/definitions/media_model.UseMedia'
+      image:
+        $ref: '#/definitions/media_model.UseMedia'
+      interactive:
+        $ref: '#/definitions/message_content_type_model.Interactive'
+      location:
+        $ref: '#/definitions/message_type_common_model.LocationData'
+      messaging_product:
+        description: Default is "whatsapp".
+        type: string
+      order:
+        $ref: '#/definitions/message_type_common_model.OrderData'
+      reaction:
+        $ref: '#/definitions/message_type_common_model.ReactionData'
+      recipient_identity_key_hash:
+        description: To use it you need to allow identity check at code.service. If
+          the field is provided, this message will only be sent if "recipient_identity_key_hash"
+          matches client's current hash.
+        type: string
+      recipient_type:
+        description: Default is "individual"
+        type: string
+      sticker:
+        $ref: '#/definitions/media_model.UseMedia'
+      template:
+        $ref: '#/definitions/template_model.UseTemplate'
+      text:
+        $ref: '#/definitions/message_type_common_model.TextData'
+      to:
+        description: Whatsapp ID of receiver.
+        type: string
+      type:
+        allOf:
+        - $ref: '#/definitions/message_type_common_model.Type'
+        description: Type of message.
+      video:
+        $ref: '#/definitions/media_model.UseMedia'
+    required:
+    - type
+    type: object
+  github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProduct:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        allOf:
+        - $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_model.MessagingProductName'
+        description: Add type:enum('WhatsApp'); when it becomes supported by GORM
+          and PostgreSQL
+        enum:
+        - WhatsApp
+      phone_config:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_phone-config_entity.PhoneConfig'
+      phone_config_id:
+        type: string
+      updated_at:
+        type: string
+      workspace:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace'
+      workspace_id:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact:
+    properties:
+      blocked:
+        type: boolean
+      contact:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_contact_entity.Contact'
+      contact_id:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      last_read_at:
+        description: Timestamp of the last read action.
+        type: string
+      messaging_product:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProduct'
+      messaging_product_id:
+        type: string
+      product_details:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_model.ProductDetails'
+      updated_at:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_messaging-product_model.CreateContact:
+    properties:
+      contact_id:
+        type: string
+      messaging_product_id:
+        type: string
+      product_details:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_model.ProductDetails'
+    type: object
+  github_com_Astervia_wacraft-core_src_messaging-product_model.CreateWhatsAppContact:
+    properties:
+      contact_id:
+        type: string
+      product_details:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_model.WhatsAppProductDetails'
+    type: object
+  github_com_Astervia_wacraft-core_src_messaging-product_model.MessagingProductName:
+    enum:
+    - WhatsApp
+    type: string
+    x-enum-varnames:
+    - WhatsApp
+  github_com_Astervia_wacraft-core_src_messaging-product_model.ProductDetails:
+    properties:
+      phone_number:
+        description: Available at from field on received messages.
+        type: string
+      wa_id:
+        description: Available at from field on received messages.
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_messaging-product_model.WhatsAppProductDetails:
+    properties:
+      phone_number:
+        description: Available at from field on received messages.
+        type: string
+      wa_id:
+        description: Available at from field on received messages.
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_phone-config_entity.PhoneConfig:
+    properties:
+      access_token:
+        type: string
+      created_at:
+        type: string
+      display_phone:
+        description: Display phone number (e.g., +1234567890)
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      meta_app_secret:
+        type: string
+      name:
+        description: Friendly name for this configuration
+        type: string
+      updated_at:
+        type: string
+      waba_account_id:
+        description: WhatsApp Business Account ID
+        type: string
+      waba_id:
+        description: Phone Number ID from Meta (unique when active)
+        type: string
+      webhook_verify_token:
+        type: string
+      workspace:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace'
+      workspace_id:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_phone-config_model.CreatePhoneConfig:
+    properties:
+      access_token:
+        type: string
+      display_phone:
+        type: string
+      is_active:
+        type: boolean
+      meta_app_secret:
+        type: string
+      name:
+        type: string
+      waba_account_id:
+        description: WhatsApp Business Account ID
+        type: string
+      waba_id:
+        description: Phone Number ID from Meta
+        type: string
+      webhook_verify_token:
+        type: string
+    required:
+    - access_token
+    - display_phone
+    - meta_app_secret
+    - name
+    - waba_account_id
+    - waba_id
+    - webhook_verify_token
+    type: object
+  github_com_Astervia_wacraft-core_src_phone-config_model.UpdatePhoneConfig:
+    properties:
+      access_token:
+        type: string
+      display_phone:
+        type: string
+      is_active:
+        type: boolean
+      meta_app_secret:
+        type: string
+      name:
+        type: string
+      waba_account_id:
+        type: string
+      waba_id:
+        type: string
+      webhook_verify_token:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_status_entity.Status:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      json:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message'
+      message_id:
+        type: string
+      product_data:
+        allOf:
+        - $ref: '#/definitions/github_com_Astervia_wacraft-core_src_status_model.ProductData'
+        description: Specific data about the product. For example, the webhook data
+          received.
+      updated_at:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_status_model.ProductData:
+    properties:
+      biz_opaque_callback_data:
+        description: Arbitrary string used for tracking messages, groups of messages,
+          you name it...
+        type: string
+      conversation:
+        allOf:
+        - $ref: '#/definitions/webhook_model.Conversation'
+        description: Information about the conversation.
+      errors:
+        description: An array of error objects describing the error. Error objects
+          have the following properties, which map to their equivalent properties
+          in API error response payloads.
+        items:
+          $ref: '#/definitions/common_model.Error'
+        type: array
+      id:
+        description: The ID for the message that the business that is subscribed to
+          the webhooks sent to a customer
+        type: string
+      pricing:
+        allOf:
+        - $ref: '#/definitions/common_model.Pricing'
+        description: An object containing pricing information.
+      recipient_id:
+        description: The customer's WhatsApp ID. A business can respond to a customer
+          using this ID. This ID may not match the customer's phone number, which
+          is returned by the API as input when sending a message to the customer.
+        type: string
+      status:
+        $ref: '#/definitions/message_model.SendingStatus'
+      timestamp:
+        description: Date for the status message
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_status_model.StatusFields:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      message_id:
+        type: string
+      product_data:
+        allOf:
+        - $ref: '#/definitions/github_com_Astervia_wacraft-core_src_status_model.ProductData'
+        description: Specific data about the product. For example, the webhook data
+          received.
+      updated_at:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_user_entity.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      email_verified:
+        type: boolean
+      id:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      role:
+        description: 'Deprecated: use workspace policies'
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_user_model.Create:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_user_model.ForgotPasswordRequest:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  github_com_Astervia_wacraft-core_src_user_model.RegisterRequest:
+    properties:
+      email:
+        type: string
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      password:
+        maxLength: 72
+        minLength: 8
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  github_com_Astervia_wacraft-core_src_user_model.RegisterResponse:
+    properties:
+      message:
+        type: string
+      user_id:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_user_model.ResetPasswordRequest:
+    properties:
+      password:
+        maxLength: 72
+        minLength: 8
+        type: string
+      token:
+        type: string
+    required:
+    - password
+    - token
+    type: object
+  github_com_Astervia_wacraft-core_src_user_model.UpdateWithID:
+    properties:
+      email:
+        type: string
+      id:
+        description: The unique identifier.
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_user_model.UpdateWithPassword:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_webhook_entity.Webhook:
+    properties:
+      authorization:
+        type: string
+      created_at:
+        type: string
+      event:
+        type: string
+      http_method:
+        type: string
+      id:
+        type: string
+      timeout:
+        description: The timeout in seconds. 0 means no timeout
+        type: integer
+      updated_at:
+        type: string
+      url:
+        type: string
+      workspace:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace'
+      workspace_id:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_webhook_entity.WebhookLog:
+    properties:
+      created_at:
+        type: string
+      http_response_code:
+        type: integer
+      id:
+        type: string
+      payload: {}
+      response_data: {}
+      updated_at:
+        type: string
+      webhook:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_webhook_entity.Webhook'
+      webhook_id:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_webhook_model.CreateWebhook:
+    properties:
+      authorization:
+        description: Optional authorization token
+        type: string
+      event:
+        description: Event type associated with the webhook, required
+        type: string
+      http_method:
+        enum:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - PATCH
+        type: string
+      timeout:
+        maximum: 60
+        minimum: 1
+        type: integer
+      url:
+        description: Webhook URL, required and must be a valid URL
+        type: string
+    required:
+    - event
+    - http_method
+    - url
+    type: object
+  github_com_Astervia_wacraft-core_src_webhook_model.UpdateWebhook:
+    properties:
+      authorization:
+        description: Optional updated authorization token
+        type: string
+      event:
+        description: Optional updated event associated with the webhook
+        type: string
+      http_method:
+        enum:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - PATCH
+        type: string
+      id:
+        description: The unique identifier.
+        type: string
+      timeout:
+        maximum: 60
+        minimum: 1
+        type: integer
+      url:
+        description: Optional updated URL, validated to be a valid URL
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_workspace_entity.Workspace:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      creator:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_entity.User'
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      slug:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_workspace_model.AcceptInvitationRequest:
+    properties:
+      name:
+        description: Required if user doesn't exist
+        maxLength: 100
+        minLength: 2
+        type: string
+      password:
+        description: Required if user doesn't exist
+        maxLength: 72
+        minLength: 8
+        type: string
+      token:
+        type: string
+    required:
+    - token
+    type: object
+  github_com_Astervia_wacraft-core_src_workspace_model.CreateInvitationRequest:
+    properties:
+      email:
+        type: string
+      policies:
+        items:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.Policy'
+        minItems: 1
+        type: array
+    required:
+    - email
+    - policies
+    type: object
+  github_com_Astervia_wacraft-core_src_workspace_model.CreateMember:
+    properties:
+      policies:
+        items:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.Policy'
+        minItems: 1
+        type: array
+      user_id:
+        type: string
+    required:
+    - policies
+    - user_id
+    type: object
+  github_com_Astervia_wacraft-core_src_workspace_model.CreateWorkspace:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      slug:
+        type: string
+    required:
+    - name
+    - slug
+    type: object
+  github_com_Astervia_wacraft-core_src_workspace_model.InvitationResponse:
+    properties:
+      accepted_at:
+        type: string
+      email:
+        type: string
+      expires_at:
+        type: string
+      id:
+        type: string
+      invited_by:
+        type: string
+      policies:
+        items:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.Policy'
+        type: array
+      workspace_id:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_workspace_model.Policy:
+    enum:
+    - workspace.admin
+    - workspace.settings
+    - workspace.members
+    - phone_config.read
+    - phone_config.manage
+    - contact.read
+    - contact.manage
+    - message.read
+    - message.send
+    - campaign.read
+    - campaign.manage
+    - campaign.run
+    - webhook.read
+    - webhook.manage
+    type: string
+    x-enum-varnames:
+    - PolicyWorkspaceAdmin
+    - PolicyWorkspaceSettings
+    - PolicyWorkspaceMembers
+    - PolicyPhoneConfigRead
+    - PolicyPhoneConfigManage
+    - PolicyContactRead
+    - PolicyContactManage
+    - PolicyMessageRead
+    - PolicyMessageSend
+    - PolicyCampaignRead
+    - PolicyCampaignManage
+    - PolicyCampaignRun
+    - PolicyWebhookRead
+    - PolicyWebhookManage
+  github_com_Astervia_wacraft-core_src_workspace_model.UpdateMemberPolicies:
+    properties:
+      policies:
+        items:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.Policy'
+        type: array
+    required:
+    - policies
+    type: object
+  github_com_Astervia_wacraft-core_src_workspace_model.UpdateWorkspace:
+    properties:
+      description:
+        type: string
+      id:
+        description: The unique identifier.
+        type: string
+      name:
+        type: string
+      slug:
+        type: string
+    type: object
   media_model.MediaInfo:
     properties:
       file_size:
@@ -362,55 +1139,6 @@ definitions:
         $ref: '#/definitions/message_type_interactive_model.ListReplyData'
       type:
         description: The type of interactive message received.
-        type: string
-    type: object
-  message_entity.Message:
-    properties:
-      created_at:
-        type: string
-      deleted_at:
-        type: string
-      from:
-        allOf:
-        - $ref: '#/definitions/messaging_product_entity.MessagingProductContact'
-        description: Null if manager sent the message.
-      from_id:
-        description: Null if manager sent the message.
-        type: string
-      id:
-        type: string
-      messaging_product:
-        allOf:
-        - $ref: '#/definitions/messaging_product_entity.MessagingProduct'
-        description: Null if manager received the message.
-      messaging_product_id:
-        type: string
-      product_data:
-        allOf:
-        - $ref: '#/definitions/message_model.ProductData'
-        description: Specific data about the product. For example, the webhook data
-          received.
-      receiver_data:
-        allOf:
-        - $ref: '#/definitions/message_model.ReceiverData'
-        description: Specific data about the product. For example, the webhook data
-          received.
-      sender_data:
-        allOf:
-        - $ref: '#/definitions/message_model.SenderData'
-        description: Specific data that allows to send message.
-      statuses:
-        items:
-          $ref: '#/definitions/status_model.StatusFields'
-        type: array
-      to:
-        allOf:
-        - $ref: '#/definitions/messaging_product_entity.MessagingProductContact'
-        description: Null if manager received the message.
-      to_id:
-        description: Null if manager received the message.
-        type: string
-      updated_at:
         type: string
     type: object
   message_model.Context:
@@ -543,22 +1271,6 @@ definitions:
     required:
     - message_status
     type: object
-  message_model.ProductData:
-    properties:
-      contacts:
-        description: Contacts that received messages.
-        items:
-          $ref: '#/definitions/message_model.ResponseContact'
-        type: array
-      messages:
-        description: IDs of sent messages.
-        items:
-          $ref: '#/definitions/message_model.MessageResponse'
-        type: array
-      messaging_product:
-        description: Default is "whatsapp".
-        type: string
-    type: object
   message_model.ReceivedContext:
     properties:
       forwarded:
@@ -581,62 +1293,6 @@ definitions:
         description: Referred product object describing the product the user is requesting
           information about. You must parse this value if you support Product Enquiry
           Messages.
-    type: object
-  message_model.ReceiverData:
-    properties:
-      audio:
-        $ref: '#/definitions/media_model.UseMedia'
-      button:
-        $ref: '#/definitions/message_type_common_model.ButtonData'
-      contacts:
-        items:
-          $ref: '#/definitions/message_content_type_model.Contact'
-        type: array
-      context:
-        $ref: '#/definitions/message_model.ReceivedContext'
-      document:
-        $ref: '#/definitions/media_model.UseMedia'
-      errors:
-        items:
-          $ref: '#/definitions/common_model.Error'
-        type: array
-      from:
-        description: The customer's WhatsApp ID. A business can respond to a customer
-          using this ID. This ID may not match the customer's phone number, which
-          is returned by the API as input when sending a message to the customer.
-        type: string
-      id:
-        description: The ID for the message that was received by the business. You
-          could use messages endpoint to mark this specific message as read.
-        type: string
-      image:
-        $ref: '#/definitions/media_model.UseMedia'
-      interactive:
-        $ref: '#/definitions/message_content_type_model.ReceivedInteractive'
-      location:
-        $ref: '#/definitions/message_type_common_model.LocationData'
-      order:
-        $ref: '#/definitions/message_type_common_model.OrderData'
-      reaction:
-        $ref: '#/definitions/message_type_common_model.ReactionData'
-      referral:
-        $ref: '#/definitions/message_model.Referral'
-      sticker:
-        $ref: '#/definitions/media_model.UseMedia'
-      system:
-        $ref: '#/definitions/message_model.System'
-      template:
-        $ref: '#/definitions/template_model.UseTemplate'
-      text:
-        $ref: '#/definitions/message_type_common_model.TextData'
-      timestamp:
-        description: Unix timestamp indicating when the WhatsApp server received the
-          message from the customer.
-        type: string
-      type:
-        $ref: '#/definitions/message_type_common_model.ReceiveType'
-      video:
-        $ref: '#/definitions/media_model.UseMedia'
     type: object
   message_model.Referral:
     properties:
@@ -690,78 +1346,6 @@ definitions:
       wa_id:
         description: User's WhatsApp id returned.
         type: string
-    type: object
-  message_model.SendWhatsAppMessage:
-    properties:
-      sender_data:
-        allOf:
-        - $ref: '#/definitions/message_model.Message'
-        description: Specific data that allows to send message.
-      to_id:
-        description: Messaging product contact id to send message.
-        type: string
-    required:
-    - sender_data
-    - to_id
-    type: object
-  message_model.SenderData:
-    properties:
-      audio:
-        $ref: '#/definitions/media_model.UseMedia'
-      biz_opaque_callback_data:
-        description: Arbitrary string used for tracking messages, groups of messages,
-          you name it...
-        type: string
-      button:
-        $ref: '#/definitions/message_type_common_model.ButtonData'
-      contacts:
-        items:
-          $ref: '#/definitions/message_content_type_model.Contact'
-        type: array
-      context:
-        allOf:
-        - $ref: '#/definitions/message_model.Context'
-        description: Used to answer a message.
-      document:
-        $ref: '#/definitions/media_model.UseMedia'
-      image:
-        $ref: '#/definitions/media_model.UseMedia'
-      interactive:
-        $ref: '#/definitions/message_content_type_model.Interactive'
-      location:
-        $ref: '#/definitions/message_type_common_model.LocationData'
-      messaging_product:
-        description: Default is "whatsapp".
-        type: string
-      order:
-        $ref: '#/definitions/message_type_common_model.OrderData'
-      reaction:
-        $ref: '#/definitions/message_type_common_model.ReactionData'
-      recipient_identity_key_hash:
-        description: To use it you need to allow identity check at code.service. If
-          the field is provided, this message will only be sent if "recipient_identity_key_hash"
-          matches client's current hash.
-        type: string
-      recipient_type:
-        description: Default is "individual"
-        type: string
-      sticker:
-        $ref: '#/definitions/media_model.UseMedia'
-      template:
-        $ref: '#/definitions/template_model.UseTemplate'
-      text:
-        $ref: '#/definitions/message_type_common_model.TextData'
-      to:
-        description: Whatsapp ID of receiver.
-        type: string
-      type:
-        allOf:
-        - $ref: '#/definitions/message_type_common_model.Type'
-        description: Type of message.
-      video:
-        $ref: '#/definitions/media_model.UseMedia'
-    required:
-    - type
     type: object
   message_model.SendingStatus:
     enum:
@@ -1272,156 +1856,6 @@ definitions:
           24 characters.'
         type: string
     type: object
-  messaging_product_entity.MessagingProduct:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: string
-      name:
-        allOf:
-        - $ref: '#/definitions/messaging_product_model.MessagingProductName'
-        description: Add type:enum('WhatsApp'); when it becomes supported by GORM
-          and PostgreSQL
-        enum:
-        - WhatsApp
-      updated_at:
-        type: string
-    type: object
-  messaging_product_entity.MessagingProductContact:
-    properties:
-      blocked:
-        type: boolean
-      contact:
-        $ref: '#/definitions/contact_entity.Contact'
-      contact_id:
-        type: string
-      created_at:
-        type: string
-      id:
-        type: string
-      last_read_at:
-        description: Timestamp of the last read action.
-        type: string
-      messaging_product:
-        $ref: '#/definitions/messaging_product_entity.MessagingProduct'
-      messaging_product_id:
-        type: string
-      product_details:
-        $ref: '#/definitions/messaging_product_model.ProductDetails'
-      updated_at:
-        type: string
-    type: object
-  messaging_product_model.CreateContact:
-    properties:
-      contact_id:
-        type: string
-      messaging_product_id:
-        type: string
-      product_details:
-        $ref: '#/definitions/messaging_product_model.ProductDetails'
-    type: object
-  messaging_product_model.CreateWhatsAppContact:
-    properties:
-      contact_id:
-        type: string
-      product_details:
-        $ref: '#/definitions/messaging_product_model.WhatsAppProductDetails'
-    type: object
-  messaging_product_model.MessagingProductName:
-    enum:
-    - WhatsApp
-    type: string
-    x-enum-varnames:
-    - WhatsApp
-  messaging_product_model.ProductDetails:
-    properties:
-      phone_number:
-        description: Available at from field on received messages.
-        type: string
-      wa_id:
-        description: Available at from field on received messages.
-        type: string
-    type: object
-  messaging_product_model.WhatsAppProductDetails:
-    properties:
-      phone_number:
-        description: Available at from field on received messages.
-        type: string
-      wa_id:
-        description: Available at from field on received messages.
-        type: string
-    type: object
-  status_entity.Status:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: string
-      json:
-        $ref: '#/definitions/message_entity.Message'
-      message_id:
-        type: string
-      product_data:
-        allOf:
-        - $ref: '#/definitions/status_model.ProductData'
-        description: Specific data about the product. For example, the webhook data
-          received.
-      updated_at:
-        type: string
-    type: object
-  status_model.ProductData:
-    properties:
-      biz_opaque_callback_data:
-        description: Arbitrary string used for tracking messages, groups of messages,
-          you name it...
-        type: string
-      conversation:
-        allOf:
-        - $ref: '#/definitions/webhook_model.Conversation'
-        description: Information about the conversation.
-      errors:
-        description: An array of error objects describing the error. Error objects
-          have the following properties, which map to their equivalent properties
-          in API error response payloads.
-        items:
-          $ref: '#/definitions/common_model.Error'
-        type: array
-      id:
-        description: The ID for the message that the business that is subscribed to
-          the webhooks sent to a customer
-        type: string
-      pricing:
-        allOf:
-        - $ref: '#/definitions/common_model.Pricing'
-        description: An object containing pricing information.
-      recipient_id:
-        description: The customer's WhatsApp ID. A business can respond to a customer
-          using this ID. This ID may not match the customer's phone number, which
-          is returned by the API as input when sending a message to the customer.
-        type: string
-      status:
-        $ref: '#/definitions/message_model.SendingStatus'
-      timestamp:
-        description: Date for the status message
-        type: string
-    type: object
-  status_model.StatusFields:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: string
-      message_id:
-        type: string
-      product_data:
-        allOf:
-        - $ref: '#/definitions/status_model.ProductData'
-        description: Specific data about the product. For example, the webhook data
-          received.
-      updated_at:
-        type: string
-    type: object
   template_model.ButtonData:
     properties:
       example:
@@ -1513,13 +1947,13 @@ definitions:
     - HEADER
     - BODY
     - FOOTER
-    - BUTTONS
+    - BUTTON
     type: string
     x-enum-varnames:
     - Header
     - Body
     - Footer
-    - Buttons
+    - ButtonComponent
   template_model.GetTemplateResponse:
     properties:
       data:
@@ -1739,92 +2173,6 @@ definitions:
       name:
         type: string
     type: object
-  user_entity.User:
-    properties:
-      created_at:
-        type: string
-      email:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      password:
-        type: string
-      role:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  user_model.Create:
-    properties:
-      email:
-        type: string
-      name:
-        type: string
-      password:
-        type: string
-      role:
-        type: string
-    type: object
-  user_model.UpdateWithID:
-    properties:
-      email:
-        type: string
-      id:
-        description: The unique identifier.
-        type: string
-      name:
-        type: string
-      role:
-        type: string
-    type: object
-  user_model.UpdateWithPassword:
-    properties:
-      email:
-        type: string
-      name:
-        type: string
-      password:
-        type: string
-    type: object
-  webhook_entity.Webhook:
-    properties:
-      authorization:
-        type: string
-      created_at:
-        type: string
-      event:
-        type: string
-      http_method:
-        type: string
-      id:
-        type: string
-      timeout:
-        description: The timeout in seconds. 0 means no timeout
-        type: integer
-      updated_at:
-        type: string
-      url:
-        type: string
-    type: object
-  webhook_entity.WebhookLog:
-    properties:
-      created_at:
-        type: string
-      http_response_code:
-        type: integer
-      id:
-        type: string
-      payload: {}
-      response_data: {}
-      updated_at:
-        type: string
-      webhook:
-        $ref: '#/definitions/webhook_entity.Webhook'
-      webhook_id:
-        type: string
-    type: object
   webhook_model.Change:
     properties:
       field:
@@ -1856,34 +2204,6 @@ definitions:
         allOf:
         - $ref: '#/definitions/webhook_model.Origin'
         description: Describes conversation category
-    type: object
-  webhook_model.CreateWebhook:
-    properties:
-      authorization:
-        description: Optional authorization token
-        type: string
-      event:
-        description: Event type associated with the webhook, required
-        type: string
-      http_method:
-        enum:
-        - GET
-        - POST
-        - PUT
-        - DELETE
-        - PATCH
-        type: string
-      timeout:
-        maximum: 60
-        minimum: 1
-        type: integer
-      url:
-        description: Webhook URL, required and must be a valid URL
-        type: string
-    required:
-    - event
-    - http_method
-    - url
     type: object
   webhook_model.Entry:
     properties:
@@ -1983,33 +2303,6 @@ definitions:
         description: Date for the status message
         type: string
     type: object
-  webhook_model.UpdateWebhook:
-    properties:
-      authorization:
-        description: Optional updated authorization token
-        type: string
-      event:
-        description: Optional updated event associated with the webhook
-        type: string
-      http_method:
-        enum:
-        - GET
-        - POST
-        - PUT
-        - DELETE
-        - PATCH
-        type: string
-      id:
-        description: The unique identifier.
-        type: string
-      timeout:
-        maximum: 60
-        minimum: 1
-        type: integer
-      url:
-        description: Optional updated URL, validated to be a valid URL
-        type: string
-    type: object
   webhook_model.Value:
     properties:
       contacts:
@@ -2046,6 +2339,27 @@ definitions:
         description: The specific webhook a business is subscribed to. The webhook
           is whatsapp_business_account.
     type: object
+  workspace_handler.MemberResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      policies:
+        items:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.Policy'
+        type: array
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_entity.User'
+      user_id:
+        type: string
+      workspace:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace'
+      workspace_id:
+        type: string
+    type: object
 info:
   contact:
     email: wacraft@astervia.tech
@@ -2059,6 +2373,204 @@ info:
   title: wacraft Server API
   version: 0.1.0
 paths:
+  /auth/accept-invitation:
+    post:
+      consumes:
+      - application/json
+      description: Accepts a workspace invitation. Creates user if doesn't exist.
+      parameters:
+      - description: Invitation acceptance data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.AcceptInvitationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Invitation accepted
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid or expired invitation
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      summary: Accept invitation
+      tags:
+      - Auth
+  /auth/forgot-password:
+    post:
+      consumes:
+      - application/json
+      description: Sends a password reset email to the user if the email exists.
+      parameters:
+      - description: Email address
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_model.ForgotPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password reset email sent
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      summary: Request password reset
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user account and sends verification email if required.
+      parameters:
+      - description: Registration data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_model.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_model.RegisterResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "403":
+          description: Registration disabled
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "409":
+          description: Email already exists
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      summary: Register new user
+      tags:
+      - Auth
+  /auth/resend-verification:
+    post:
+      consumes:
+      - application/json
+      description: Resends the email verification link to the user's email.
+      parameters:
+      - description: Email address
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Verification email sent
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      summary: Resend verification email
+      tags:
+      - Auth
+  /auth/reset-password:
+    post:
+      consumes:
+      - application/json
+      description: Resets the user's password using the token from the reset email.
+      parameters:
+      - description: Reset token and new password
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_model.ResetPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password reset successful
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid or expired token
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      summary: Reset password
+      tags:
+      - Auth
+  /auth/verify-email:
+    get:
+      description: Verifies a user's email address using the token from the verification
+        email.
+      parameters:
+      - description: Verification token
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Email verified
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid or expired token
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      summary: Verify email
+      tags:
+      - Auth
   /campaign:
     delete:
       consumes:
@@ -2070,7 +2582,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/common_model.RequiredID'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.RequiredID'
       produces:
       - application/json
       responses:
@@ -2081,11 +2593,11 @@ paths:
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Delete campaign
@@ -2148,6 +2660,9 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
+      - in: query
+        name: workspace_id
+        type: string
       produces:
       - application/json
       responses:
@@ -2155,16 +2670,16 @@ paths:
           description: List of campaigns
           schema:
             items:
-              $ref: '#/definitions/campaign_entity.Campaign'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.Campaign'
             type: array
         "400":
           description: Invalid query
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: List campaigns (paginated)
@@ -2180,22 +2695,22 @@ paths:
         name: campaign
         required: true
         schema:
-          $ref: '#/definitions/campaign_model.UpdateCampaign'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_campaign_model.UpdateCampaign'
       produces:
       - application/json
       responses:
         "200":
           description: Updated campaign object
           schema:
-            $ref: '#/definitions/campaign_entity.Campaign'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.Campaign'
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Update campaign
@@ -2212,22 +2727,22 @@ paths:
         name: campaign
         required: true
         schema:
-          $ref: '#/definitions/campaign_model.CreateCampaign'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_campaign_model.CreateCampaign'
       produces:
       - application/json
       responses:
         "201":
           description: Created campaign
           schema:
-            $ref: '#/definitions/campaign_entity.Campaign'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.Campaign'
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Create a new campaign
@@ -2292,6 +2807,9 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
+      - in: query
+        name: workspace_id
+        type: string
       - in: path
         name: keyName
         required: true
@@ -2309,16 +2827,16 @@ paths:
           description: List of matching campaigns
           schema:
             items:
-              $ref: '#/definitions/campaign_entity.Campaign'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.Campaign'
             type: array
         "400":
           description: Invalid input (e.g., decoding or query error)
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Search campaigns with regex-like operator
@@ -2390,16 +2908,16 @@ paths:
           description: List of campaign message send errors
           schema:
             items:
-              $ref: '#/definitions/campaign_entity.CampaignMessageSendError'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.CampaignMessageSendError'
             type: array
         "400":
           description: Invalid query
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: List campaign message send errors
@@ -2417,7 +2935,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/common_model.RequiredID'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.RequiredID'
       produces:
       - application/json
       responses:
@@ -2428,11 +2946,11 @@ paths:
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Delete campaign message
@@ -2502,16 +3020,16 @@ paths:
           description: List of campaign messages
           schema:
             items:
-              $ref: '#/definitions/campaign_entity.CampaignMessage'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.CampaignMessage'
             type: array
         "400":
           description: Invalid query
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: List campaign messages (paginated)
@@ -2528,22 +3046,22 @@ paths:
         name: campaign_message
         required: true
         schema:
-          $ref: '#/definitions/campaign_model.CreateCampaignMessage'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_campaign_model.CreateCampaignMessage'
       produces:
       - application/json
       responses:
         "201":
           description: Created campaign message
           schema:
-            $ref: '#/definitions/campaign_entity.CampaignMessage'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.CampaignMessage'
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Create a new campaign message
@@ -2608,11 +3126,11 @@ paths:
         "400":
           description: Invalid query
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Count campaign messages
@@ -2677,11 +3195,11 @@ paths:
         "400":
           description: Invalid query
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Count sent campaign messages
@@ -2746,11 +3264,11 @@ paths:
         "400":
           description: Invalid query
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Count unsent campaign messages
@@ -2822,16 +3340,16 @@ paths:
           description: List of sent campaign messages
           schema:
             items:
-              $ref: '#/definitions/campaign_entity.CampaignMessage'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.CampaignMessage'
             type: array
         "400":
           description: Invalid query
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: List sent campaign messages
@@ -2902,16 +3420,16 @@ paths:
           description: List of unsent campaign messages
           schema:
             items:
-              $ref: '#/definitions/campaign_entity.CampaignMessage'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.CampaignMessage'
             type: array
         "400":
           description: Invalid query
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: List unsent campaign messages
@@ -2928,7 +3446,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/common_model.RequiredID'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.RequiredID'
       produces:
       - application/json
       responses:
@@ -2939,11 +3457,11 @@ paths:
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Delete contact by ID
@@ -3010,6 +3528,9 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
+      - in: query
+        name: workspace_id
+        type: string
       produces:
       - application/json
       responses:
@@ -3017,16 +3538,16 @@ paths:
           description: List of contacts
           schema:
             items:
-              $ref: '#/definitions/contact_entity.Contact'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_contact_entity.Contact'
             type: array
         "400":
           description: Invalid query parameters
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Get contacts paginated
@@ -3043,22 +3564,22 @@ paths:
         name: contact
         required: true
         schema:
-          $ref: '#/definitions/contact_model.CreateContact'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_contact_model.CreateContact'
       produces:
       - application/json
       responses:
         "201":
           description: Created contact
           schema:
-            $ref: '#/definitions/contact_entity.Contact'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_contact_entity.Contact'
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Create a new contact
@@ -3074,22 +3595,22 @@ paths:
         name: contact
         required: true
         schema:
-          $ref: '#/definitions/contact_model.UpdateContact'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_contact_model.UpdateContact'
       produces:
       - application/json
       responses:
         "200":
           description: Updated contact
           schema:
-            $ref: '#/definitions/contact_entity.Contact'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_contact_entity.Contact'
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Update contact
@@ -3117,11 +3638,11 @@ paths:
         "400":
           description: Missing or invalid media ID
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to retrieve media URL
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Get WhatsApp media URL
@@ -3149,11 +3670,11 @@ paths:
         "400":
           description: Missing or invalid media ID
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to download media
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Download WhatsApp media
@@ -3182,11 +3703,11 @@ paths:
         "400":
           description: Invalid MediaInfo
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to download media
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Download media from MediaInfo
@@ -3219,15 +3740,15 @@ paths:
         "400":
           description: Missing file or MIME type
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "415":
           description: Unsupported media type
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to upload media
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Upload media file
@@ -3318,16 +3839,16 @@ paths:
           description: List of messages
           schema:
             items:
-              $ref: '#/definitions/message_entity.Message'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message'
             type: array
         "400":
           description: Invalid query parameters
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to retrieve messages
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Retrieve messages
@@ -3428,16 +3949,16 @@ paths:
           description: List of matched messages
           schema:
             items:
-              $ref: '#/definitions/message_entity.Message'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message'
             type: array
         "400":
           description: Invalid keyName, likeText, or query
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to query messages
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Search messages by content field
@@ -3533,16 +4054,16 @@ paths:
           description: List of matched messages
           schema:
             items:
-              $ref: '#/definitions/message_entity.Message'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message'
             type: array
         "400":
           description: Invalid likeText or query
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to query messages
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Search messages by content text
@@ -3633,16 +4154,16 @@ paths:
           description: Latest messages per conversation
           schema:
             items:
-              $ref: '#/definitions/message_entity.Message'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message'
             type: array
         "400":
           description: Invalid query
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to retrieve conversations
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Get conversations
@@ -3725,11 +4246,11 @@ paths:
         "400":
           description: Invalid query
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to count conversations
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Count distinct conversations
@@ -3818,11 +4339,11 @@ paths:
         "400":
           description: Invalid query or ID
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to count messages
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Count messages by contact
@@ -3916,11 +4437,11 @@ paths:
         "400":
           description: Invalid query or likeText
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to count messages
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Count messages by content
@@ -4016,16 +4537,16 @@ paths:
           description: Conversation messages
           schema:
             items:
-              $ref: '#/definitions/message_entity.Message'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message'
             type: array
         "400":
           description: Invalid query or ID
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to retrieve messages
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Get conversation messages
@@ -4126,16 +4647,16 @@ paths:
           description: Filtered conversation messages
           schema:
             items:
-              $ref: '#/definitions/message_entity.Message'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message'
             type: array
         "400":
           description: Invalid ID, query, or likeText
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to retrieve messages
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Search messages by content
@@ -4228,11 +4749,11 @@ paths:
         "400":
           description: Invalid query parameters
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to count messages
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Count messages
@@ -4331,11 +4852,11 @@ paths:
         "400":
           description: Invalid likeText or query
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to count messages
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Count messages with content match
@@ -4353,22 +4874,22 @@ paths:
         name: message
         required: true
         schema:
-          $ref: '#/definitions/message_model.SendWhatsAppMessage'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_message_model.SendWhatsAppMessage'
       produces:
       - application/json
       responses:
         "201":
           description: Message sent successfully
           schema:
-            $ref: '#/definitions/message_entity.Message'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message'
         "400":
           description: Invalid message payload
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to send or save the message
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Send WhatsApp message
@@ -4462,11 +4983,11 @@ paths:
         "400":
           description: Invalid query parameters
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to mark conversation as read
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Mark last message as read
@@ -4564,11 +5085,11 @@ paths:
         "400":
           description: Invalid query parameters
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to send typing
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Mark last message as read and starts typing
@@ -4664,16 +5185,16 @@ paths:
           description: List of matching messages
           schema:
             items:
-              $ref: '#/definitions/message_entity.Message'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message'
             type: array
         "400":
           description: Invalid wamID or query parameters
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to retrieve messages
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Search messages by wamID
@@ -4738,6 +5259,9 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
+      - in: query
+        name: workspace_id
+        type: string
       produces:
       - application/json
       responses:
@@ -4745,16 +5269,16 @@ paths:
           description: List of messaging products
           schema:
             items:
-              $ref: '#/definitions/messaging_product_entity.MessagingProduct'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProduct'
             type: array
         "400":
           description: Invalid query parameters
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to retrieve products
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Retrieve messaging products
@@ -4771,7 +5295,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/common_model.RequiredID'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.RequiredID'
       produces:
       - application/json
       responses:
@@ -4780,11 +5304,11 @@ paths:
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to delete contact
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Delete messaging product contact
@@ -4874,16 +5398,16 @@ paths:
           description: List of messaging product contacts
           schema:
             items:
-              $ref: '#/definitions/messaging_product_entity.MessagingProductContact'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact'
             type: array
         "400":
           description: Invalid query parameters
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to retrieve contacts
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Retrieve messaging product contacts
@@ -4899,22 +5423,22 @@ paths:
         name: contact
         required: true
         schema:
-          $ref: '#/definitions/messaging_product_model.CreateContact'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_model.CreateContact'
       produces:
       - application/json
       responses:
         "201":
           description: Created contact
           schema:
-            $ref: '#/definitions/messaging_product_entity.MessagingProductContact'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact'
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to create contact
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Create messaging product contact
@@ -4932,22 +5456,22 @@ paths:
         name: contact
         required: true
         schema:
-          $ref: '#/definitions/common_model.RequiredID'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.RequiredID'
       produces:
       - application/json
       responses:
         "201":
           description: Unblocked contact
           schema:
-            $ref: '#/definitions/messaging_product_entity.MessagingProductContact'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact'
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to unblock contact
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Unblock messaging product contact
@@ -4964,22 +5488,22 @@ paths:
         name: contact
         required: true
         schema:
-          $ref: '#/definitions/common_model.RequiredID'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.RequiredID'
       produces:
       - application/json
       responses:
         "201":
           description: Blocked contact
           schema:
-            $ref: '#/definitions/messaging_product_entity.MessagingProductContact'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact'
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to block contact
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Block messaging product contact
@@ -5076,16 +5600,16 @@ paths:
           description: List of matching contacts
           schema:
             items:
-              $ref: '#/definitions/messaging_product_entity.MessagingProductContact'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact'
             type: array
         "400":
           description: Invalid query or likeText
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to retrieve contacts
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Search contacts by content
@@ -5174,11 +5698,11 @@ paths:
         "400":
           description: Invalid query or likeText
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to count contacts
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Count contacts by content
@@ -5202,15 +5726,15 @@ paths:
         "200":
           description: Updated messaging product contact
           schema:
-            $ref: '#/definitions/messaging_product_entity.MessagingProductContact'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact'
         "400":
           description: Invalid contact ID format
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to update last_read_at
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Update last_read_at timestamp
@@ -5301,16 +5825,16 @@ paths:
           description: List of WhatsApp messaging product contacts
           schema:
             items:
-              $ref: '#/definitions/messaging_product_entity.MessagingProductContact'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact'
             type: array
         "400":
           description: Invalid query parameters
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to retrieve WhatsApp contacts
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Retrieve WhatsApp contacts
@@ -5327,22 +5851,22 @@ paths:
         name: contact
         required: true
         schema:
-          $ref: '#/definitions/messaging_product_model.CreateWhatsAppContact'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_model.CreateWhatsAppContact'
       produces:
       - application/json
       responses:
         "201":
           description: Created contact
           schema:
-            $ref: '#/definitions/messaging_product_entity.MessagingProductContact'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact'
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to create contact
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Create WhatsApp contact
@@ -5426,16 +5950,16 @@ paths:
           description: List of statuses
           schema:
             items:
-              $ref: '#/definitions/status_entity.Status'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_status_entity.Status'
             type: array
         "400":
           description: Invalid query parameters
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to retrieve statuses
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Retrieve statuses
@@ -5530,16 +6054,16 @@ paths:
           description: List of statuses
           schema:
             items:
-              $ref: '#/definitions/status_entity.Status'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_status_entity.Status'
             type: array
         "400":
           description: Invalid query or path parameter
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to retrieve statuses
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Search statuses by key and content
@@ -5629,16 +6153,16 @@ paths:
           description: List of statuses
           schema:
             items:
-              $ref: '#/definitions/status_entity.Status'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_status_entity.Status'
             type: array
         "400":
           description: Invalid query or path parameter
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to retrieve statuses
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Search statuses by content
@@ -5726,11 +6250,11 @@ paths:
         "400":
           description: Invalid query parameters
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to count statuses
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Count statuses
@@ -5820,16 +6344,16 @@ paths:
           description: List of statuses
           schema:
             items:
-              $ref: '#/definitions/status_entity.Status'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_status_entity.Status'
             type: array
         "400":
           description: Invalid wamID or query parameters
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Failed to fetch statuses
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Retrieve statuses by wamID
@@ -5839,14 +6363,15 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Deletes a user by ID. The special user su@sudo cannot be deleted.
+      description: Deletes a user by ID. Restricted to admin users only. The special
+        user su@sudo cannot be deleted.
       parameters:
       - description: User ID to delete
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/common_model.RequiredID'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.RequiredID'
       produces:
       - application/json
       responses:
@@ -5857,24 +6382,29 @@ paths:
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "401":
           description: Cannot delete su@sudo user
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "403":
+          description: Forbidden - Admin role required
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Delete user by ID
+      summary: Delete user by ID (Admin only)
       tags:
       - User
     get:
       consumes:
       - application/json
-      description: Returns a paginated list of users based on optional filters.
+      description: Returns a paginated list of users based on optional filters. Restricted
+        to admin users only.
       parameters:
       - default: desc
         enum:
@@ -5938,86 +6468,99 @@ paths:
           description: List of users
           schema:
             items:
-              $ref: '#/definitions/user_entity.User'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_entity.User'
             type: array
         "400":
           description: Invalid query parameters
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "403":
+          description: Forbidden - Admin role required
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Retrieve users
+      summary: Retrieve users (Admin only)
       tags:
       - User
     post:
       consumes:
       - application/json
-      description: Creates a new user account with the provided information.
+      description: Creates a new user account with the provided information. Restricted
+        to admin users only.
       parameters:
       - description: User data
         in: body
         name: user
         required: true
         schema:
-          $ref: '#/definitions/user_model.Create'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_model.Create'
       produces:
       - application/json
       responses:
         "201":
           description: Created user
           schema:
-            $ref: '#/definitions/user_entity.User'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_entity.User'
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "403":
+          description: Forbidden - Admin role required
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Create a new user
+      summary: Create a new user (Admin only)
       tags:
       - User
     put:
       consumes:
       - application/json
-      description: Updates user data by ID. Restricted to superusers. Cannot update
-        su@sudo.
+      description: Updates user data by ID including email and role. Restricted to
+        admin users only. Cannot update su@sudo.
       parameters:
       - description: User data to update
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/user_model.UpdateWithID'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_model.UpdateWithID'
       produces:
       - application/json
       responses:
         "200":
           description: User updated successfully
           schema:
-            $ref: '#/definitions/user_entity.User'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_entity.User'
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "403":
+          description: Forbidden - Admin role required
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Update user by ID
+      summary: Update user by ID (Admin only)
       tags:
       - User
   /user/content/{keyName}/like/{likeText}:
@@ -6025,7 +6568,7 @@ paths:
       consumes:
       - application/json
       description: Returns a paginated list of users where the specified key matches
-        a partial value using ILIKE operator.
+        a partial value using ILIKE operator. Restricted to admin users only.
       parameters:
       - default: desc
         enum:
@@ -6099,19 +6642,23 @@ paths:
           description: List of users
           schema:
             items:
-              $ref: '#/definitions/user_entity.User'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_entity.User'
             type: array
         "400":
           description: Invalid path or query parameters
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "403":
+          description: Forbidden - Admin role required
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      summary: Search users by key and text
+      summary: Search users by key and text (Admin only)
       tags:
       - User
   /user/me:
@@ -6125,7 +6672,7 @@ paths:
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Delete current user
@@ -6141,11 +6688,11 @@ paths:
         "200":
           description: Current user
           schema:
-            $ref: '#/definitions/user_entity.User'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_entity.User'
         "401":
           description: Unauthorized or invalid user context
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Get current user
@@ -6154,29 +6701,30 @@ paths:
     put:
       consumes:
       - application/json
-      description: Updates the profile details of the authenticated user.
+      description: Updates the profile details of the authenticated user. Users can
+        update their name and password, but NOT their email address.
       parameters:
-      - description: User data to update
+      - description: User data to update (email field is ignored)
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/user_model.UpdateWithPassword'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_model.UpdateWithPassword'
       produces:
       - application/json
       responses:
         "200":
           description: User updated successfully
           schema:
-            $ref: '#/definitions/user_entity.User'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_entity.User'
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Update current user
@@ -6194,26 +6742,26 @@ paths:
         name: credentials
         required: true
         schema:
-          $ref: '#/definitions/auth_model.TokenRequest'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_auth_model.TokenRequest'
       produces:
       - application/json
       responses:
         "200":
           description: Token issued successfully
           schema:
-            $ref: '#/definitions/auth_model.TokenResponse'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_auth_model.TokenResponse'
         "400":
           description: Bad request or missing fields
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "401":
           description: Unauthorized or invalid credentials
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Issue access and refresh tokens
@@ -6230,7 +6778,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/common_model.RequiredID'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.RequiredID'
       produces:
       - application/json
       responses:
@@ -6239,11 +6787,11 @@ paths:
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Delete a webhook
@@ -6315,6 +6863,9 @@ paths:
         in: query
         name: url
         type: string
+      - in: query
+        name: workspace_id
+        type: string
       produces:
       - application/json
       responses:
@@ -6322,16 +6873,16 @@ paths:
           description: List of webhooks
           schema:
             items:
-              $ref: '#/definitions/webhook_entity.Webhook'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_webhook_entity.Webhook'
             type: array
         "400":
           description: Invalid query parameters
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Get webhooks paginated
@@ -6348,22 +6899,22 @@ paths:
         name: webhook
         required: true
         schema:
-          $ref: '#/definitions/webhook_model.CreateWebhook'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_webhook_model.CreateWebhook'
       produces:
       - application/json
       responses:
         "201":
           description: Created webhook
           schema:
-            $ref: '#/definitions/webhook_entity.Webhook'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_webhook_entity.Webhook'
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Create a new webhook
@@ -6380,22 +6931,22 @@ paths:
         name: webhook
         required: true
         schema:
-          $ref: '#/definitions/webhook_model.UpdateWebhook'
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_webhook_model.UpdateWebhook'
       produces:
       - application/json
       responses:
         "200":
           description: Updated webhook
           schema:
-            $ref: '#/definitions/webhook_entity.Webhook'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_webhook_entity.Webhook'
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Update an existing webhook
@@ -6522,6 +7073,9 @@ paths:
         in: query
         name: url
         type: string
+      - in: query
+        name: workspace_id
+        type: string
       - in: path
         name: keyName
         required: true
@@ -6539,16 +7093,16 @@ paths:
           description: List of webhooks
           schema:
             items:
-              $ref: '#/definitions/webhook_entity.Webhook'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_webhook_entity.Webhook'
             type: array
         "400":
           description: Invalid query or path parameters
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Query webhooks by key and partial value
@@ -6619,21 +7173,37 @@ paths:
           description: List of webhook logs
           schema:
             items:
-              $ref: '#/definitions/webhook_entity.WebhookLog'
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_webhook_entity.WebhookLog'
             type: array
         "400":
           description: Invalid query parameters
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Get webhook logs paginated
       tags:
       - Webhook log
+  /websocket/{channel}:
+    get:
+      consumes:
+      - application/json
+      description: Validates workspace membership for WebSocket connections using
+        header or query param
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Workspace validated
+      security:
+      - ApiKeyAuth: []
+      summary: Workspace WebSocket middleware
+      tags:
+      - Websocket
   /websocket/{messageChannel}:
     get:
       consumes:
@@ -6680,11 +7250,11 @@ paths:
         "400":
           description: Invalid campaign ID or bad request
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Send WhatsApp campaign via WebSocket
@@ -6695,7 +7265,12 @@ paths:
       consumes:
       - application/json
       description: Establishes a WebSocket connection and streams incoming and outgoing
-        WhatsApp messages in real-time.
+        WhatsApp messages in real-time for a specific workspace.
+      parameters:
+      - description: Workspace ID (alternative to header)
+        in: query
+        name: workspace_id
+        type: string
       produces:
       - application/json
       responses:
@@ -6706,11 +7281,11 @@ paths:
         "400":
           description: Invalid connection request
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Subscribe to new messages
@@ -6721,7 +7296,12 @@ paths:
       consumes:
       - application/json
       description: Upgrades the HTTP connection to a WebSocket stream to receive real-time
-        message status updates.
+        message status updates for a specific workspace.
+      parameters:
+      - description: Workspace ID (alternative to header)
+        in: query
+        name: workspace_id
+        type: string
       produces:
       - application/json
       responses:
@@ -6732,15 +7312,15 @@ paths:
         "400":
           description: Invalid WebSocket handshake
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Subscribe to status updates
@@ -6877,16 +7457,653 @@ paths:
         "400":
           description: Invalid query parameters
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
           description: Unable to retrieve templates from API
           schema:
-            $ref: '#/definitions/common_model.DescriptiveError'
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
       summary: Get WhatsApp templates
       tags:
       - WhatsApp template
+  /workspace:
+    get:
+      description: Returns a list of all workspaces the authenticated user is a member
+        of.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of workspaces
+          schema:
+            items:
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: List user's workspaces
+      tags:
+      - Workspace
+    post:
+      consumes:
+      - application/json
+      description: Creates a new workspace and adds the creator as admin member.
+      parameters:
+      - description: Workspace data
+        in: body
+        name: workspace
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.CreateWorkspace'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created workspace
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new workspace
+      tags:
+      - Workspace
+  /workspace/{workspace_id}:
+    delete:
+      description: Deletes a workspace. Requires workspace.admin policy.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Workspace deleted
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete workspace
+      tags:
+      - Workspace
+    get:
+      description: Returns a specific workspace by its ID.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Workspace details
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace'
+        "404":
+          description: Workspace not found
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get workspace by ID
+      tags:
+      - Workspace
+    patch:
+      consumes:
+      - application/json
+      description: Updates an existing workspace. Requires workspace.settings policy.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Updated workspace data
+        in: body
+        name: workspace
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.UpdateWorkspace'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated workspace
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update workspace
+      tags:
+      - Workspace
+  /workspace/{workspace_id}/invitation:
+    get:
+      description: Returns a list of pending invitations for the workspace.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Invitations
+          schema:
+            items:
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.InvitationResponse'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: List workspace invitations
+      tags:
+      - Workspace
+    post:
+      consumes:
+      - application/json
+      description: Creates an invitation for a user to join the workspace.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Invitation data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.CreateInvitationRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Invitation created
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.InvitationResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "409":
+          description: User already member
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: Invite user to workspace
+      tags:
+      - Workspace
+  /workspace/{workspace_id}/invitation/{invitation_id}:
+    delete:
+      description: Revokes a pending workspace invitation.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Invitation ID
+        in: path
+        name: invitation_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Invitation revoked
+        "404":
+          description: Invitation not found
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: Revoke invitation
+      tags:
+      - Workspace
+  /workspace/{workspace_id}/member:
+    get:
+      description: Returns a list of all members in the workspace with their policies.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of members
+          schema:
+            items:
+              $ref: '#/definitions/workspace_handler.MemberResponse'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: List workspace members
+      tags:
+      - Workspace
+    post:
+      consumes:
+      - application/json
+      description: Adds a new member to the workspace with specified policies. Requires
+        workspace.members policy.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Member data
+        in: body
+        name: member
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.CreateMember'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created member
+          schema:
+            $ref: '#/definitions/workspace_handler.MemberResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: Add workspace member
+      tags:
+      - Workspace
+  /workspace/{workspace_id}/member/{user_id}:
+    delete:
+      description: Removes a member from the workspace. Requires workspace.members
+        policy.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Member removed
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "404":
+          description: Member not found
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: Remove workspace member
+      tags:
+      - Workspace
+    patch:
+      consumes:
+      - application/json
+      description: Updates the policies for a workspace member. Requires workspace.members
+        policy.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: New policies
+        in: body
+        name: policies
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.UpdateMemberPolicies'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated member
+          schema:
+            $ref: '#/definitions/workspace_handler.MemberResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "404":
+          description: Member not found
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update member policies
+      tags:
+      - Workspace
+  /workspace/{workspace_id}/phone-config:
+    get:
+      description: Returns a paginated list of phone configurations for the workspace.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - default: desc
+        enum:
+        - asc
+        - desc
+        in: query
+        name: created_at
+        type: string
+        x-enum-varnames:
+        - Asc
+        - Desc
+      - in: query
+        name: created_at_geq
+        type: string
+      - in: query
+        name: created_at_leq
+        type: string
+      - in: query
+        name: display_phone
+        type: string
+      - description: The unique identifier
+        in: query
+        name: id
+        type: string
+      - in: query
+        name: is_active
+        type: boolean
+      - default: 10
+        description: Number of items to return
+        in: query
+        name: limit
+        type: integer
+      - in: query
+        name: name
+        type: string
+      - default: 0
+        description: The offset from where to start the items
+        in: query
+        name: offset
+        type: integer
+      - default: desc
+        enum:
+        - asc
+        - desc
+        in: query
+        name: updated_at
+        type: string
+        x-enum-varnames:
+        - Asc
+        - Desc
+      - in: query
+        name: updated_at_geq
+        type: string
+      - in: query
+        name: updated_at_leq
+        type: string
+      - description: Phone Number ID
+        in: query
+        name: waba_id
+        type: string
+      - in: query
+        name: workspace_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of phone configs
+          schema:
+            items:
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_phone-config_entity.PhoneConfig'
+            type: array
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: List phone configurations
+      tags:
+      - Phone Config
+    post:
+      consumes:
+      - application/json
+      description: Creates a new phone configuration for the workspace.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Phone config data
+        in: body
+        name: config
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_phone-config_model.CreatePhoneConfig'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created phone config
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_phone-config_entity.PhoneConfig'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: Create phone configuration
+      tags:
+      - Phone Config
+  /workspace/{workspace_id}/phone-config/{id}:
+    delete:
+      description: Deletes a phone configuration from the workspace.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Phone Config ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete phone configuration
+      tags:
+      - Phone Config
+    get:
+      description: Returns a specific phone configuration by ID.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Phone Config ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Phone config
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_phone-config_entity.PhoneConfig'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get phone configuration
+      tags:
+      - Phone Config
+    patch:
+      consumes:
+      - application/json
+      description: Updates an existing phone configuration.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Phone Config ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Phone config data
+        in: body
+        name: config
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_phone-config_model.UpdatePhoneConfig'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated phone config
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_phone-config_entity.PhoneConfig'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update phone configuration
+      tags:
+      - Phone Config
 schemes:
 - http
 - https

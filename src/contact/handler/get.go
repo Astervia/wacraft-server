@@ -7,6 +7,7 @@ import (
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -24,6 +25,8 @@ import (
 //	@Security		ApiKeyAuth
 //	@Router			/contact [get]
 func Get(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	query := new(contact_model.QueryPaginated)
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -39,9 +42,10 @@ func Get(c *fiber.Ctx) error {
 
 	contacts, err := repository.GetPaginated(
 		contact_entity.Contact{
-			Audit: common_model.Audit{ID: query.ID},
-			Name:  query.Name,
-			Email: query.Email,
+			Audit:       common_model.Audit{ID: query.ID},
+			Name:        query.Name,
+			Email:       query.Email,
+			WorkspaceID: &workspace.ID,
 		},
 		&query.Paginate,
 		&query.DateOrder,

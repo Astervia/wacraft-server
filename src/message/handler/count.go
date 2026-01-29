@@ -10,6 +10,7 @@ import (
 	"github.com/Astervia/wacraft-server/src/database"
 	message_service "github.com/Astervia/wacraft-server/src/message/service"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -40,6 +41,9 @@ func Count(c *fiber.Ctx) error {
 		)
 	}
 
+	workspace := workspace_middleware.GetWorkspace(c)
+	db := database.DB.Joins("JOIN messaging_products ON messages.messaging_product_id = messaging_products.id AND messaging_products.workspace_id = ?", workspace.ID).Model(&message_entity.Message{})
+
 	messages, err := repository.Count(
 		message_entity.Message{
 			MessageFields: message_model.MessageFields{
@@ -55,7 +59,7 @@ func Count(c *fiber.Ctx) error {
 		},
 		&query.DateOrder,
 		&query.DateWhereWithDeletedAt,
-		"", database.DB.Model(&message_entity.Message{}),
+		"", db,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
@@ -102,6 +106,9 @@ func CountContentLike(c *fiber.Ctx) error {
 		)
 	}
 
+	workspace := workspace_middleware.GetWorkspace(c)
+	db := database.DB.Joins("JOIN messaging_products ON messages.messaging_product_id = messaging_products.id AND messaging_products.workspace_id = ?", workspace.ID)
+
 	messages, err := message_service.CountContentLike(
 		decodedText,
 		message_entity.Message{
@@ -118,7 +125,7 @@ func CountContentLike(c *fiber.Ctx) error {
 		},
 		&query.DateOrder,
 		&query.DateWhereWithDeletedAt,
-		nil,
+		db,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(

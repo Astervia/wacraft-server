@@ -6,8 +6,10 @@ import (
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	message_entity "github.com/Astervia/wacraft-core/src/message/entity"
 	message_model "github.com/Astervia/wacraft-core/src/message/model"
+	"github.com/Astervia/wacraft-server/src/database"
 	message_service "github.com/Astervia/wacraft-server/src/message/service"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
@@ -47,6 +49,9 @@ func GetConversation(c *fiber.Ctx) error {
 		)
 	}
 
+	workspace := workspace_middleware.GetWorkspace(c)
+	db := database.DB.Joins("JOIN messaging_products ON messages.messaging_product_id = messaging_products.id AND messaging_products.workspace_id = ?", workspace.ID)
+
 	messages, err := message_service.GetConversation(
 		mpcID,
 		message_entity.Message{
@@ -65,7 +70,7 @@ func GetConversation(c *fiber.Ctx) error {
 		&query.DateOrder,
 		&query.DateWhereWithDeletedAt,
 		"",
-		nil,
+		db,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
@@ -103,6 +108,8 @@ func GetConversations(c *fiber.Ctx) error {
 		)
 	}
 
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	messages, err := message_service.GetLatestMessagesForEachUser(
 		message_entity.Message{
 			MessageFields: message_model.MessageFields{
@@ -119,7 +126,7 @@ func GetConversations(c *fiber.Ctx) error {
 		&query.Paginate,
 		&query.DateOrder,
 		&query.DateWhereWithDeletedAt,
-		nil,
+		workspace.ID,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
@@ -165,6 +172,9 @@ func CountConversationsByMessagingProductContact(c *fiber.Ctx) error {
 		)
 	}
 
+	workspace := workspace_middleware.GetWorkspace(c)
+	db := database.DB.Joins("JOIN messaging_products ON messages.messaging_product_id = messaging_products.id AND messaging_products.workspace_id = ?", workspace.ID)
+
 	messages, err := message_service.CountConversations(
 		mpcID,
 		message_entity.Message{
@@ -182,7 +192,7 @@ func CountConversationsByMessagingProductContact(c *fiber.Ctx) error {
 		&query.DateOrder,
 		&query.DateWhereWithDeletedAt,
 		"",
-		nil,
+		db,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
@@ -220,6 +230,8 @@ func CountDistinctConversations(c *fiber.Ctx) error {
 		)
 	}
 
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	messages, err := message_service.CountDistinctConversations(
 		message_entity.Message{
 			MessageFields: message_model.MessageFields{
@@ -236,7 +248,7 @@ func CountDistinctConversations(c *fiber.Ctx) error {
 		&query.DateOrder,
 		&query.DateWhereWithDeletedAt,
 		"",
-		nil,
+		workspace.ID,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
@@ -291,6 +303,8 @@ func ConversationContentLikeByMessagingProductContact(c *fiber.Ctx) error {
 		)
 	}
 
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	messages, err := message_service.ConversationContentLike(
 		mpcID,
 		decodedText,
@@ -309,7 +323,7 @@ func ConversationContentLikeByMessagingProductContact(c *fiber.Ctx) error {
 		&query.Paginate,
 		&query.DateOrder,
 		&query.DateWhereWithDeletedAt,
-		nil,
+		workspace.ID,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
@@ -364,6 +378,8 @@ func CountConversationContentLike(c *fiber.Ctx) error {
 		)
 	}
 
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	count, err := message_service.CountConversationContentLike(
 		mpcID,
 		decodedText,
@@ -381,7 +397,7 @@ func CountConversationContentLike(c *fiber.Ctx) error {
 		},
 		&query.DateOrder,
 		&query.DateWhereWithDeletedAt,
-		nil,
+		workspace.ID,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(

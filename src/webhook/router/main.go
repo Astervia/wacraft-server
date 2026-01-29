@@ -1,9 +1,10 @@
 package webhook_router
 
 import (
-	user_model "github.com/Astervia/wacraft-core/src/user/model"
+	workspace_model "github.com/Astervia/wacraft-core/src/workspace/model"
 	auth_middleware "github.com/Astervia/wacraft-server/src/auth/middleware"
 	webhook_handler "github.com/Astervia/wacraft-server/src/webhook/handler"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -16,18 +17,28 @@ func Route(app *fiber.App) {
 
 func mainRoutes(group fiber.Router) {
 	group.Get("/",
-		auth_middleware.UserMiddleware, auth_middleware.RoleMiddleware(user_model.Admin, user_model.Automation, user_model.Developer),
+		auth_middleware.UserMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookRead),
 		webhook_handler.GetWebhooks)
 	group.Post("/",
-		auth_middleware.UserMiddleware, auth_middleware.RoleMiddleware(user_model.Admin, user_model.Automation, user_model.Developer),
+		auth_middleware.UserMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookManage),
 		webhook_handler.CreateWebhook)
 	group.Put("/",
-		auth_middleware.UserMiddleware, auth_middleware.RoleMiddleware(user_model.Admin, user_model.Automation, user_model.Developer),
+		auth_middleware.UserMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookManage),
 		webhook_handler.UpdateWebhook)
 	group.Delete("/",
-		auth_middleware.UserMiddleware, auth_middleware.RoleMiddleware(user_model.Admin, user_model.Automation, user_model.Developer),
+		auth_middleware.UserMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookManage),
 		webhook_handler.DeleteWebhookByID)
 	group.Get("/content/:keyName/like/:likeText",
-		auth_middleware.UserMiddleware, auth_middleware.RoleMiddleware(user_model.Admin, user_model.Automation, user_model.Developer),
+		auth_middleware.UserMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookRead),
 		webhook_handler.ContentKeyLike)
 }

@@ -7,6 +7,7 @@ import (
 	messaging_product_model "github.com/Astervia/wacraft-core/src/messaging-product/model"
 	messaging_product_service "github.com/Astervia/wacraft-server/src/messaging-product/service"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -37,6 +38,7 @@ func CreateWhatsAppContact(c *fiber.Ctx) error {
 		)
 	}
 
+	workspace := workspace_middleware.GetWorkspace(c)
 	entity, err := messaging_product_service.CreateContactForMessagingProduct(
 		messaging_product_entity.MessagingProductContact{
 			ContactID: data.ContactID,
@@ -48,6 +50,7 @@ func CreateWhatsAppContact(c *fiber.Ctx) error {
 			},
 		},
 		messaging_product_model.WhatsApp,
+		workspace.ID,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(

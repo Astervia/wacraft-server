@@ -3,9 +3,9 @@ package contact_handler
 import (
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	contact_entity "github.com/Astervia/wacraft-core/src/contact/entity"
-	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-server/src/validators"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -23,6 +23,8 @@ import (
 //	@Security		ApiKeyAuth
 //	@Router			/contact [delete]
 func DeleteContactByID(c *fiber.Ctx) error {
+	workspace := workspace_middleware.GetWorkspace(c)
+
 	var reqBody common_model.RequiredID
 	if err := c.BodyParser(&reqBody); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -36,10 +38,17 @@ func DeleteContactByID(c *fiber.Ctx) error {
 		)
 	}
 
-	err := repository.DeleteByID[contact_entity.Contact](reqBody.ID, database.DB)
-	if err != nil {
+	// Delete with workspace scope to ensure cross-workspace isolation
+	result := database.DB.Where("id = ? AND workspace_id = ?", reqBody.ID, workspace.ID).Delete(&contact_entity.Contact{})
+	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
-			common_model.NewApiError("unable to delete contact", err, "repository").Send(),
+			common_model.NewApiError("unable to delete contact", result.Error, "database").Send(),
+		)
+	}
+
+	if result.RowsAffected == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(
+			common_model.NewApiError("contact not found", nil, "handler").Send(),
 		)
 	}
 
