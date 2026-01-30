@@ -56,7 +56,7 @@ func MarkWhatsAppMessageAsReadToUser(
 	msgWamID := msg.ReceiverData.ID
 	response, err := message_service.MarkAsRead(
 		whatsapp.WabaApi,
-		message_model.MarkAsRead{
+		message_model.MarkAsReadPayload{
 			MessageID:        msgWamID,
 			Status:           message_model.Read,
 			MessagingProduct: common_model.MessagingProduct{MessagingProduct: "whatsapp"},
@@ -119,7 +119,7 @@ func MarkWhatsAppMessageAsReadToUserByWorkspace(
 	msgWamID := msg.ReceiverData.ID
 	response, err := message_service.MarkAsRead(
 		*wabaApi,
-		message_model.MarkAsRead{
+		message_model.MarkAsReadPayload{
 			MessageID:        msgWamID,
 			Status:           message_model.Read,
 			MessagingProduct: common_model.MessagingProduct{MessagingProduct: "whatsapp"},

@@ -57,7 +57,7 @@ func SendTypingToUser(
 	msgWamID := msg.ReceiverData.ID
 	response, err := typing_service.SendTyping(
 		whatsapp.WabaApi,
-		typing_model.SendTyping{
+		typing_model.SendTypingPayload{
 			MessageID:        msgWamID,
 			Status:           message_model.Read,
 			MessagingProduct: common_model.MessagingProduct{MessagingProduct: "whatsapp"},
@@ -123,7 +123,7 @@ func SendTypingToUserByWorkspace(
 	msgWamID := msg.ReceiverData.ID
 	response, err := typing_service.SendTyping(
 		*wabaApi,
-		typing_model.SendTyping{
+		typing_model.SendTypingPayload{
 			MessageID:        msgWamID,
 			Status:           message_model.Read,
 			MessagingProduct: common_model.MessagingProduct{MessagingProduct: "whatsapp"},
