@@ -6,8 +6,8 @@ import (
 
 	phone_config_entity "github.com/Astervia/wacraft-core/src/phone-config/entity"
 	"github.com/Astervia/wacraft-server/src/database"
-	bootstrap_module "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap/model"
-	bootstrap_service "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap/service"
+	bootstrap_module "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap"
+	bootstrap_service "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap"
 	"github.com/google/uuid"
 )
 

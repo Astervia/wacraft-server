@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	format_service "github.com/Astervia/wacraft-core/src/format/service"
-	webhook_model "github.com/Rfluid/whatsapp-cloud-api/src/webhook/model"
+	webhook_model "github.com/Rfluid/whatsapp-cloud-api/src/webhook"
 	"github.com/gofiber/fiber/v2"
 	"github.com/pterm/pterm"
 )

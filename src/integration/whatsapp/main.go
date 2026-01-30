@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"github.com/Astervia/wacraft-server/src/config/env"
-	bootstrap_module "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap/model"
-	bootstrap_service "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap/service"
+	bootstrap_module "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap"
+	bootstrap_service "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap"
 	"github.com/pterm/pterm"
 )
 

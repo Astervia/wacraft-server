@@ -6,7 +6,7 @@ import (
 	"github.com/Astervia/wacraft-server/src/database"
 	phone_config_service "github.com/Astervia/wacraft-server/src/phone-config/service"
 	webhook_handler "github.com/Astervia/wacraft-server/src/webhook-in/handler"
-	wh_model "github.com/Rfluid/whatsapp-cloud-api/src/webhook/model"
+	wh_model "github.com/Rfluid/whatsapp-cloud-api/src/webhook"
 	auth_middleware "github.com/Rfluid/whatsapp-webhook-server/src/auth/middleware"
 	server_service "github.com/Rfluid/whatsapp-webhook-server/src/server/service"
 	webhook_model "github.com/Rfluid/whatsapp-webhook-server/src/webhook/model"
