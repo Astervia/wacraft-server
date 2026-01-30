@@ -2003,7 +2003,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/media_model.MediaInfo"
+                            "$ref": "#/definitions/media.MediaInfo"
                         }
                     }
                 ],
@@ -2067,7 +2067,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Media ID returned from WhatsApp",
                         "schema": {
-                            "$ref": "#/definitions/common_model.ID"
+                            "$ref": "#/definitions/common.ID"
                         }
                     },
                     "400": {
@@ -2122,7 +2122,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Media information with download URL",
                         "schema": {
-                            "$ref": "#/definitions/media_model.MediaInfo"
+                            "$ref": "#/definitions/media.MediaInfo"
                         }
                     },
                     "400": {
@@ -4007,7 +4007,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success response",
                         "schema": {
-                            "$ref": "#/definitions/common_model.SuccessResponse"
+                            "$ref": "#/definitions/common.SuccessResponse"
                         }
                     },
                     "400": {
@@ -4156,7 +4156,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success response",
                         "schema": {
-                            "$ref": "#/definitions/common_model.SuccessResponse"
+                            "$ref": "#/definitions/common.SuccessResponse"
                         }
                     },
                     "400": {
@@ -7005,7 +7005,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/webhook-in": {
+        "/webhook-in/{waba_id}": {
             "get": {
                 "description": "Used by Meta to verify the validity of the webhook endpoint.",
                 "consumes": [
@@ -7019,6 +7019,13 @@ const docTemplate = `{
                 ],
                 "summary": "Verify webhook endpoint",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Phone number ID provided by Meta",
+                        "name": "waba_id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Subscription mode (should be 'subscribe')",
@@ -7064,12 +7071,19 @@ const docTemplate = `{
                 "summary": "Handle webhook events",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Phone number ID provided by Meta",
+                        "name": "waba_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "Content sent by WhatsApp Cloud API",
                         "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/webhook_model.WebhookBody"
+                            "$ref": "#/definitions/webhook.WebhookBody"
                         }
                     }
                 ],
@@ -7738,7 +7752,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/template_model.GetTemplateResponse"
+                                "$ref": "#/definitions/template.GetTemplateResponse"
                             }
                         }
                     },
@@ -8745,7 +8759,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "common_model.BusinessAccount": {
+        "common.BusinessAccount": {
             "type": "string",
             "enum": [
                 "whatsapp_business_account"
@@ -8754,7 +8768,7 @@ const docTemplate = `{
                 "WhatsAppBusinessAccount"
             ]
         },
-        "common_model.Error": {
+        "common.Error": {
             "type": "object",
             "properties": {
                 "code": {
@@ -8762,7 +8776,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "error_data": {
-                    "$ref": "#/definitions/common_model.ErrorData"
+                    "$ref": "#/definitions/common.ErrorData"
                 },
                 "fbtrace_id": {
                     "description": "Unique identifier for the error. Use this ID when contacting support.",
@@ -8778,7 +8792,7 @@ const docTemplate = `{
                 }
             }
         },
-        "common_model.ErrorData": {
+        "common.ErrorData": {
             "type": "object",
             "properties": {
                 "details": {
@@ -8791,7 +8805,7 @@ const docTemplate = `{
                 }
             }
         },
-        "common_model.GraphCursors": {
+        "common.GraphCursors": {
             "type": "object",
             "properties": {
                 "after": {
@@ -8804,7 +8818,7 @@ const docTemplate = `{
                 }
             }
         },
-        "common_model.ID": {
+        "common.ID": {
             "type": "object",
             "properties": {
                 "id": {
@@ -8812,7 +8826,7 @@ const docTemplate = `{
                 }
             }
         },
-        "common_model.Language": {
+        "common.Language": {
             "type": "object",
             "properties": {
                 "code": {
@@ -8821,21 +8835,21 @@ const docTemplate = `{
                 }
             }
         },
-        "common_model.Pricing": {
+        "common.Pricing": {
             "type": "object",
             "properties": {
                 "billable": {
                     "type": "boolean"
                 },
                 "category": {
-                    "$ref": "#/definitions/common_model.PricingCategory"
+                    "$ref": "#/definitions/common.PricingCategory"
                 },
                 "pricing_model": {
                     "type": "string"
                 }
             }
         },
-        "common_model.PricingCategory": {
+        "common.PricingCategory": {
             "type": "string",
             "enum": [
                 "authentication",
@@ -8859,13 +8873,420 @@ const docTemplate = `{
                 "ReferralConversation"
             ]
         },
-        "common_model.SuccessResponse": {
+        "common.SuccessResponse": {
             "type": "object",
             "properties": {
                 "success": {
                     "type": "boolean"
                 }
             }
+        },
+        "contact.Address": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "country_code": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "street": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "zip": {
+                    "type": "string"
+                }
+            }
+        },
+        "contact.Email": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "contact.Name": {
+            "type": "object",
+            "properties": {
+                "first_name": {
+                    "type": "string"
+                },
+                "formatted_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "middle_name": {
+                    "type": "string"
+                },
+                "prefix": {
+                    "type": "string"
+                },
+                "suffix": {
+                    "type": "string"
+                }
+            }
+        },
+        "contact.Org": {
+            "type": "object",
+            "properties": {
+                "company": {
+                    "type": "string"
+                },
+                "department": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "contact.Phone": {
+            "type": "object",
+            "properties": {
+                "phone": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "wa_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "contact.URL": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "content.ButtonData": {
+            "type": "object",
+            "properties": {
+                "payload": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "content.ButtonSubType": {
+            "type": "string",
+            "enum": [
+                "BOOKING_CONFIRMATION",
+                "CATALOG",
+                "COPY_CODE",
+                "FLOW",
+                "MPM",
+                "ORDER_DETAILS",
+                "QUICK_REPLY",
+                "REMINDER",
+                "URL",
+                "VOICE_CALL"
+            ],
+            "x-enum-varnames": [
+                "BookingConfirmation",
+                "Catalog",
+                "CopyCode",
+                "Flow",
+                "Mpm",
+                "OrderDetails",
+                "QuickReply",
+                "Reminder",
+                "Url",
+                "VoiceCall"
+            ]
+        },
+        "content.Contact": {
+            "type": "object",
+            "properties": {
+                "addresses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/contact.Address"
+                    }
+                },
+                "birthday": {
+                    "type": "string"
+                },
+                "emails": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/contact.Email"
+                    }
+                },
+                "name": {
+                    "$ref": "#/definitions/contact.Name"
+                },
+                "org": {
+                    "$ref": "#/definitions/contact.Org"
+                },
+                "phones": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/contact.Phone"
+                    }
+                },
+                "urls": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/contact.URL"
+                    }
+                }
+            }
+        },
+        "content.Currency": {
+            "type": "object",
+            "properties": {
+                "amount_1000": {
+                    "description": "Value times 1000.",
+                    "type": "integer"
+                },
+                "code": {
+                    "description": "Use ISO 4217.",
+                    "type": "string"
+                },
+                "fallback_value": {
+                    "description": "Text in case it fails.",
+                    "type": "string"
+                }
+            }
+        },
+        "content.DateTime": {
+            "type": "object",
+            "properties": {
+                "fallback_value": {
+                    "type": "string"
+                }
+            }
+        },
+        "content.Interactive": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "description": "An action object with what you want the user to perform after reading the message. See action object for full information.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/interactive.Action"
+                        }
+                    ]
+                },
+                "body": {
+                    "description": "Optional for type product. Required for other message types.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/interactive.Body"
+                        }
+                    ]
+                },
+                "footer": {
+                    "description": "An object with the footer of the message.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/interactive.Footer"
+                        }
+                    ]
+                },
+                "header": {
+                    "description": "Header content displayed on top of a message. You cannot set a header if your interactive object is of product type.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/interactive.Header"
+                        }
+                    ]
+                },
+                "type": {
+                    "description": "The type of interactive message you want to send.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/interactive.InteractiveType"
+                        }
+                    ]
+                }
+            }
+        },
+        "content.LocationData": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "content.OrderData": {
+            "type": "object",
+            "properties": {
+                "catalog_id": {
+                    "description": "ID for the catalog the ordered item belongs to.",
+                    "type": "string"
+                },
+                "product_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/content.ProductItem"
+                    }
+                },
+                "text": {
+                    "description": "Text message from the user sent along with the order.",
+                    "type": "string"
+                }
+            }
+        },
+        "content.ProductItem": {
+            "type": "object",
+            "properties": {
+                "currency": {
+                    "type": "string"
+                },
+                "item_price": {
+                    "type": "string"
+                },
+                "product_retailer_id": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "string"
+                }
+            }
+        },
+        "content.ReactionData": {
+            "type": "object",
+            "properties": {
+                "emoji": {
+                    "description": "The emoji encoding. Something like \"\\uD83D\\uDE00\"",
+                    "type": "string"
+                },
+                "message_id": {
+                    "description": "ID of the message to react to. Something like \"wamid.HBgLM...\"",
+                    "type": "string"
+                }
+            }
+        },
+        "content.ReceiveType": {
+            "type": "string",
+            "enum": [
+                "system",
+                "unknown",
+                "text",
+                "reaction",
+                "location",
+                "contacts",
+                "interactive",
+                "template",
+                "image",
+                "video",
+                "audio",
+                "sticker",
+                "document",
+                "button",
+                "order"
+            ],
+            "x-enum-varnames": [
+                "Text",
+                "Reaction",
+                "Location",
+                "Contacts",
+                "InteractiveMsg",
+                "Template",
+                "Image",
+                "Video",
+                "Audio",
+                "Sticker",
+                "Document",
+                "Button",
+                "Order"
+            ]
+        },
+        "content.ReceivedInteractive": {
+            "type": "object",
+            "properties": {
+                "button_reply": {
+                    "$ref": "#/definitions/interactive.ButtonReplyData"
+                },
+                "list_reply": {
+                    "$ref": "#/definitions/interactive.ListReplyData"
+                },
+                "type": {
+                    "description": "The type of interactive message received.",
+                    "type": "string"
+                }
+            }
+        },
+        "content.TextData": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "preview_url": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "content.Type": {
+            "type": "string",
+            "enum": [
+                "system",
+                "unknown",
+                "text",
+                "reaction",
+                "location",
+                "contacts",
+                "interactive",
+                "template",
+                "image",
+                "video",
+                "audio",
+                "sticker",
+                "document",
+                "button",
+                "order"
+            ],
+            "x-enum-varnames": [
+                "Text",
+                "Reaction",
+                "Location",
+                "Contacts",
+                "InteractiveMsg",
+                "Template",
+                "Image",
+                "Video",
+                "Audio",
+                "Sticker",
+                "Document",
+                "Button",
+                "Order"
+            ]
         },
         "github_com_Astervia_wacraft-core_src_auth_model.TokenRequest": {
             "type": "object",
@@ -9232,14 +9653,14 @@ const docTemplate = `{
                     "description": "Contacts that received messages.",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/message_model.ResponseContact"
+                        "$ref": "#/definitions/message.ResponseContact"
                     }
                 },
                 "messages": {
                     "description": "IDs of sent messages.",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/message_model.MessageResponse"
+                        "$ref": "#/definitions/message.MessageResponse"
                     }
                 },
                 "messaging_product": {
@@ -9252,27 +9673,27 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "audio": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "button": {
-                    "$ref": "#/definitions/message_type_common_model.ButtonData"
+                    "$ref": "#/definitions/content.ButtonData"
                 },
                 "contacts": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/message_content_type_model.Contact"
+                        "$ref": "#/definitions/content.Contact"
                     }
                 },
                 "context": {
-                    "$ref": "#/definitions/message_model.ReceivedContext"
+                    "$ref": "#/definitions/message.ReceivedContext"
                 },
                 "document": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "errors": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/common_model.Error"
+                        "$ref": "#/definitions/common.Error"
                     }
                 },
                 "from": {
@@ -9284,44 +9705,44 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "image": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "interactive": {
-                    "$ref": "#/definitions/message_content_type_model.ReceivedInteractive"
+                    "$ref": "#/definitions/content.ReceivedInteractive"
                 },
                 "location": {
-                    "$ref": "#/definitions/message_type_common_model.LocationData"
+                    "$ref": "#/definitions/content.LocationData"
                 },
                 "order": {
-                    "$ref": "#/definitions/message_type_common_model.OrderData"
+                    "$ref": "#/definitions/content.OrderData"
                 },
                 "reaction": {
-                    "$ref": "#/definitions/message_type_common_model.ReactionData"
+                    "$ref": "#/definitions/content.ReactionData"
                 },
                 "referral": {
-                    "$ref": "#/definitions/message_model.Referral"
+                    "$ref": "#/definitions/message.Referral"
                 },
                 "sticker": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "system": {
-                    "$ref": "#/definitions/message_model.System"
+                    "$ref": "#/definitions/message.System"
                 },
                 "template": {
-                    "$ref": "#/definitions/template_model.UseTemplate"
+                    "$ref": "#/definitions/template.UseTemplate"
                 },
                 "text": {
-                    "$ref": "#/definitions/message_type_common_model.TextData"
+                    "$ref": "#/definitions/content.TextData"
                 },
                 "timestamp": {
                     "description": "Unix timestamp indicating when the WhatsApp server received the message from the customer.",
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/message_type_common_model.ReceiveType"
+                    "$ref": "#/definitions/content.ReceiveType"
                 },
                 "video": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 }
             }
         },
@@ -9336,7 +9757,7 @@ const docTemplate = `{
                     "description": "Specific data that allows to send message.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/message_model.Message"
+                            "$ref": "#/definitions/message.Message"
                         }
                     ]
                 },
@@ -9353,50 +9774,50 @@ const docTemplate = `{
             ],
             "properties": {
                 "audio": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "biz_opaque_callback_data": {
                     "description": "Arbitrary string used for tracking messages, groups of messages, you name it...",
                     "type": "string"
                 },
                 "button": {
-                    "$ref": "#/definitions/message_type_common_model.ButtonData"
+                    "$ref": "#/definitions/content.ButtonData"
                 },
                 "contacts": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/message_content_type_model.Contact"
+                        "$ref": "#/definitions/content.Contact"
                     }
                 },
                 "context": {
                     "description": "Used to answer a message.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/message_model.Context"
+                            "$ref": "#/definitions/message.Context"
                         }
                     ]
                 },
                 "document": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "image": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "interactive": {
-                    "$ref": "#/definitions/message_content_type_model.Interactive"
+                    "$ref": "#/definitions/content.Interactive"
                 },
                 "location": {
-                    "$ref": "#/definitions/message_type_common_model.LocationData"
+                    "$ref": "#/definitions/content.LocationData"
                 },
                 "messaging_product": {
                     "description": "Default is \"whatsapp\".",
                     "type": "string"
                 },
                 "order": {
-                    "$ref": "#/definitions/message_type_common_model.OrderData"
+                    "$ref": "#/definitions/content.OrderData"
                 },
                 "reaction": {
-                    "$ref": "#/definitions/message_type_common_model.ReactionData"
+                    "$ref": "#/definitions/content.ReactionData"
                 },
                 "recipient_identity_key_hash": {
                     "description": "To use it you need to allow identity check at code.service. If the field is provided, this message will only be sent if \"recipient_identity_key_hash\" matches client's current hash.",
@@ -9407,13 +9828,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "sticker": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "template": {
-                    "$ref": "#/definitions/template_model.UseTemplate"
+                    "$ref": "#/definitions/template.UseTemplate"
                 },
                 "text": {
-                    "$ref": "#/definitions/message_type_common_model.TextData"
+                    "$ref": "#/definitions/content.TextData"
                 },
                 "to": {
                     "description": "Whatsapp ID of receiver.",
@@ -9423,12 +9844,12 @@ const docTemplate = `{
                     "description": "Type of message.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/message_type_common_model.Type"
+                            "$ref": "#/definitions/content.Type"
                         }
                     ]
                 },
                 "video": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 }
             }
         },
@@ -9721,7 +10142,7 @@ const docTemplate = `{
                     "description": "Information about the conversation.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/webhook_model.Conversation"
+                            "$ref": "#/definitions/webhook.Conversation"
                         }
                     ]
                 },
@@ -9729,7 +10150,7 @@ const docTemplate = `{
                     "description": "An array of error objects describing the error. Error objects have the following properties, which map to their equivalent properties in API error response payloads.",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/common_model.Error"
+                        "$ref": "#/definitions/common.Error"
                     }
                 },
                 "id": {
@@ -9740,7 +10161,7 @@ const docTemplate = `{
                     "description": "An object containing pricing information.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/common_model.Pricing"
+                            "$ref": "#/definitions/common.Pricing"
                         }
                     ]
                 },
@@ -9749,7 +10170,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "$ref": "#/definitions/message_model.SendingStatus"
+                    "$ref": "#/definitions/message.SendingStatus"
                 },
                 "timestamp": {
                     "description": "Date for the status message",
@@ -10261,7 +10682,320 @@ const docTemplate = `{
                 }
             }
         },
-        "media_model.MediaInfo": {
+        "interactive.Action": {
+            "type": "object",
+            "properties": {
+                "button": {
+                    "description": "Required for list messages. It cannot be an empty string and must be unique within the message. Emojis are supported, markdown is not. Maximum length: 20 characters.",
+                    "type": "string"
+                },
+                "buttons": {
+                    "description": "Required for Reply Button Messages.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/interactive.ButtonData"
+                    }
+                },
+                "catalog_id": {
+                    "description": "Required for Single-Product Messages and Multi-Product Messages. Unique identifier of the Facebook catalog linked to your WhatsApp Business Account. This ID can be retrieved via Commerce Manager.",
+                    "type": "string"
+                },
+                "flow_action": {
+                    "description": "Optional for Flows Messages. navigate or data_exchange. Use navigate to predefine the first screen as part of the message. Use data_exchange for advanced use-cases where the first screen is provided by your endpoint.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/interactive.FlowAction"
+                        }
+                    ]
+                },
+                "flow_action_payload": {
+                    "description": "Optional for Flows Messages. Required only if flow_action is navigate.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/interactive.FlowActionPayload"
+                        }
+                    ]
+                },
+                "flow_cta": {
+                    "description": "Required for Flows Messages. Text on the CTA button, eg. \"Signup\". Maximum length: 20 characters (no emoji).",
+                    "type": "string"
+                },
+                "flow_id": {
+                    "description": "Required for Flows Messages. Unique identifier of the Flow provided by WhatsApp.",
+                    "type": "string"
+                },
+                "flow_message_version": {
+                    "description": "Required for Flows Messages.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/interactive.FlowMessageVersion"
+                        }
+                    ]
+                },
+                "flow_mode": {
+                    "description": "Optional for Flows Messages. The current mode of the Flow, either draft or published.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/interactive.FlowMode"
+                        }
+                    ]
+                },
+                "flow_token": {
+                    "description": "Required for Flows Messages. A token that is generated by the business to serve as an identifier.",
+                    "type": "string"
+                },
+                "product_retailer_id": {
+                    "description": "Required for Single-Product Messages and Multi-Product Messages. Unique identifier of the product in a catalog. Maximum 100 characters for both Single-Product and Multi-Product messages. To get this ID, go to Commerce Manager, select your Facebook Business account, and you will see a list of shops connected to your account. Click the shop you want to use. On the left-side panel, click Catalog \u003e Items, and find the item you want to mention. The ID for that item is displayed under the item's name.",
+                    "type": "string"
+                },
+                "sections": {
+                    "description": "Required for List Messages and Multi-Product Messages. There is a minimum of 1 and maximum of 10.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/interactive.Section"
+                    }
+                }
+            }
+        },
+        "interactive.Body": {
+            "type": "object",
+            "properties": {
+                "text": {
+                    "description": "Required if body is present",
+                    "type": "string"
+                }
+            }
+        },
+        "interactive.ButtonData": {
+            "type": "object",
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "reply": {
+                    "description": "The reply object contains the title and ID of the reply button.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/interactive.ButtonReplyData"
+                        }
+                    ]
+                },
+                "type": {
+                    "description": "The only supported option is reply for Reply Button Messages.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/interactive.ButtonType"
+                        }
+                    ]
+                }
+            }
+        },
+        "interactive.ButtonReplyData": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "A unique identifier for the button reply.",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "The title of the button reply.",
+                    "type": "string"
+                }
+            }
+        },
+        "interactive.ButtonType": {
+            "type": "string",
+            "enum": [
+                "reply"
+            ],
+            "x-enum-varnames": [
+                "Reply"
+            ]
+        },
+        "interactive.FlowAction": {
+            "type": "string",
+            "enum": [
+                "navigate",
+                "data_exchange"
+            ],
+            "x-enum-varnames": [
+                "Navigate",
+                "DataExchange"
+            ]
+        },
+        "interactive.FlowActionPayload": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Optional. The input data for the first screen of the Flow. Must be a non-empty object."
+                },
+                "screen": {
+                    "description": "Required. The id of the first screen of the Flow.",
+                    "type": "string"
+                }
+            }
+        },
+        "interactive.FlowMessageVersion": {
+            "type": "string",
+            "enum": [
+                "3"
+            ],
+            "x-enum-varnames": [
+                "Version3"
+            ]
+        },
+        "interactive.FlowMode": {
+            "type": "string",
+            "enum": [
+                "draft",
+                "published"
+            ],
+            "x-enum-varnames": [
+                "Draft",
+                "Published"
+            ]
+        },
+        "interactive.Footer": {
+            "type": "object",
+            "properties": {
+                "text": {
+                    "description": "Required if body is present",
+                    "type": "string"
+                }
+            }
+        },
+        "interactive.Header": {
+            "type": "object",
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "audio": {
+                    "$ref": "#/definitions/media.UseMedia"
+                },
+                "document": {
+                    "$ref": "#/definitions/media.UseMedia"
+                },
+                "image": {
+                    "$ref": "#/definitions/media.UseMedia"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "type": {
+                    "description": "Type of message.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/interactive.HeaderType"
+                        }
+                    ]
+                },
+                "video": {
+                    "$ref": "#/definitions/media.UseMedia"
+                }
+            }
+        },
+        "interactive.HeaderType": {
+            "type": "string",
+            "enum": [
+                "document",
+                "image",
+                "video",
+                "text"
+            ],
+            "x-enum-varnames": [
+                "Document",
+                "Image",
+                "Video",
+                "Text"
+            ]
+        },
+        "interactive.InteractiveType": {
+            "type": "string",
+            "enum": [
+                "list",
+                "button",
+                "product",
+                "product_list",
+                "catalog_message",
+                "flow"
+            ],
+            "x-enum-varnames": [
+                "List",
+                "Button",
+                "Product",
+                "ProductList",
+                "CatalogMessage",
+                "Flow"
+            ]
+        },
+        "interactive.ListReplyData": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "description": "The description of the list reply.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "A unique identifier for the list reply.",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "The title of the list reply.",
+                    "type": "string"
+                }
+            }
+        },
+        "interactive.ProductItem": {
+            "type": "object",
+            "properties": {
+                "product_retailer_id": {
+                    "description": "Required for Multi-Product Messages. Unique identifier of the product in a catalog. To get this ID, go to Commerce Manager, select your account and the shop you want to use. Then, click Catalog \u003e Items, and find the item you want to mention. The ID for that item is displayed under the item's name.",
+                    "type": "string"
+                }
+            }
+        },
+        "interactive.Row": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "description": "Optional. Maximum length: 72 characters.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Required. Maximum length: 200 characters.",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "Required. Maximum length: 24 characters.",
+                    "type": "string"
+                }
+            }
+        },
+        "interactive.Section": {
+            "type": "object",
+            "properties": {
+                "product_items": {
+                    "description": "Required for Multi-Product Messages. There is a minimum of 1 product per section and a maximum of 30 products across all sections.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/interactive.ProductItem"
+                    }
+                },
+                "rows": {
+                    "description": "Required for List Messages. Contains a list of row objects. Limited to 10 rows across all sections.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/interactive.Row"
+                    }
+                },
+                "title": {
+                    "description": "Required if the message has more than one section. Maximum length: 24 characters.",
+                    "type": "string"
+                }
+            }
+        },
+        "media.MediaInfo": {
             "type": "object",
             "properties": {
                 "file_size": {
@@ -10284,7 +11018,7 @@ const docTemplate = `{
                 }
             }
         },
-        "media_model.UseMedia": {
+        "media.UseMedia": {
             "type": "object",
             "properties": {
                 "caption": {
@@ -10305,105 +11039,7 @@ const docTemplate = `{
                 }
             }
         },
-        "message_content_type_model.Contact": {
-            "type": "object",
-            "properties": {
-                "addresses": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/message_type_contact_model.Address"
-                    }
-                },
-                "birthday": {
-                    "type": "string"
-                },
-                "emails": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/message_type_contact_model.Email"
-                    }
-                },
-                "name": {
-                    "$ref": "#/definitions/message_type_contact_model.Name"
-                },
-                "org": {
-                    "$ref": "#/definitions/message_type_contact_model.Org"
-                },
-                "phones": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/message_type_contact_model.Phone"
-                    }
-                },
-                "urls": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/message_type_contact_model.URL"
-                    }
-                }
-            }
-        },
-        "message_content_type_model.Interactive": {
-            "type": "object",
-            "properties": {
-                "action": {
-                    "description": "An action object with what you want the user to perform after reading the message. See action object for full information.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/message_type_interactive_model.Action"
-                        }
-                    ]
-                },
-                "body": {
-                    "description": "Optional for type product. Required for other message types.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/message_type_interactive_model.Body"
-                        }
-                    ]
-                },
-                "footer": {
-                    "description": "An object with the footer of the message.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/message_type_interactive_model.Footer"
-                        }
-                    ]
-                },
-                "header": {
-                    "description": "Header content displayed on top of a message. You cannot set a header if your interactive object is of product type.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/message_type_interactive_model.Header"
-                        }
-                    ]
-                },
-                "type": {
-                    "description": "The type of interactive message you want to send.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/message_type_interactive_model.InteractiveType"
-                        }
-                    ]
-                }
-            }
-        },
-        "message_content_type_model.ReceivedInteractive": {
-            "type": "object",
-            "properties": {
-                "button_reply": {
-                    "$ref": "#/definitions/message_type_interactive_model.ButtonReplyData"
-                },
-                "list_reply": {
-                    "$ref": "#/definitions/message_type_interactive_model.ListReplyData"
-                },
-                "type": {
-                    "description": "The type of interactive message received.",
-                    "type": "string"
-                }
-            }
-        },
-        "message_model.Context": {
+        "message.Context": {
             "type": "object",
             "properties": {
                 "message_id": {
@@ -10412,57 +11048,57 @@ const docTemplate = `{
                 }
             }
         },
-        "message_model.Message": {
+        "message.Message": {
             "type": "object",
             "required": [
                 "type"
             ],
             "properties": {
                 "audio": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "biz_opaque_callback_data": {
                     "description": "Arbitrary string used for tracking messages, groups of messages, you name it...",
                     "type": "string"
                 },
                 "button": {
-                    "$ref": "#/definitions/message_type_common_model.ButtonData"
+                    "$ref": "#/definitions/content.ButtonData"
                 },
                 "contacts": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/message_content_type_model.Contact"
+                        "$ref": "#/definitions/content.Contact"
                     }
                 },
                 "context": {
                     "description": "Used to answer a message.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/message_model.Context"
+                            "$ref": "#/definitions/message.Context"
                         }
                     ]
                 },
                 "document": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "image": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "interactive": {
-                    "$ref": "#/definitions/message_content_type_model.Interactive"
+                    "$ref": "#/definitions/content.Interactive"
                 },
                 "location": {
-                    "$ref": "#/definitions/message_type_common_model.LocationData"
+                    "$ref": "#/definitions/content.LocationData"
                 },
                 "messaging_product": {
                     "description": "Default is \"whatsapp\".",
                     "type": "string"
                 },
                 "order": {
-                    "$ref": "#/definitions/message_type_common_model.OrderData"
+                    "$ref": "#/definitions/content.OrderData"
                 },
                 "reaction": {
-                    "$ref": "#/definitions/message_type_common_model.ReactionData"
+                    "$ref": "#/definitions/content.ReactionData"
                 },
                 "recipient_identity_key_hash": {
                     "description": "To use it you need to allow identity check at code.service. If the field is provided, this message will only be sent if \"recipient_identity_key_hash\" matches client's current hash.",
@@ -10473,13 +11109,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "sticker": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "template": {
-                    "$ref": "#/definitions/template_model.UseTemplate"
+                    "$ref": "#/definitions/template.UseTemplate"
                 },
                 "text": {
-                    "$ref": "#/definitions/message_type_common_model.TextData"
+                    "$ref": "#/definitions/content.TextData"
                 },
                 "to": {
                     "description": "Whatsapp ID of receiver.",
@@ -10489,40 +11125,40 @@ const docTemplate = `{
                     "description": "Type of message.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/message_type_common_model.Type"
+                            "$ref": "#/definitions/content.Type"
                         }
                     ]
                 },
                 "video": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 }
             }
         },
-        "message_model.MessageReceived": {
+        "message.MessageReceived": {
             "type": "object",
             "properties": {
                 "audio": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "button": {
-                    "$ref": "#/definitions/message_type_common_model.ButtonData"
+                    "$ref": "#/definitions/content.ButtonData"
                 },
                 "contacts": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/message_content_type_model.Contact"
+                        "$ref": "#/definitions/content.Contact"
                     }
                 },
                 "context": {
-                    "$ref": "#/definitions/message_model.ReceivedContext"
+                    "$ref": "#/definitions/message.ReceivedContext"
                 },
                 "document": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "errors": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/common_model.Error"
+                        "$ref": "#/definitions/common.Error"
                     }
                 },
                 "from": {
@@ -10534,48 +11170,48 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "image": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "interactive": {
-                    "$ref": "#/definitions/message_content_type_model.ReceivedInteractive"
+                    "$ref": "#/definitions/content.ReceivedInteractive"
                 },
                 "location": {
-                    "$ref": "#/definitions/message_type_common_model.LocationData"
+                    "$ref": "#/definitions/content.LocationData"
                 },
                 "order": {
-                    "$ref": "#/definitions/message_type_common_model.OrderData"
+                    "$ref": "#/definitions/content.OrderData"
                 },
                 "reaction": {
-                    "$ref": "#/definitions/message_type_common_model.ReactionData"
+                    "$ref": "#/definitions/content.ReactionData"
                 },
                 "referral": {
-                    "$ref": "#/definitions/message_model.Referral"
+                    "$ref": "#/definitions/message.Referral"
                 },
                 "sticker": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "system": {
-                    "$ref": "#/definitions/message_model.System"
+                    "$ref": "#/definitions/message.System"
                 },
                 "template": {
-                    "$ref": "#/definitions/template_model.UseTemplate"
+                    "$ref": "#/definitions/template.UseTemplate"
                 },
                 "text": {
-                    "$ref": "#/definitions/message_type_common_model.TextData"
+                    "$ref": "#/definitions/content.TextData"
                 },
                 "timestamp": {
                     "description": "Unix timestamp indicating when the WhatsApp server received the message from the customer.",
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/message_type_common_model.ReceiveType"
+                    "$ref": "#/definitions/content.ReceiveType"
                 },
                 "video": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 }
             }
         },
-        "message_model.MessageResponse": {
+        "message.MessageResponse": {
             "type": "object",
             "required": [
                 "message_status"
@@ -10585,11 +11221,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "message_status": {
-                    "$ref": "#/definitions/message_model.SendingStatus"
+                    "$ref": "#/definitions/message.SendingStatus"
                 }
             }
         },
-        "message_model.ReceivedContext": {
+        "message.ReceivedContext": {
             "type": "object",
             "properties": {
                 "forwarded": {
@@ -10612,13 +11248,13 @@ const docTemplate = `{
                     "description": "Referred product object describing the product the user is requesting information about. You must parse this value if you support Product Enquiry Messages.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/message_model.ReferredProduct"
+                            "$ref": "#/definitions/message.ReferredProduct"
                         }
                     ]
                 }
             }
         },
-        "message_model.Referral": {
+        "message.Referral": {
             "type": "object",
             "properties": {
                 "body": {
@@ -10663,7 +11299,7 @@ const docTemplate = `{
                 }
             }
         },
-        "message_model.ReferredProduct": {
+        "message.ReferredProduct": {
             "type": "object",
             "properties": {
                 "catalog_id": {
@@ -10676,7 +11312,7 @@ const docTemplate = `{
                 }
             }
         },
-        "message_model.ResponseContact": {
+        "message.ResponseContact": {
             "type": "object",
             "properties": {
                 "input": {
@@ -10689,7 +11325,7 @@ const docTemplate = `{
                 }
             }
         },
-        "message_model.SendingStatus": {
+        "message.SendingStatus": {
             "type": "string",
             "enum": [
                 "delivered",
@@ -10704,7 +11340,7 @@ const docTemplate = `{
                 "Failed"
             ]
         },
-        "message_model.System": {
+        "message.System": {
             "type": "object",
             "properties": {
                 "body": {
@@ -10727,7 +11363,7 @@ const docTemplate = `{
                     "description": "Type of system update.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/message_model.SystemType"
+                            "$ref": "#/definitions/message.SystemType"
                         }
                     ]
                 },
@@ -10737,7 +11373,7 @@ const docTemplate = `{
                 }
             }
         },
-        "message_model.SystemType": {
+        "message.SystemType": {
             "type": "object",
             "properties": {
                 "customer_changed_number": {
@@ -10750,630 +11386,7 @@ const docTemplate = `{
                 }
             }
         },
-        "message_type_common_model.ButtonData": {
-            "type": "object",
-            "properties": {
-                "payload": {
-                    "type": "string"
-                },
-                "text": {
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_common_model.ButtonSubType": {
-            "type": "string",
-            "enum": [
-                "BOOKING_CONFIRMATION",
-                "CATALOG",
-                "COPY_CODE",
-                "FLOW",
-                "MPM",
-                "ORDER_DETAILS",
-                "QUICK_REPLY",
-                "REMINDER",
-                "URL",
-                "VOICE_CALL"
-            ],
-            "x-enum-varnames": [
-                "BookingConfirmation",
-                "Catalog",
-                "CopyCode",
-                "Flow",
-                "Mpm",
-                "OrderDetails",
-                "QuickReply",
-                "Reminder",
-                "Url",
-                "VoiceCall"
-            ]
-        },
-        "message_type_common_model.Currency": {
-            "type": "object",
-            "properties": {
-                "amount_1000": {
-                    "description": "Value times 1000.",
-                    "type": "integer"
-                },
-                "code": {
-                    "description": "Use ISO 4217.",
-                    "type": "string"
-                },
-                "fallback_value": {
-                    "description": "Text in case it fails.",
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_common_model.DateTime": {
-            "type": "object",
-            "properties": {
-                "fallback_value": {
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_common_model.LocationData": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "latitude": {
-                    "type": "number"
-                },
-                "longitude": {
-                    "type": "number"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_common_model.OrderData": {
-            "type": "object",
-            "properties": {
-                "catalog_id": {
-                    "description": "ID for the catalog the ordered item belongs to.",
-                    "type": "string"
-                },
-                "product_items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/message_type_common_model.ProductItem"
-                    }
-                },
-                "text": {
-                    "description": "Text message from the user sent along with the order.",
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_common_model.ProductItem": {
-            "type": "object",
-            "properties": {
-                "currency": {
-                    "type": "string"
-                },
-                "item_price": {
-                    "type": "string"
-                },
-                "product_retailer_id": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_common_model.ReactionData": {
-            "type": "object",
-            "properties": {
-                "emoji": {
-                    "description": "The emoji encoding. Something like \"\\uD83D\\uDE00\"",
-                    "type": "string"
-                },
-                "message_id": {
-                    "description": "ID of the message to react to. Something like \"wamid.HBgLM...\"",
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_common_model.ReceiveType": {
-            "type": "string",
-            "enum": [
-                "system",
-                "unknown",
-                "text",
-                "reaction",
-                "location",
-                "contacts",
-                "interactive",
-                "template",
-                "image",
-                "video",
-                "audio",
-                "sticker",
-                "document",
-                "button",
-                "order",
-                "document",
-                "image",
-                "video",
-                "text"
-            ],
-            "x-enum-varnames": [
-                "Document",
-                "Image",
-                "Video",
-                "Text"
-            ]
-        },
-        "message_type_common_model.TextData": {
-            "type": "object",
-            "properties": {
-                "body": {
-                    "type": "string"
-                },
-                "preview_url": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "message_type_common_model.Type": {
-            "type": "string",
-            "enum": [
-                "system",
-                "unknown",
-                "text",
-                "reaction",
-                "location",
-                "contacts",
-                "interactive",
-                "template",
-                "image",
-                "video",
-                "audio",
-                "sticker",
-                "document",
-                "button",
-                "order"
-            ],
-            "x-enum-varnames": [
-                "Document",
-                "Image",
-                "Video",
-                "Text"
-            ]
-        },
-        "message_type_contact_model.Address": {
-            "type": "object",
-            "properties": {
-                "city": {
-                    "type": "string"
-                },
-                "country": {
-                    "type": "string"
-                },
-                "country_code": {
-                    "type": "string"
-                },
-                "state": {
-                    "type": "string"
-                },
-                "street": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "zip": {
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_contact_model.Email": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_contact_model.Name": {
-            "type": "object",
-            "properties": {
-                "first_name": {
-                    "type": "string"
-                },
-                "formatted_name": {
-                    "type": "string"
-                },
-                "last_name": {
-                    "type": "string"
-                },
-                "middle_name": {
-                    "type": "string"
-                },
-                "prefix": {
-                    "type": "string"
-                },
-                "suffix": {
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_contact_model.Org": {
-            "type": "object",
-            "properties": {
-                "company": {
-                    "type": "string"
-                },
-                "department": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_contact_model.Phone": {
-            "type": "object",
-            "properties": {
-                "phone": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "wa_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_contact_model.URL": {
-            "type": "object",
-            "properties": {
-                "type": {
-                    "type": "string"
-                },
-                "url": {
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_interactive_model.Action": {
-            "type": "object",
-            "properties": {
-                "button": {
-                    "description": "Required for list messages. It cannot be an empty string and must be unique within the message. Emojis are supported, markdown is not. Maximum length: 20 characters.",
-                    "type": "string"
-                },
-                "buttons": {
-                    "description": "Required for Reply Button Messages.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/message_type_interactive_model.ButtonData"
-                    }
-                },
-                "catalog_id": {
-                    "description": "Required for Single-Product Messages and Multi-Product Messages. Unique identifier of the Facebook catalog linked to your WhatsApp Business Account. This ID can be retrieved via Commerce Manager.",
-                    "type": "string"
-                },
-                "flow_action": {
-                    "description": "Optional for Flows Messages. navigate or data_exchange. Use navigate to predefine the first screen as part of the message. Use data_exchange for advanced use-cases where the first screen is provided by your endpoint.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/message_type_interactive_model.FlowAction"
-                        }
-                    ]
-                },
-                "flow_action_payload": {
-                    "description": "Optional for Flows Messages. Required only if flow_action is navigate.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/message_type_interactive_model.FlowActionPayload"
-                        }
-                    ]
-                },
-                "flow_cta": {
-                    "description": "Required for Flows Messages. Text on the CTA button, eg. \"Signup\". Maximum length: 20 characters (no emoji).",
-                    "type": "string"
-                },
-                "flow_id": {
-                    "description": "Required for Flows Messages. Unique identifier of the Flow provided by WhatsApp.",
-                    "type": "string"
-                },
-                "flow_message_version": {
-                    "description": "Required for Flows Messages.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/message_type_interactive_model.FlowMessageVersion"
-                        }
-                    ]
-                },
-                "flow_mode": {
-                    "description": "Optional for Flows Messages. The current mode of the Flow, either draft or published.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/message_type_interactive_model.FlowMode"
-                        }
-                    ]
-                },
-                "flow_token": {
-                    "description": "Required for Flows Messages. A token that is generated by the business to serve as an identifier.",
-                    "type": "string"
-                },
-                "product_retailer_id": {
-                    "description": "Required for Single-Product Messages and Multi-Product Messages. Unique identifier of the product in a catalog. Maximum 100 characters for both Single-Product and Multi-Product messages. To get this ID, go to Commerce Manager, select your Facebook Business account, and you will see a list of shops connected to your account. Click the shop you want to use. On the left-side panel, click Catalog \u003e Items, and find the item you want to mention. The ID for that item is displayed under the item's name.",
-                    "type": "string"
-                },
-                "sections": {
-                    "description": "Required for List Messages and Multi-Product Messages. There is a minimum of 1 and maximum of 10.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/message_type_interactive_model.Section"
-                    }
-                }
-            }
-        },
-        "message_type_interactive_model.Body": {
-            "type": "object",
-            "properties": {
-                "text": {
-                    "description": "Required if body is present",
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_interactive_model.ButtonData": {
-            "type": "object",
-            "required": [
-                "type"
-            ],
-            "properties": {
-                "reply": {
-                    "description": "The reply object contains the title and ID of the reply button.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/message_type_interactive_model.ButtonReplyData"
-                        }
-                    ]
-                },
-                "type": {
-                    "description": "The only supported option is reply for Reply Button Messages.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/message_type_interactive_model.ButtonType"
-                        }
-                    ]
-                }
-            }
-        },
-        "message_type_interactive_model.ButtonReplyData": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "description": "A unique identifier for the button reply.",
-                    "type": "string"
-                },
-                "title": {
-                    "description": "The title of the button reply.",
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_interactive_model.ButtonType": {
-            "type": "string",
-            "enum": [
-                "reply"
-            ],
-            "x-enum-varnames": [
-                "Reply"
-            ]
-        },
-        "message_type_interactive_model.FlowAction": {
-            "type": "string",
-            "enum": [
-                "navigate",
-                "data_exchange"
-            ],
-            "x-enum-varnames": [
-                "Navigate",
-                "DataExchange"
-            ]
-        },
-        "message_type_interactive_model.FlowActionPayload": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "description": "Optional. The input data for the first screen of the Flow. Must be a non-empty object."
-                },
-                "screen": {
-                    "description": "Required. The id of the first screen of the Flow.",
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_interactive_model.FlowMessageVersion": {
-            "type": "string",
-            "enum": [
-                "3"
-            ],
-            "x-enum-varnames": [
-                "Version3"
-            ]
-        },
-        "message_type_interactive_model.FlowMode": {
-            "type": "string",
-            "enum": [
-                "draft",
-                "published"
-            ],
-            "x-enum-varnames": [
-                "Draft",
-                "Published"
-            ]
-        },
-        "message_type_interactive_model.Footer": {
-            "type": "object",
-            "properties": {
-                "text": {
-                    "description": "Required if body is present",
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_interactive_model.Header": {
-            "type": "object",
-            "required": [
-                "type"
-            ],
-            "properties": {
-                "audio": {
-                    "$ref": "#/definitions/media_model.UseMedia"
-                },
-                "document": {
-                    "$ref": "#/definitions/media_model.UseMedia"
-                },
-                "image": {
-                    "$ref": "#/definitions/media_model.UseMedia"
-                },
-                "text": {
-                    "type": "string"
-                },
-                "type": {
-                    "description": "Type of message.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/message_type_interactive_model.HeaderType"
-                        }
-                    ]
-                },
-                "video": {
-                    "$ref": "#/definitions/media_model.UseMedia"
-                }
-            }
-        },
-        "message_type_interactive_model.HeaderType": {
-            "type": "string",
-            "enum": [
-                "system",
-                "unknown",
-                "text",
-                "reaction",
-                "location",
-                "contacts",
-                "interactive",
-                "template",
-                "image",
-                "video",
-                "audio",
-                "sticker",
-                "document",
-                "button",
-                "order",
-                "document",
-                "image",
-                "video",
-                "text"
-            ],
-            "x-enum-varnames": [
-                "Document",
-                "Image",
-                "Video",
-                "Text"
-            ]
-        },
-        "message_type_interactive_model.InteractiveType": {
-            "type": "string",
-            "enum": [
-                "list",
-                "button",
-                "product",
-                "product_list",
-                "catalog_message",
-                "flow"
-            ],
-            "x-enum-varnames": [
-                "List",
-                "Button",
-                "Product",
-                "ProductList",
-                "CatalogMessage",
-                "Flow"
-            ]
-        },
-        "message_type_interactive_model.ListReplyData": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "description": "The description of the list reply.",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "A unique identifier for the list reply.",
-                    "type": "string"
-                },
-                "title": {
-                    "description": "The title of the list reply.",
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_interactive_model.ProductItem": {
-            "type": "object",
-            "properties": {
-                "product_retailer_id": {
-                    "description": "Required for Multi-Product Messages. Unique identifier of the product in a catalog. To get this ID, go to Commerce Manager, select your account and the shop you want to use. Then, click Catalog \u003e Items, and find the item you want to mention. The ID for that item is displayed under the item's name.",
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_interactive_model.Row": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "description": "Optional. Maximum length: 72 characters.",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "Required. Maximum length: 200 characters.",
-                    "type": "string"
-                },
-                "title": {
-                    "description": "Required. Maximum length: 24 characters.",
-                    "type": "string"
-                }
-            }
-        },
-        "message_type_interactive_model.Section": {
-            "type": "object",
-            "properties": {
-                "product_items": {
-                    "description": "Required for Multi-Product Messages. There is a minimum of 1 product per section and a maximum of 30 products across all sections.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/message_type_interactive_model.ProductItem"
-                    }
-                },
-                "rows": {
-                    "description": "Required for List Messages. Contains a list of row objects. Limited to 10 rows across all sections.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/message_type_interactive_model.Row"
-                    }
-                },
-                "title": {
-                    "description": "Required if the message has more than one section. Maximum length: 24 characters.",
-                    "type": "string"
-                }
-            }
-        },
-        "template_model.ButtonData": {
+        "template.ButtonData": {
             "type": "object",
             "required": [
                 "type"
@@ -11398,14 +11411,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/template_model.ButtonType"
+                    "$ref": "#/definitions/template.ButtonType"
                 },
                 "url": {
                     "type": "string"
                 }
             }
         },
-        "template_model.ButtonType": {
+        "template.ButtonType": {
             "type": "string",
             "enum": [
                 "PHONE_NUMBER",
@@ -11422,7 +11435,7 @@ const docTemplate = `{
                 "Flow"
             ]
         },
-        "template_model.Component": {
+        "template.Component": {
             "type": "object",
             "required": [
                 "type"
@@ -11435,23 +11448,23 @@ const docTemplate = `{
                 "parameters": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/template_model.Parameter"
+                        "$ref": "#/definitions/template.Parameter"
                     }
                 },
                 "sub_type": {
                     "description": "Only for button type.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/message_type_common_model.ButtonSubType"
+                            "$ref": "#/definitions/content.ButtonSubType"
                         }
                     ]
                 },
                 "type": {
-                    "$ref": "#/definitions/template_model.ComponentType"
+                    "$ref": "#/definitions/template.ComponentType"
                 }
             }
         },
-        "template_model.ComponentExample": {
+        "template.ComponentExample": {
             "type": "object",
             "properties": {
                 "body_text": {
@@ -11477,7 +11490,7 @@ const docTemplate = `{
                 }
             }
         },
-        "template_model.ComponentFormat": {
+        "template.ComponentFormat": {
             "type": "string",
             "enum": [
                 "IMAGE",
@@ -11496,7 +11509,7 @@ const docTemplate = `{
                 "TextFormat"
             ]
         },
-        "template_model.ComponentType": {
+        "template.ComponentType": {
             "type": "string",
             "enum": [
                 "HEADER",
@@ -11511,70 +11524,70 @@ const docTemplate = `{
                 "ButtonComponent"
             ]
         },
-        "template_model.GetTemplateResponse": {
+        "template.GetTemplateResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/template_model.Template"
+                        "$ref": "#/definitions/template.Template"
                     }
                 },
                 "paging": {
-                    "$ref": "#/definitions/template_model.Paging"
+                    "$ref": "#/definitions/template.Paging"
                 },
                 "summary": {
-                    "$ref": "#/definitions/template_model.TemplateSummaryResponse"
+                    "$ref": "#/definitions/template.TemplateSummaryResponse"
                 }
             }
         },
-        "template_model.Paging": {
+        "template.Paging": {
             "type": "object",
             "properties": {
                 "cursors": {
-                    "$ref": "#/definitions/common_model.GraphCursors"
+                    "$ref": "#/definitions/common.GraphCursors"
                 },
                 "next": {
                     "type": "string"
                 }
             }
         },
-        "template_model.Parameter": {
+        "template.Parameter": {
             "type": "object",
             "properties": {
                 "audio": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "button": {
-                    "$ref": "#/definitions/message_type_common_model.ButtonData"
+                    "$ref": "#/definitions/content.ButtonData"
                 },
                 "currency": {
-                    "$ref": "#/definitions/message_type_common_model.Currency"
+                    "$ref": "#/definitions/content.Currency"
                 },
                 "date_time": {
-                    "$ref": "#/definitions/message_type_common_model.DateTime"
+                    "$ref": "#/definitions/content.DateTime"
                 },
                 "document": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "image": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "sticker": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "text": {
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/template_model.ParameterType"
+                    "$ref": "#/definitions/template.ParameterType"
                 },
                 "video": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 }
             }
         },
-        "template_model.ParameterType": {
+        "template.ParameterType": {
             "type": "string",
             "enum": [
                 "text",
@@ -11599,7 +11612,7 @@ const docTemplate = `{
                 "Payload"
             ]
         },
-        "template_model.Status": {
+        "template.Status": {
             "type": "string",
             "enum": [
                 "APPROVED",
@@ -11626,7 +11639,7 @@ const docTemplate = `{
                 "Archived"
             ]
         },
-        "template_model.Template": {
+        "template.Template": {
             "type": "object",
             "properties": {
                 "category": {
@@ -11635,7 +11648,7 @@ const docTemplate = `{
                 "components": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/template_model.TemplateComponent"
+                        "$ref": "#/definitions/template.TemplateComponent"
                     }
                 },
                 "id": {
@@ -11648,11 +11661,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "$ref": "#/definitions/template_model.Status"
+                    "$ref": "#/definitions/template.Status"
                 }
             }
         },
-        "template_model.TemplateCategory": {
+        "template.TemplateCategory": {
             "type": "string",
             "enum": [
                 "ACCOUNT_UPDATE",
@@ -11693,54 +11706,54 @@ const docTemplate = `{
                 "FreeService"
             ]
         },
-        "template_model.TemplateComponent": {
+        "template.TemplateComponent": {
             "type": "object",
             "required": [
                 "type"
             ],
             "properties": {
                 "audio": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "buttons": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/template_model.ButtonData"
+                        "$ref": "#/definitions/template.ButtonData"
                     }
                 },
                 "currency": {
-                    "$ref": "#/definitions/message_type_common_model.Currency"
+                    "$ref": "#/definitions/content.Currency"
                 },
                 "date_time": {
-                    "$ref": "#/definitions/message_type_common_model.DateTime"
+                    "$ref": "#/definitions/content.DateTime"
                 },
                 "document": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "example": {
-                    "$ref": "#/definitions/template_model.ComponentExample"
+                    "$ref": "#/definitions/template.ComponentExample"
                 },
                 "format": {
-                    "$ref": "#/definitions/template_model.ComponentFormat"
+                    "$ref": "#/definitions/template.ComponentFormat"
                 },
                 "image": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "sticker": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 },
                 "text": {
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/template_model.ComponentType"
+                    "$ref": "#/definitions/template.ComponentType"
                 },
                 "video": {
-                    "$ref": "#/definitions/media_model.UseMedia"
+                    "$ref": "#/definitions/media.UseMedia"
                 }
             }
         },
-        "template_model.TemplateQualityScore": {
+        "template.TemplateQualityScore": {
             "type": "string",
             "enum": [
                 "GREEN",
@@ -11755,7 +11768,7 @@ const docTemplate = `{
                 "Unknown"
             ]
         },
-        "template_model.TemplateSummary": {
+        "template.TemplateSummary": {
             "type": "string",
             "enum": [
                 "total_count",
@@ -11770,7 +11783,7 @@ const docTemplate = `{
                 "AreTranslationsComplete"
             ]
         },
-        "template_model.TemplateSummaryResponse": {
+        "template.TemplateSummaryResponse": {
             "type": "object",
             "properties": {
                 "are_translations_complete": {
@@ -11787,46 +11800,46 @@ const docTemplate = `{
                 }
             }
         },
-        "template_model.UseTemplate": {
+        "template.UseTemplate": {
             "type": "object",
             "properties": {
                 "components": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/template_model.Component"
+                        "$ref": "#/definitions/template.Component"
                     }
                 },
                 "language": {
-                    "$ref": "#/definitions/common_model.Language"
+                    "$ref": "#/definitions/common.Language"
                 },
                 "name": {
                     "type": "string"
                 }
             }
         },
-        "webhook_model.Change": {
+        "webhook.Change": {
             "type": "object",
             "properties": {
                 "field": {
-                    "$ref": "#/definitions/webhook_model.Field"
+                    "$ref": "#/definitions/webhook.Field"
                 },
                 "value": {
-                    "$ref": "#/definitions/webhook_model.Value"
+                    "$ref": "#/definitions/webhook.Value"
                 }
             }
         },
-        "webhook_model.Contact": {
+        "webhook.Contact": {
             "type": "object",
             "properties": {
                 "profile": {
-                    "$ref": "#/definitions/webhook_model.ContactProfile"
+                    "$ref": "#/definitions/webhook.ContactProfile"
                 },
                 "wa_id": {
                     "type": "string"
                 }
             }
         },
-        "webhook_model.ContactProfile": {
+        "webhook.ContactProfile": {
             "type": "object",
             "properties": {
                 "name": {
@@ -11834,7 +11847,7 @@ const docTemplate = `{
                 }
             }
         },
-        "webhook_model.Conversation": {
+        "webhook.Conversation": {
             "type": "object",
             "properties": {
                 "expiration_timestamp": {
@@ -11848,19 +11861,19 @@ const docTemplate = `{
                     "description": "Describes conversation category",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/webhook_model.Origin"
+                            "$ref": "#/definitions/webhook.Origin"
                         }
                     ]
                 }
             }
         },
-        "webhook_model.Entry": {
+        "webhook.Entry": {
             "type": "object",
             "properties": {
                 "changes": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/webhook_model.Change"
+                        "$ref": "#/definitions/webhook.Change"
                     }
                 },
                 "id": {
@@ -11868,7 +11881,7 @@ const docTemplate = `{
                 }
             }
         },
-        "webhook_model.Field": {
+        "webhook.Field": {
             "type": "string",
             "enum": [
                 "account_alerts",
@@ -11909,7 +11922,7 @@ const docTemplate = `{
                 "Messages"
             ]
         },
-        "webhook_model.Metadata": {
+        "webhook.Metadata": {
             "type": "object",
             "properties": {
                 "display_phone_number": {
@@ -11920,20 +11933,20 @@ const docTemplate = `{
                 }
             }
         },
-        "webhook_model.Origin": {
+        "webhook.Origin": {
             "type": "object",
             "properties": {
                 "type": {
                     "description": "Indicates conversation category. This can also be referred to as a conversation entry point",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/common_model.PricingCategory"
+                            "$ref": "#/definitions/common.PricingCategory"
                         }
                     ]
                 }
             }
         },
-        "webhook_model.Status": {
+        "webhook.Status": {
             "type": "object",
             "properties": {
                 "biz_opaque_callback_data": {
@@ -11944,7 +11957,7 @@ const docTemplate = `{
                     "description": "Information about the conversation.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/webhook_model.Conversation"
+                            "$ref": "#/definitions/webhook.Conversation"
                         }
                     ]
                 },
@@ -11952,7 +11965,7 @@ const docTemplate = `{
                     "description": "An array of error objects describing the error. Error objects have the following properties, which map to their equivalent properties in API error response payloads.",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/common_model.Error"
+                        "$ref": "#/definitions/common.Error"
                     }
                 },
                 "id": {
@@ -11963,7 +11976,7 @@ const docTemplate = `{
                     "description": "An object containing pricing information.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/common_model.Pricing"
+                            "$ref": "#/definitions/common.Pricing"
                         }
                     ]
                 },
@@ -11972,7 +11985,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "$ref": "#/definitions/message_model.SendingStatus"
+                    "$ref": "#/definitions/message.SendingStatus"
                 },
                 "timestamp": {
                     "description": "Date for the status message",
@@ -11980,25 +11993,25 @@ const docTemplate = `{
                 }
             }
         },
-        "webhook_model.Value": {
+        "webhook.Value": {
             "type": "object",
             "properties": {
                 "contacts": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/webhook_model.Contact"
+                        "$ref": "#/definitions/webhook.Contact"
                     }
                 },
                 "errors": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/common_model.Error"
+                        "$ref": "#/definitions/common.Error"
                     }
                 },
                 "messages": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/message_model.MessageReceived"
+                        "$ref": "#/definitions/message.MessageReceived"
                     }
                 },
                 "messaging_product": {
@@ -12006,30 +12019,30 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "metadata": {
-                    "$ref": "#/definitions/webhook_model.Metadata"
+                    "$ref": "#/definitions/webhook.Metadata"
                 },
                 "statuses": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/webhook_model.Status"
+                        "$ref": "#/definitions/webhook.Status"
                     }
                 }
             }
         },
-        "webhook_model.WebhookBody": {
+        "webhook.WebhookBody": {
             "type": "object",
             "properties": {
                 "entry": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/webhook_model.Entry"
+                        "$ref": "#/definitions/webhook.Entry"
                     }
                 },
                 "object": {
                     "description": "The specific webhook a business is subscribed to. The webhook is whatsapp_business_account.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/common_model.BusinessAccount"
+                            "$ref": "#/definitions/common.BusinessAccount"
                         }
                     ]
                 }
