@@ -2,6 +2,8 @@ package phone_config_handler
 
 import (
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
+	messaging_product_entity "github.com/Astervia/wacraft-core/src/messaging-product/entity"
+	messaging_product_model "github.com/Astervia/wacraft-core/src/messaging-product/model"
 	phone_config_entity "github.com/Astervia/wacraft-core/src/phone-config/entity"
 	phone_config_model "github.com/Astervia/wacraft-core/src/phone-config/model"
 	"github.com/Astervia/wacraft-core/src/repository"
@@ -94,6 +96,13 @@ func Create(c *fiber.Ctx) error {
 		isActive = *req.IsActive
 	}
 
+	tx := database.DB.Begin()
+	if err := tx.Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			common_model.NewApiError("failed to start transaction", err, "database").Send(),
+		)
+	}
+
 	phoneConfig, err := repository.Create(
 		phone_config_entity.PhoneConfig{
 			Name:               req.Name,
@@ -105,11 +114,32 @@ func Create(c *fiber.Ctx) error {
 			MetaAppSecret:      req.MetaAppSecret,
 			WebhookVerifyToken: req.WebhookVerifyToken,
 			IsActive:           isActive,
-		}, database.DB,
+		}, tx,
 	)
 	if err != nil {
+		tx.Rollback()
 		return c.Status(fiber.StatusInternalServerError).JSON(
-			common_model.NewApiError("Failed to create phone config", err, "repository").Send(),
+			common_model.NewApiError("failed to create phone config", err, "repository").Send(),
+		)
+	}
+
+	_, err = repository.Create(
+		messaging_product_entity.MessagingProduct{
+			Name:          messaging_product_model.WhatsApp,
+			WorkspaceID:   phoneConfig.WorkspaceID,
+			PhoneConfigID: &phoneConfig.ID,
+		}, tx,
+	)
+	if err != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			common_model.NewApiError("failed to create messaging product", err, "repository").Send(),
+		)
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			common_model.NewApiError("unable to commit", err, "repository").Send(),
 		)
 	}
 
