@@ -19,7 +19,7 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Param			message	query		message_model.QueryPaginated	true	"Pagination and filter parameters"
-//	@Success		200		{object}	common_model.SuccessResponse	"Success response"
+//	@Success		200		{object}	common.SuccessResponse	"Success response"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid query parameters"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Failed to mark conversation as read"
 //	@Security		ApiKeyAuth

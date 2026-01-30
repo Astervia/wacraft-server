@@ -218,7 +218,7 @@ func UploadWhatsAppMedia(ctx *fiber.Ctx) error {
 	}
 	defer file.Close()
 
-	uploadData := media_model.Upload{
+	uploadData := media_model.UploadPayload{
 		FileName: fileHeader.Filename,
 		FileData: file,
 		Type:     supportedMimeType,

@@ -66,15 +66,15 @@ func SendMessage(c *fiber.Ctx) error {
 	)
 	if err != nil {
 		// Fall back to legacy method if workspace-specific fails
-		entity, err = message_service.FindMessagingProductAndSendMessage(
-			body,
-			propagateCallback,
+		// entity, err = message_service.FindMessagingProductAndSendMessage(
+		// 	body,
+		// 	propagateCallback,
+		// )
+		// if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			common_model.NewApiError("unable to find messaging product and send message", err, "message_service").Send(),
 		)
-		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(
-				common_model.NewApiError("unable to find messaging product and send message", err, "message_service").Send(),
-			)
-		}
+		// }
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(entity)
