@@ -9,6 +9,7 @@ import (
 	message_model "github.com/Astervia/wacraft-core/src/message/model"
 	messaging_product_entity "github.com/Astervia/wacraft-core/src/messaging-product/entity"
 	messaging_product_model "github.com/Astervia/wacraft-core/src/messaging-product/model"
+	phone_config_entity "github.com/Astervia/wacraft-core/src/phone-config/entity"
 	status_entity "github.com/Astervia/wacraft-core/src/status/entity"
 	webhook_entity "github.com/Astervia/wacraft-core/src/webhook/entity"
 	webhook_out_model "github.com/Astervia/wacraft-core/src/webhook/model"
@@ -28,9 +29,24 @@ import (
 
 var messageExecutionContexts = []wh_model.Field{wh_model.Messages}
 
+// PhoneConfigCtxKey stores the active phone config for a webhook request.
+const PhoneConfigCtxKey = "phone_config"
+
 // MessageHandler is the legacy handler that uses the global WhatsApp messaging product.
 var MessageHandler = webhook_model.ChangeHandler{
 	Callback:          messageCallback,
+	ExecutionContexts: &messageExecutionContexts,
+}
+
+// PhoneConfigMessageHandler routes webhook messages based on the phone config in context.
+var PhoneConfigMessageHandler = webhook_model.ChangeHandler{
+	Callback: func(ctx *fiber.Ctx, body *wh_model.WebhookBody, change *wh_model.Change) error {
+		phoneConfig, ok := ctx.Locals(PhoneConfigCtxKey).(*phone_config_entity.PhoneConfig)
+		if !ok || phoneConfig == nil {
+			return fiber.NewError(fiber.StatusNotFound, "phone config not found")
+		}
+		return messageCallbackForPhoneConfig(ctx, body, change, phoneConfig.ID, phoneConfig.WabaID)
+	},
 	ExecutionContexts: &messageExecutionContexts,
 }
 

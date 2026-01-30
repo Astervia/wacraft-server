@@ -52,40 +52,25 @@ func ServeWebhook(app *fiber.App) {
 		server_service.Bootstrap(server, &LegacyHook)
 	}
 
-	// Register per-phone-config webhooks at /webhook-in/:phone_number_id
-	registerPhoneConfigWebhooks(app)
+	// Register webhook for all phone configs at /webhook-in/:waba_id
+	registerWabaWebhook(app)
 }
 
-// registerPhoneConfigWebhooks registers webhook endpoints for each active phone config.
-func registerPhoneConfigWebhooks(app *fiber.App) {
-	var phoneConfigs []phone_config_entity.PhoneConfig
-	if err := database.DB.Where("is_active = true").Find(&phoneConfigs).Error; err != nil {
-		pterm.DefaultLogger.Warn("Failed to load phone configs for webhook registration: " + err.Error())
-		return
-	}
-
-	for _, pc := range phoneConfigs {
-		registerPhoneConfigWebhook(app, pc)
-	}
-
-	pterm.DefaultLogger.Info("Registered webhooks for phone configs")
-}
-
-// registerPhoneConfigWebhook registers a webhook endpoint for a specific phone config.
-func registerPhoneConfigWebhook(app *fiber.App, pc phone_config_entity.PhoneConfig) {
-	path := "/" + pc.WabaID
-
-	appSecret := phone_config_service.GetMetaAppSecret(&pc)
-	verifyToken := phone_config_service.GetVerifyToken(&pc)
-
+// registerWabaWebhook registers a single webhook endpoint at /webhook-in/:waba_id.
+func registerWabaWebhook(app *fiber.App) {
 	hook := webhook_service.Config{
-		Path: path,
+		Path: "/:waba_id",
 		ChangeHandlers: []webhook_model.ChangeHandler{
-			webhook_handler.CreateMessageHandlerForPhoneConfig(pc.ID, pc.WabaID),
+			webhook_handler.PhoneConfigMessageHandler,
 		},
 		CtxHandler: defaultCtxHandler,
 		PostMiddlewares: []func(ctx *fiber.Ctx) error{
 			func(ctx *fiber.Ctx) error {
+				phoneConfig, err := requirePhoneConfig(ctx)
+				if err != nil {
+					return err
+				}
+				appSecret := phone_config_service.GetMetaAppSecret(phoneConfig)
 				if appSecret == "" {
 					return ctx.Next()
 				}
@@ -94,6 +79,11 @@ func registerPhoneConfigWebhook(app *fiber.App, pc phone_config_entity.PhoneConf
 		},
 		GetMiddlewares: []func(ctx *fiber.Ctx) error{
 			func(ctx *fiber.Ctx) error {
+				phoneConfig, err := requirePhoneConfig(ctx)
+				if err != nil {
+					return err
+				}
+				verifyToken := phone_config_service.GetVerifyToken(phoneConfig)
 				if verifyToken == "" {
 					return ctx.Next()
 				}
@@ -105,9 +95,29 @@ func registerPhoneConfigWebhook(app *fiber.App, pc phone_config_entity.PhoneConf
 	server := server_service.NewConfig(app, "/webhook-in")
 	server_service.Bootstrap(server, &hook)
 
-	pterm.DefaultLogger.Info("Registered webhook for phone config: " + pc.Name + " at /webhook-in/" + pc.WabaID)
+	pterm.DefaultLogger.Info("Registered webhook for all phone configs at /webhook-in/:waba_id")
 }
 
 func defaultCtxHandler(ctx *fiber.Ctx, body *wh_model.WebhookBody) error {
 	return nil
+}
+
+func requirePhoneConfig(ctx *fiber.Ctx) (*phone_config_entity.PhoneConfig, error) {
+	if phoneConfig, ok := ctx.Locals(webhook_handler.PhoneConfigCtxKey).(*phone_config_entity.PhoneConfig); ok && phoneConfig != nil {
+		return phoneConfig, nil
+	}
+
+	wabaID := ctx.Params("waba_id")
+	if wabaID == "" {
+		return nil, fiber.NewError(fiber.StatusBadRequest, "missing waba_id")
+	}
+
+	var phoneConfig phone_config_entity.PhoneConfig
+	if err := database.DB.Where("waba_id = ? AND is_active = true", wabaID).First(&phoneConfig).Error; err != nil {
+		pterm.DefaultLogger.Warn("Phone config not found for webhook waba_id " + wabaID + ": " + err.Error())
+		return nil, fiber.NewError(fiber.StatusNotFound, "phone config not found")
+	}
+
+	ctx.Locals(webhook_handler.PhoneConfigCtxKey, &phoneConfig)
+	return &phoneConfig, nil
 }
