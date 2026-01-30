@@ -2,12 +2,12 @@ package phone_config_service
 
 import (
 	"fmt"
+	"net/http"
 	"sync"
 
 	phone_config_entity "github.com/Astervia/wacraft-core/src/phone-config/entity"
 	"github.com/Astervia/wacraft-server/src/database"
 	bootstrap_module "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap"
-	bootstrap_service "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap"
 	"github.com/google/uuid"
 )
 
@@ -16,6 +16,8 @@ var apiCache = struct {
 	sync.RWMutex
 	apis map[uuid.UUID]*bootstrap_module.WhatsAppAPI
 }{apis: make(map[uuid.UUID]*bootstrap_module.WhatsAppAPI)}
+
+var sharedHTTPClient = &http.Client{}
 
 // GetWhatsAppAPIByPhoneConfigID returns a WhatsApp API instance for the given phone config ID.
 // It caches the API instance for reuse.
@@ -55,21 +57,16 @@ func GetWhatsAppAPIByWabaID(wabaID string) (*bootstrap_module.WhatsAppAPI, *phon
 // buildWhatsAppAPI creates and caches a WhatsApp API instance from a phone config.
 func buildWhatsAppAPI(phoneConfig *phone_config_entity.PhoneConfig) (*bootstrap_module.WhatsAppAPI, error) {
 	version := "v24.0"
-	wabaApi, err := bootstrap_service.GenerateWhatsAppAPI(phoneConfig.AccessToken, &version, nil)
+	cfg := bootstrap_module.SenderConfig{
+		AccessToken:   phoneConfig.AccessToken,
+		WABAID:        phoneConfig.WabaID,
+		WABAAccountID: phoneConfig.WabaAccountID,
+		Version:       &version,
+	}
+	wabaApi, err := bootstrap_module.FromConfigWithClient(cfg, sharedHTTPClient)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate WhatsApp API: %w", err)
 	}
-
-	if _, err := wabaApi.SetWABAID(phoneConfig.WabaID); err != nil {
-		return nil, fmt.Errorf("failed to set WABA ID: %w", err)
-	}
-
-	if _, err := wabaApi.SetWABAAccountID(phoneConfig.WabaAccountID); err != nil {
-		return nil, fmt.Errorf("failed to set WABA account ID: %w", err)
-	}
-
-	wabaApi.SetJSONHeaders().SetFormHeaders().SetWABAIDURL(nil)
-	wabaApi.SetWABAAccountIDURL(nil)
 
 	// Cache the API instance
 	apiCache.Lock()
