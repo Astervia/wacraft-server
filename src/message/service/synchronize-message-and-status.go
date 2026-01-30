@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	message_model "github.com/Rfluid/whatsapp-cloud-api/src/message/model"
+	message_model "github.com/Rfluid/whatsapp-cloud-api/src/message"
 	"github.com/google/uuid"
 )
 

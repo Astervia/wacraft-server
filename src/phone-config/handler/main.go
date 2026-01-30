@@ -9,8 +9,8 @@ import (
 	phone_config_service "github.com/Astervia/wacraft-server/src/phone-config/service"
 	"github.com/Astervia/wacraft-server/src/validators"
 	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
-	bootstrap_service "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap/service"
-	profile_service "github.com/Rfluid/whatsapp-cloud-api/src/profile/service"
+	bootstrap_service "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap"
+	profile_service "github.com/Rfluid/whatsapp-cloud-api/src/profile"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )

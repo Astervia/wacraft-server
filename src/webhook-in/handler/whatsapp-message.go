@@ -17,7 +17,7 @@ import (
 	messaging_product_service "github.com/Astervia/wacraft-server/src/messaging-product/service"
 	status_handler "github.com/Astervia/wacraft-server/src/status/handler"
 	webhook_service "github.com/Astervia/wacraft-server/src/webhook/service"
-	wh_model "github.com/Rfluid/whatsapp-cloud-api/src/webhook/model"
+	wh_model "github.com/Rfluid/whatsapp-cloud-api/src/webhook"
 	webhook_model "github.com/Rfluid/whatsapp-webhook-server/src/webhook/model"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
