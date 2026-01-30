@@ -12,10 +12,11 @@ import (
 //	@Tags			Webhook In
 //	@Accept			json
 //	@Produce		json
-//	@Param			input	body		webhook_model.WebhookBody	true	"Content sent by WhatsApp Cloud API"
+//	@Param			waba_id	path		string								true	"Phone number ID provided by Meta"
+//	@Param			input	body		webhook.WebhookBody	true	"Content sent by WhatsApp Cloud API"
 //	@Success		200		{string}	string						"Valid webhook received"
-//	@Router			/webhook-in [post]
-func postWebHookDocs(ctx *fiber.Ctx) error {
+//	@Router			/webhook-in/{waba_id} [post]
+func postWebHookDocs(_ *fiber.Ctx) error {
 	return nil
 }
 
@@ -26,11 +27,12 @@ func postWebHookDocs(ctx *fiber.Ctx) error {
 //	@Tags			Webhook In
 //	@Accept			json
 //	@Produce		json
+//	@Param			waba_id	path		string								true	"Phone number ID provided by Meta"
 //	@Param			hub.mode			query		string	true	"Subscription mode (should be 'subscribe')"
 //	@Param			hub.challenge		query		int		true	"Challenge token returned by the endpoint"
 //	@Param			hub.verify_token	query		string	true	"Verification token defined in Meta dashboard"
 //	@Success		200					{string}	string	"hub.challenge echoed back"
-//	@Router			/webhook-in [get]
-func getWebHookDocs(ctx *fiber.Ctx) error {
+//	@Router			/webhook-in/{waba_id} [get]
+func getWebHookDocs(_ *fiber.Ctx) error {
 	return nil
 }
