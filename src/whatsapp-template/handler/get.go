@@ -4,8 +4,8 @@ import (
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	"github.com/Astervia/wacraft-server/src/integration/whatsapp"
 	"github.com/Astervia/wacraft-server/src/validators"
-	template_model "github.com/Rfluid/whatsapp-cloud-api/src/template/model"
-	template_service "github.com/Rfluid/whatsapp-cloud-api/src/template/service"
+	template_model "github.com/Rfluid/whatsapp-cloud-api/src/template"
+	template_service "github.com/Rfluid/whatsapp-cloud-api/src/template"
 	"github.com/gofiber/fiber/v2"
 )
 

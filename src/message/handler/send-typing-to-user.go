@@ -7,7 +7,7 @@ import (
 	message_service "github.com/Astervia/wacraft-server/src/message/service"
 	"github.com/Astervia/wacraft-server/src/validators"
 	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
-	_ "github.com/Rfluid/whatsapp-cloud-api/src/common/model"
+	_ "github.com/Rfluid/whatsapp-cloud-api/src/common"
 	"github.com/gofiber/fiber/v2"
 )
 

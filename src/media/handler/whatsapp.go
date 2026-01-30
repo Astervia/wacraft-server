@@ -14,10 +14,10 @@ import (
 	phone_config_service "github.com/Astervia/wacraft-server/src/phone-config/service"
 	"github.com/Astervia/wacraft-server/src/validators"
 	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
-	bootstrap_module "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap/model"
-	common_model "github.com/Rfluid/whatsapp-cloud-api/src/common/model"
-	media_model "github.com/Rfluid/whatsapp-cloud-api/src/media/model"
-	media_service "github.com/Rfluid/whatsapp-cloud-api/src/media/service"
+	bootstrap_module "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap"
+	common_model "github.com/Rfluid/whatsapp-cloud-api/src/common"
+	media_model "github.com/Rfluid/whatsapp-cloud-api/src/media"
+	media_service "github.com/Rfluid/whatsapp-cloud-api/src/media"
 	"github.com/gofiber/fiber/v2"
 )
 

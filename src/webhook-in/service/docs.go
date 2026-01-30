@@ -1,7 +1,7 @@
 package webhook_service
 
 import (
-	_ "github.com/Rfluid/whatsapp-cloud-api/src/webhook/model"
+	_ "github.com/Rfluid/whatsapp-cloud-api/src/webhook"
 	"github.com/gofiber/fiber/v2"
 )
 

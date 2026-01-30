@@ -13,7 +13,7 @@ import (
 	"github.com/Astervia/wacraft-server/src/config/env"
 	message_service "github.com/Astervia/wacraft-server/src/message/service"
 	whk_service "github.com/Astervia/wacraft-server/src/webhook-in/service"
-	wh_model "github.com/Rfluid/whatsapp-cloud-api/src/webhook/model"
+	wh_model "github.com/Rfluid/whatsapp-cloud-api/src/webhook"
 	"github.com/google/uuid"
 	"golang.org/x/sync/errgroup"
 	"gorm.io/gorm"
