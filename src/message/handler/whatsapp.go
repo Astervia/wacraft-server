@@ -25,6 +25,7 @@ import (
 //	@Failure		400		{object}	common_model.DescriptiveError		"Invalid message payload"
 //	@Failure		500		{object}	common_model.DescriptiveError		"Failed to send or save the message"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/message/whatsapp [post]
 func SendMessage(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)

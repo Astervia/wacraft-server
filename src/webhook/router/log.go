@@ -13,11 +13,13 @@ func logRoutes(group fiber.Router) {
 
 	logGroup.Get("/",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookRead),
 		webhook_handler.GetWebhookLogs)
 	logGroup.Post("/send",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookManage),
 		webhook_handler.GetWebhookLogs)

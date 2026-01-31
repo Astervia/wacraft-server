@@ -25,6 +25,7 @@ import (
 //	@Failure		400			{object}	common_model.DescriptiveError		"Invalid input (e.g., decoding or query error)"
 //	@Failure		500			{object}	common_model.DescriptiveError		"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/campaign/content/{keyName}/like/{likeText} [get]
 func ContentKeyLike(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)

@@ -21,6 +21,7 @@ import (
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/campaign [delete]
 func Delete(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -61,6 +62,7 @@ func Delete(c *fiber.Ctx) error {
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/campaign/message [delete]
 func DeleteMessage(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)

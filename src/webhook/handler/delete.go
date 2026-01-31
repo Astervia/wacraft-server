@@ -22,6 +22,7 @@ import (
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Router			/webhook [delete]
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 func DeleteWebhookByID(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
 

@@ -23,6 +23,7 @@ import (
 //	@Failure		400					{object}	common_model.DescriptiveError	"Invalid query"
 //	@Failure		500					{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/campaign/message/count [get]
 func CountMessages(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -75,6 +76,7 @@ func CountMessages(c *fiber.Ctx) error {
 //	@Failure		400					{object}	common_model.DescriptiveError	"Invalid query"
 //	@Failure		500					{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/campaign/message/count/unsent [get]
 func CountUnsentMessages(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -130,6 +132,7 @@ func CountUnsentMessages(c *fiber.Ctx) error {
 //	@Failure		400					{object}	common_model.DescriptiveError	"Invalid query"
 //	@Failure		500					{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/campaign/message/count/sent [get]
 func CountSentMessages(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)

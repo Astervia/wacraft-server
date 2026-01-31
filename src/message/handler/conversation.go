@@ -27,6 +27,7 @@ import (
 //	@Failure		400							{object}	common_model.DescriptiveError	"Invalid query or ID"
 //	@Failure		500							{object}	common_model.DescriptiveError	"Failed to retrieve messages"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/message/conversation/messaging-product-contact/{messagingProductContactID} [get]
 func GetConversation(c *fiber.Ctx) error {
 	mpcID, err := uuid.Parse(c.Params("messagingProductContactID"))
@@ -93,6 +94,7 @@ func GetConversation(c *fiber.Ctx) error {
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid query"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Failed to retrieve conversations"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/message/conversation [get]
 func GetConversations(c *fiber.Ctx) error {
 	query := new(message_model.QueryPaginated)
@@ -150,6 +152,7 @@ func GetConversations(c *fiber.Ctx) error {
 //	@Failure		400							{object}	common_model.DescriptiveError	"Invalid query or ID"
 //	@Failure		500							{object}	common_model.DescriptiveError	"Failed to count messages"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/message/conversation/count/messaging-product-contact/{messagingProductContactID} [get]
 func CountConversationsByMessagingProductContact(c *fiber.Ctx) error {
 	mpcID, err := uuid.Parse(c.Params("messagingProductContactID"))
@@ -215,6 +218,7 @@ func CountConversationsByMessagingProductContact(c *fiber.Ctx) error {
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid query"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Failed to count conversations"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/message/conversation/count [get]
 func CountDistinctConversations(c *fiber.Ctx) error {
 	query := new(message_model.Query)
@@ -273,6 +277,7 @@ func CountDistinctConversations(c *fiber.Ctx) error {
 //	@Failure		400							{object}	common_model.DescriptiveError	"Invalid ID, query, or likeText"
 //	@Failure		500							{object}	common_model.DescriptiveError	"Failed to retrieve messages"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/message/conversation/messaging-product-contact/{messagingProductContactID}/content/like/{likeText} [get]
 func ConversationContentLikeByMessagingProductContact(c *fiber.Ctx) error {
 	mpcID, err := uuid.Parse(c.Params("messagingProductContactID"))
@@ -348,6 +353,7 @@ func ConversationContentLikeByMessagingProductContact(c *fiber.Ctx) error {
 //	@Failure		400							{object}	common_model.DescriptiveError	"Invalid query or likeText"
 //	@Failure		500							{object}	common_model.DescriptiveError	"Failed to count messages"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/message/conversation/count/messaging-product-contact/{messagingProductContactID}/content/like/{likeText} [get]
 func CountConversationContentLike(c *fiber.Ctx) error {
 	mpcID, err := uuid.Parse(c.Params("messagingProductContactID"))

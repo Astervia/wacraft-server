@@ -59,6 +59,7 @@ func getWorkspaceWhatsAppAPI(workspace *workspace_entity.Workspace) *bootstrap_m
 //	@Failure		400		{object}	cmn_model.DescriptiveError	"Missing or invalid media ID"
 //	@Failure		500		{object}	cmn_model.DescriptiveError	"Failed to retrieve media URL"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/media/whatsapp/{mediaID} [get]
 func GetWhatsAppMediaURL(ctx *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(ctx)
@@ -93,6 +94,7 @@ func GetWhatsAppMediaURL(ctx *fiber.Ctx) error {
 //	@Failure		400		{object}	cmn_model.DescriptiveError	"Missing or invalid media ID"
 //	@Failure		500		{object}	cmn_model.DescriptiveError	"Failed to download media"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/media/whatsapp/download/{mediaID} [get]
 func DownloadWhatsAppMedia(ctx *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(ctx)
@@ -138,6 +140,7 @@ func DownloadWhatsAppMedia(ctx *fiber.Ctx) error {
 //	@Failure		400		{object}	cmn_model.DescriptiveError	"Invalid MediaInfo"
 //	@Failure		500		{object}	cmn_model.DescriptiveError	"Failed to download media"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/media/whatsapp/media-info/download [post]
 func DownloadFromMediaInfo(ctx *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(ctx)
@@ -184,6 +187,7 @@ func DownloadFromMediaInfo(ctx *fiber.Ctx) error {
 //	@Failure		415		{object}	cmn_model.DescriptiveError	"Unsupported media type"
 //	@Failure		500		{object}	cmn_model.DescriptiveError	"Failed to upload media"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/media/whatsapp/upload [post]
 func UploadWhatsAppMedia(ctx *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(ctx)

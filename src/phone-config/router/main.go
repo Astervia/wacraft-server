@@ -15,6 +15,7 @@ func Route(workspaceGroup fiber.Router) {
 	// List phone configs - requires phone_config.read policy
 	group.Get("",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigRead),
 		phone_config_handler.Get,
@@ -23,6 +24,7 @@ func Route(workspaceGroup fiber.Router) {
 	// Create phone config - requires phone_config.manage policy
 	group.Post("",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigManage),
 		phone_config_handler.Create,
@@ -31,6 +33,7 @@ func Route(workspaceGroup fiber.Router) {
 	// Get phone config by ID
 	group.Get("/:id",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigRead),
 		phone_config_handler.GetByID,
@@ -39,6 +42,7 @@ func Route(workspaceGroup fiber.Router) {
 	// Update phone config
 	group.Patch("/:id",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigManage),
 		phone_config_handler.Update,
@@ -47,6 +51,7 @@ func Route(workspaceGroup fiber.Router) {
 	// Delete phone config
 	group.Delete("/:id",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigManage),
 		phone_config_handler.Delete,

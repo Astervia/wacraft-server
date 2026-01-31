@@ -97,7 +97,7 @@ func (s *SMTPService) SendVerificationEmail(to, name, token, baseURL string) err
 	return s.sendEmail(to, subject, body.String())
 }
 
-func (s *SMTPService) SendWorkspaceInvitation(to, workspaceName, inviterName, token string) error {
+func (s *SMTPService) SendWorkspaceInvitation(to, workspaceName, inviterName, token, baseURL string) error {
 	subject := fmt.Sprintf("You've been invited to join %s", workspaceName)
 
 	tmpl := `
@@ -130,10 +130,14 @@ func (s *SMTPService) SendWorkspaceInvitation(to, workspaceName, inviterName, to
 		return err
 	}
 
+	if baseURL == "" {
+		baseURL = s.baseURL
+	}
+
 	var body bytes.Buffer
 	err = t.Execute(&body, EmailData{
 		Token:         token,
-		BaseURL:       s.baseURL,
+		BaseURL:       baseURL,
 		WorkspaceName: workspaceName,
 		InviterName:   inviterName,
 	})

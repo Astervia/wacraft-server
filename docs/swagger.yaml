@@ -2599,6 +2599,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Delete campaign
       tags:
       - Campaign
@@ -2681,6 +2682,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: List campaigns (paginated)
       tags:
       - Campaign
@@ -2712,6 +2714,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Update campaign
       tags:
       - Campaign
@@ -2744,6 +2747,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Create a new campaign
       tags:
       - Campaign
@@ -2838,6 +2842,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Search campaigns with regex-like operator
       tags:
       - Campaign
@@ -2919,6 +2924,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: List campaign message send errors
       tags:
       - Campaign Message Error
@@ -2952,6 +2958,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Delete campaign message
       tags:
       - Campaign Message
@@ -3031,6 +3038,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: List campaign messages (paginated)
       tags:
       - Campaign Message
@@ -3063,6 +3071,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Create a new campaign message
       tags:
       - Campaign Message
@@ -3132,6 +3141,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Count campaign messages
       tags:
       - Campaign Message
@@ -3201,6 +3211,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Count sent campaign messages
       tags:
       - Campaign Message
@@ -3270,6 +3281,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Count unsent campaign messages
       tags:
       - Campaign Message
@@ -3351,6 +3363,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: List sent campaign messages
       tags:
       - Campaign Message
@@ -3431,6 +3444,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: List unsent campaign messages
       tags:
       - Campaign Message
@@ -3463,6 +3477,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Delete contact by ID
       tags:
       - Contact
@@ -3549,6 +3564,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Get contacts paginated
       tags:
       - Contact
@@ -3581,6 +3597,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Create a new contact
       tags:
       - Contact
@@ -3612,6 +3629,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Update contact
       tags:
       - Contact
@@ -3644,6 +3662,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Get WhatsApp media URL
       tags:
       - Media
@@ -3676,6 +3695,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Download WhatsApp media
       tags:
       - Media
@@ -3709,6 +3729,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Download media from MediaInfo
       tags:
       - Media
@@ -3750,6 +3771,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Upload media file
       tags:
       - Media
@@ -3850,6 +3872,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Retrieve messages
       tags:
       - Message
@@ -3960,6 +3983,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Search messages by content field
       tags:
       - Message
@@ -4065,6 +4089,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Search messages by content text
       tags:
       - Message
@@ -4165,6 +4190,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Get conversations
       tags:
       - Message conversation
@@ -4252,6 +4278,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Count distinct conversations
       tags:
       - Message conversation
@@ -4345,6 +4372,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Count messages by contact
       tags:
       - Message conversation
@@ -4443,6 +4471,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Count messages by content
       tags:
       - Message conversation
@@ -4548,6 +4577,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Get conversation messages
       tags:
       - Message conversation
@@ -4658,6 +4688,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Search messages by content
       tags:
       - Message conversation
@@ -4755,6 +4786,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Count messages
       tags:
       - Message
@@ -4858,6 +4890,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Count messages with content match
       tags:
       - Message
@@ -4891,6 +4924,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Send WhatsApp message
       tags:
       - WhatsApp message
@@ -4989,6 +5023,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Mark last message as read
       tags:
       - WhatsApp message
@@ -5091,6 +5126,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Mark last message as read and starts typing
       tags:
       - WhatsApp message
@@ -5196,6 +5232,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Search messages by wamID
       tags:
       - WhatsApp message
@@ -5280,6 +5317,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Retrieve messaging products
       tags:
       - Messaging product
@@ -5310,6 +5348,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Delete messaging product contact
       tags:
       - Messaging product contact
@@ -5409,6 +5448,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Retrieve messaging product contacts
       tags:
       - Messaging product contact
@@ -5440,6 +5480,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Create messaging product contact
       tags:
       - Messaging product contact
@@ -5473,6 +5514,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Unblock messaging product contact
       tags:
       - Messaging product contact
@@ -5505,6 +5547,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Block messaging product contact
       tags:
       - Messaging product contact
@@ -5611,6 +5654,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Search contacts by content
       tags:
       - Messaging product contact
@@ -5704,6 +5748,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Count contacts by content
       tags:
       - Messaging product contact
@@ -5736,6 +5781,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Update last_read_at timestamp
       tags:
       - Messaging product contact
@@ -5836,6 +5882,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Retrieve WhatsApp contacts
       tags:
       - Messaging product contact
@@ -5868,6 +5915,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Create WhatsApp contact
       tags:
       - Messaging product contact
@@ -6793,6 +6841,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Delete a webhook
       tags:
       - Webhook
@@ -6884,6 +6933,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Get webhooks paginated
       tags:
       - Webhook
@@ -6916,6 +6966,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Create a new webhook
       tags:
       - Webhook
@@ -6948,6 +6999,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Update an existing webhook
       tags:
       - Webhook
@@ -7114,6 +7166,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Query webhooks by key and partial value
       tags:
       - Webhook
@@ -7194,6 +7247,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Get webhook logs paginated
       tags:
       - Webhook log
@@ -7266,6 +7320,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Send WhatsApp campaign via WebSocket
       tags:
       - Campaign Websocket
@@ -7297,6 +7352,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Subscribe to new messages
       tags:
       - Message Websocket
@@ -7473,6 +7529,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Get WhatsApp templates
       tags:
       - WhatsApp template
@@ -7495,6 +7552,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: List user's workspaces
       tags:
       - Workspace
@@ -7526,6 +7584,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Create a new workspace
       tags:
       - Workspace
@@ -7553,6 +7612,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Delete workspace
       tags:
       - Workspace
@@ -7577,6 +7637,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Get workspace by ID
       tags:
       - Workspace
@@ -7617,6 +7678,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Update workspace
       tags:
       - Workspace
@@ -7644,6 +7706,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: List workspace invitations
       tags:
       - Workspace
@@ -7684,6 +7747,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Invite user to workspace
       tags:
       - Workspace
@@ -7716,6 +7780,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Revoke invitation
       tags:
       - Workspace
@@ -7743,6 +7808,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: List workspace members
       tags:
       - Workspace
@@ -7784,6 +7850,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Add workspace member
       tags:
       - Workspace
@@ -7821,6 +7888,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Remove workspace member
       tags:
       - Workspace
@@ -7871,6 +7939,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Update member policies
       tags:
       - Workspace
@@ -7964,6 +8033,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: List phone configurations
       tags:
       - Phone Config
@@ -8000,6 +8070,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Create phone configuration
       tags:
       - Phone Config
@@ -8032,6 +8103,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Delete phone configuration
       tags:
       - Phone Config
@@ -8065,6 +8137,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Get phone configuration
       tags:
       - Phone Config
@@ -8110,6 +8183,7 @@ paths:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
+      - WorkspaceAuth: []
       summary: Update phone configuration
       tags:
       - Phone Config
@@ -8120,5 +8194,11 @@ securityDefinitions:
   ApiKeyAuth:
     in: header
     name: Authorization
+    type: apiKey
+  WorkspaceAuth:
+    description: Workspace ID (UUID) for multi-tenant access. Required for all workspace-scoped
+      endpoints.
+    in: header
+    name: X-Workspace-ID
     type: apiKey
 swagger: "2.0"

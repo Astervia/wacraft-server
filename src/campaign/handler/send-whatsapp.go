@@ -34,6 +34,7 @@ var (
 //	@Failure		400			{object}	common_model.DescriptiveError	"Invalid campaign ID or bad request"
 //	@Failure		500			{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/websocket/campaign/whatsapp/send/{campaignID} [get]
 func SendWhatsAppCampaignSubscription(ctx *websocket.Conn) {
 	defer ctx.Close()

@@ -22,6 +22,7 @@ import (
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Failed to delete contact"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/messaging-product/contact [delete]
 func DeleteContact(c *fiber.Ctx) error {
 	var reqBody common_model.RequiredID

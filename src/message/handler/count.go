@@ -26,6 +26,7 @@ import (
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid query parameters"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Failed to count messages"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/message/count [get]
 func Count(c *fiber.Ctx) error {
 	query := new(message_model.Query)
@@ -83,6 +84,7 @@ func Count(c *fiber.Ctx) error {
 //	@Failure		400			{object}	common_model.DescriptiveError	"Invalid likeText or query"
 //	@Failure		500			{object}	common_model.DescriptiveError	"Failed to count messages"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/message/count/content/like/{likeText} [get]
 func CountContentLike(c *fiber.Ctx) error {
 	encodedText := c.Params("likeText")

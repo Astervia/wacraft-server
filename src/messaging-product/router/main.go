@@ -17,6 +17,7 @@ func Route(app *fiber.App) {
 func mainRoutes(group fiber.Router) {
 	group.Get("/",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		messaging_product_handler.Get)
 }
