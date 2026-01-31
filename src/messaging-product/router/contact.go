@@ -18,54 +18,63 @@ func contactRoutes(group fiber.Router) {
 func mainContactRoutes(contactGroup fiber.Router) {
 	contactGroup.Get("/",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyContactRead),
 		messaging_product_handler.GetContact)
 
 	contactGroup.Get("/whatsapp",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyContactRead),
 		messaging_product_handler.GetWhatsAppContact)
 
 	contactGroup.Post("/",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyContactManage),
 		messaging_product_handler.CreateContact)
 
 	contactGroup.Delete("/",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyContactManage),
 		messaging_product_handler.DeleteContact)
 
 	contactGroup.Patch("/block",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyContactManage),
 		messaging_product_handler.BlockContact)
 
 	contactGroup.Delete("/block",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyContactManage),
 		messaging_product_handler.UnblockContact)
 
 	contactGroup.Get("/content/like/:likeText",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyContactRead),
 		messaging_product_handler.ContactContentLike)
 
 	contactGroup.Get("/count/content/like/:likeText",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyContactRead),
 		messaging_product_handler.ContactContentLikeCount)
 
 	contactGroup.Put("/last-read-at/:messagingProductContactID",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyContactManage),
 		messaging_product_handler.UpdateContactLastReadAt)
@@ -75,6 +84,7 @@ func whatsAppContactRoutes(contactGroup fiber.Router) {
 	wppGroup := contactGroup.Group("/whatsapp")
 	wppGroup.Post("",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyContactManage),
 		messaging_product_handler.CreateWhatsAppContact)

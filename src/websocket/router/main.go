@@ -1,6 +1,7 @@
 package websocket_router
 
 import (
+	auth_middleware "github.com/Astervia/wacraft-server/src/auth/middleware"
 	auth_websocket_middleware "github.com/Astervia/wacraft-server/src/auth/middleware/websocket"
 	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
@@ -14,6 +15,7 @@ func Route(app *fiber.App) fiber.Router {
 	group.Use(
 		"",
 		auth_websocket_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WebSocketWorkspaceMiddleware,
 	)
 

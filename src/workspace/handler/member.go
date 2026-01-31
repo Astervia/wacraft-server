@@ -32,6 +32,7 @@ type MemberResponse struct {
 //	@Failure		403				{object}	common_model.DescriptiveError		"Forbidden"
 //	@Failure		500				{object}	common_model.DescriptiveError		"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/workspace/{workspace_id}/member [post]
 func AddMember(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -134,6 +135,7 @@ func AddMember(c *fiber.Ctx) error {
 //	@Success		200				{array}		MemberResponse					"List of members"
 //	@Failure		500				{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/workspace/{workspace_id}/member [get]
 func GetMembers(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -190,6 +192,7 @@ func GetMembers(c *fiber.Ctx) error {
 //	@Failure		404				{object}	common_model.DescriptiveError			"Member not found"
 //	@Failure		500				{object}	common_model.DescriptiveError			"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/workspace/{workspace_id}/member/{user_id} [patch]
 func UpdateMemberPolicies(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -296,6 +299,7 @@ func UpdateMemberPolicies(c *fiber.Ctx) error {
 //	@Failure		404				{object}	common_model.DescriptiveError	"Member not found"
 //	@Failure		500				{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/workspace/{workspace_id}/member/{user_id} [delete]
 func RemoveMember(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)

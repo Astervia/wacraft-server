@@ -24,6 +24,7 @@ import (
 //	@Failure		500			{object}	common_model.DescriptiveError	"Internal server error"
 //	@Router			/webhook [get]
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 func GetWebhooks(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
 
@@ -76,6 +77,7 @@ func GetWebhooks(c *fiber.Ctx) error {
 //	@Failure		500			{object}	common_model.DescriptiveError		"Internal server error"
 //	@Router			/webhook/log [get]
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 func GetWebhookLogs(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
 

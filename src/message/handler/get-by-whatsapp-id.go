@@ -26,6 +26,7 @@ import (
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid wamID or query parameters"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Failed to retrieve messages"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/message/whatsapp/wam-id/{wamID} [get]
 func GetWamID(c *fiber.Ctx) error {
 	encodedText := c.Params("wamID")

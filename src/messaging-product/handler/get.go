@@ -23,6 +23,7 @@ import (
 //	@Failure		400			{object}	common_model.DescriptiveError				"Invalid query parameters"
 //	@Failure		500			{object}	common_model.DescriptiveError				"Failed to retrieve products"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/messaging-product [get]
 func Get(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)

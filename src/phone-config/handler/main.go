@@ -8,7 +8,6 @@ import (
 	phone_config_model "github.com/Astervia/wacraft-core/src/phone-config/model"
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
-	phone_config_service "github.com/Astervia/wacraft-server/src/phone-config/service"
 	"github.com/Astervia/wacraft-server/src/validators"
 	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	bootstrap_service "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap"
@@ -60,6 +59,7 @@ func deactivateConflictingPhoneConfigs(wabaID string) error {
 //	@Failure		400				{object}	common_model.DescriptiveError	"Invalid request"
 //	@Failure		500				{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/workspace/{workspace_id}/phone-config [post]
 func Create(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -158,6 +158,7 @@ func Create(c *fiber.Ctx) error {
 //	@Failure		400				{object}	common_model.DescriptiveError		"Invalid request"
 //	@Failure		500				{object}	common_model.DescriptiveError		"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/workspace/{workspace_id}/phone-config [get]
 func Get(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -209,6 +210,7 @@ func Get(c *fiber.Ctx) error {
 //	@Failure		404				{object}	common_model.DescriptiveError	"Not found"
 //	@Failure		500				{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/workspace/{workspace_id}/phone-config/{id} [get]
 func GetByID(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -246,6 +248,7 @@ func GetByID(c *fiber.Ctx) error {
 //	@Failure		404				{object}	common_model.DescriptiveError	"Not found"
 //	@Failure		500				{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/workspace/{workspace_id}/phone-config/{id} [patch]
 func Update(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -340,7 +343,7 @@ func Update(c *fiber.Ctx) error {
 			)
 		}
 		// Invalidate cached API instance
-		phone_config_service.InvalidateCache(id)
+		// phone_config_service.InvalidateCache(id)
 	}
 
 	// Reload to get updated values
@@ -365,6 +368,7 @@ func Update(c *fiber.Ctx) error {
 //	@Failure		404				{object}	common_model.DescriptiveError	"Not found"
 //	@Failure		500				{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/workspace/{workspace_id}/phone-config/{id} [delete]
 func Delete(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -391,7 +395,7 @@ func Delete(c *fiber.Ctx) error {
 	}
 
 	// Invalidate cached API instance
-	phone_config_service.InvalidateCache(id)
+	// phone_config_service.InvalidateCache(id)
 
 	return c.SendStatus(fiber.StatusNoContent)
 }

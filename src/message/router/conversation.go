@@ -13,36 +13,42 @@ func conversationRoutes(group fiber.Router) {
 
 	convGroup.Get("",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageRead),
 		message_handler.GetConversations)
 
 	convGroup.Get("/count",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageRead),
 		message_handler.CountDistinctConversations)
 
 	convGroup.Get("/messaging-product-contact/:messagingProductContactID",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageRead),
 		message_handler.GetConversation)
 
 	convGroup.Get("/count/messaging-product-contact/:messagingProductContactID",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageRead),
 		message_handler.CountConversationsByMessagingProductContact)
 
 	convGroup.Get("/messaging-product-contact/:messagingProductContactID/content/like/:likeText",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageRead),
 		message_handler.ConversationContentLikeByMessagingProductContact)
 
 	convGroup.Get("/count/messaging-product-contact/:messagingProductContactID/content/like/:likeText",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageRead),
 		message_handler.CountConversationContentLike)

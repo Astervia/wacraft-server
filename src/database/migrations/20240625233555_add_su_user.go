@@ -24,9 +24,10 @@ func upAddSuUser(ctx context.Context, tx *sql.Tx) error {
 	if err == gorm.ErrRecordNotFound {
 		// No user exists with that email, create the sudo user
 		sudoUser := entity.User{
-			Name:     "su",
-			Email:    "su@sudo",
-			Password: env.SuPassword, // Plain password (will be hashed by the model)
+			Name:          "su",
+			Email:         "su@sudo",
+			Password:      env.SuPassword, // Plain password (will be hashed by the model)
+			EmailVerified: true,
 		}
 
 		err = database.DB.Create(&sudoUser).Error

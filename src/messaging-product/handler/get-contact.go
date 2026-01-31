@@ -24,6 +24,7 @@ import (
 //	@Failure		400			{object}	common_model.DescriptiveError						"Invalid query parameters"
 //	@Failure		500			{object}	common_model.DescriptiveError						"Failed to retrieve contacts"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/messaging-product/contact [get]
 func GetContact(c *fiber.Ctx) error {
 	var query messaging_product_model.QueryContactPaginated
@@ -85,6 +86,7 @@ func GetContact(c *fiber.Ctx) error {
 //	@Failure		400			{object}	common_model.DescriptiveError							"Invalid query parameters"
 //	@Failure		500			{object}	common_model.DescriptiveError							"Failed to retrieve WhatsApp contacts"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/messaging-product/contact/whatsapp [get]
 func GetWhatsAppContact(c *fiber.Ctx) error {
 	query := new(messaging_product_model.QueryWhatsAppContactPaginated)

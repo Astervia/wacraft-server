@@ -26,6 +26,7 @@ import (
 //	@Failure		500			{object}	common_model.DescriptiveError		"Internal server error"
 //	@Router			/webhook/content/{keyName}/like/{likeText} [get]
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 func ContentKeyLike(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
 

@@ -23,6 +23,7 @@ import (
 //	@Failure		400			{object}	common_model.DescriptiveError	"Invalid query"
 //	@Failure		500			{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/campaign [get]
 func Get(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -75,6 +76,7 @@ func Get(c *fiber.Ctx) error {
 //	@Failure		400					{object}	common_model.DescriptiveError			"Invalid query"
 //	@Failure		500					{object}	common_model.DescriptiveError			"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/campaign/message [get]
 func GetMessages(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -130,6 +132,7 @@ func GetMessages(c *fiber.Ctx) error {
 //	@Failure		400					{object}	common_model.DescriptiveError			"Invalid query"
 //	@Failure		500					{object}	common_model.DescriptiveError			"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/campaign/message/unsent [get]
 func GetUnsentMessages(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -186,6 +189,7 @@ func GetUnsentMessages(c *fiber.Ctx) error {
 //	@Failure		400					{object}	common_model.DescriptiveError			"Invalid query"
 //	@Failure		500					{object}	common_model.DescriptiveError			"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/campaign/message/sent [get]
 func GetSentMessages(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -242,6 +246,7 @@ func GetSentMessages(c *fiber.Ctx) error {
 //	@Failure		400					{object}	common_model.DescriptiveError				"Invalid query"
 //	@Failure		500					{object}	common_model.DescriptiveError				"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/campaign/error [get]
 func GetErrors(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)

@@ -22,6 +22,7 @@ import (
 //	@Failure		400		{object}	common_model.DescriptiveError						"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError						"Failed to create contact"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/messaging-product/contact [post]
 func CreateContact(c *fiber.Ctx) error {
 	var data messaging_product_model.CreateContact

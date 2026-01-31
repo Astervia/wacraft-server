@@ -14,8 +14,8 @@ func Route(app *fiber.App) {
 }
 
 func mainRoutes(group fiber.Router) {
-	group.Get("", auth_middleware.UserMiddleware, status_handler.Get)
-	group.Get("/count", auth_middleware.UserMiddleware, status_handler.Count)
-	group.Get("/content/like/:likeText", auth_middleware.UserMiddleware, status_handler.ContentLike)
-	group.Get("/content/:keyName/like/:likeText", auth_middleware.UserMiddleware, status_handler.ContentKeyLike)
+	group.Get("", auth_middleware.UserMiddleware, auth_middleware.EmailVerifiedMiddleware, status_handler.Get)
+	group.Get("/count", auth_middleware.UserMiddleware, auth_middleware.EmailVerifiedMiddleware, status_handler.Count)
+	group.Get("/content/like/:likeText", auth_middleware.UserMiddleware, auth_middleware.EmailVerifiedMiddleware, status_handler.ContentLike)
+	group.Get("/content/:keyName/like/:likeText", auth_middleware.UserMiddleware, auth_middleware.EmailVerifiedMiddleware, status_handler.ContentKeyLike)
 }

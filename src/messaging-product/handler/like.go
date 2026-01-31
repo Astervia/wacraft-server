@@ -26,6 +26,7 @@ import (
 //	@Failure		400			{object}	common_model.DescriptiveError						"Invalid query or likeText"
 //	@Failure		500			{object}	common_model.DescriptiveError						"Failed to retrieve contacts"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/messaging-product/contact/content/like/{likeText} [get]
 func ContactContentLike(c *fiber.Ctx) error {
 	encodedText := c.Params("likeText")

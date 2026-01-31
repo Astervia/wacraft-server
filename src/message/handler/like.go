@@ -26,6 +26,7 @@ import (
 //	@Failure		400			{object}	common_model.DescriptiveError	"Invalid likeText or query"
 //	@Failure		500			{object}	common_model.DescriptiveError	"Failed to query messages"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/message/content/like/{likeText} [get]
 func ContentLike(c *fiber.Ctx) error {
 	encodedText := c.Params("likeText")
@@ -93,6 +94,7 @@ func ContentLike(c *fiber.Ctx) error {
 //	@Failure		400			{object}	common_model.DescriptiveError		"Invalid keyName, likeText, or query"
 //	@Failure		500			{object}	common_model.DescriptiveError		"Failed to query messages"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/message/content/{keyName}/like/{likeText} [get]
 func ContentKeyLike(c *fiber.Ctx) error {
 	params := new(message_model.ContentKeyLikeParams)

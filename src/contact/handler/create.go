@@ -23,6 +23,7 @@ import (
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/contact [post]
 func CreateContact(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -69,6 +70,7 @@ func CreateContact(c *fiber.Ctx) error {
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/contact [put]
 func UpdateContact(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)

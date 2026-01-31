@@ -329,6 +329,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Retrieves a paginated list of campaigns based on query parameters.",
@@ -455,6 +458,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Creates a new campaign using the provided data and returns the created object.",
@@ -504,6 +510,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Deletes a campaign using the provided ID in the request body.",
@@ -553,6 +562,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Updates an existing campaign using the provided ID and data.",
@@ -604,6 +616,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Applies a ILIKE filter on the specified key field and returns paginated results.",
@@ -746,6 +761,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Retrieves a paginated list of send errors associated with campaign messages.",
@@ -869,6 +887,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Retrieves a paginated list of messages associated with campaigns.",
@@ -990,6 +1011,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Creates a new campaign message using the provided data and returns the created object.",
@@ -1039,6 +1063,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Deletes a campaign message using the provided ID in the request body.",
@@ -1090,6 +1117,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Returns the total number of campaign messages that match the given filters.",
@@ -1196,6 +1226,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Returns the number of campaign messages where the message ID is not null (sent messages).",
@@ -1302,6 +1335,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Returns the number of campaign messages where the message ID is null (unsent messages).",
@@ -1408,6 +1444,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Retrieves a paginated list of campaign messages that have been sent.",
@@ -1531,6 +1570,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Retrieves a paginated list of campaign messages that were not sent.",
@@ -1654,6 +1696,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Returns a paginated list of contacts using optional query parameters for filtering and sorting.",
@@ -1785,6 +1830,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Updates an existing contact using the provided ID and data.",
@@ -1834,6 +1882,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Creates a new contact using the provided data and returns the created object.",
@@ -1883,6 +1934,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Deletes a contact based on the ID sent in the request body.",
@@ -1934,6 +1988,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Downloads media using a temporary URL retrieved via the WhatsApp API.",
@@ -1983,6 +2040,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Receives MediaInfo JSON, validates it, downloads the media from the provided URL, and streams it.",
@@ -2034,6 +2094,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Uploads a media file to WhatsApp. Files remain available for up to 30 days unless deleted earlier.",
@@ -2096,6 +2159,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Uses the WhatsApp API to retrieve a temporary media download URL. This URL expires in 5 minutes.",
@@ -2145,6 +2211,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Fetches a paginated list of messages filtered by sender, receiver, messaging product, etc.",
@@ -2297,6 +2366,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Matches the given text using ILIKE against ` + "`" + `sender_data` + "`" + `, ` + "`" + `receiver_data` + "`" + `, and ` + "`" + `product_data` + "`" + ` fields.",
@@ -2456,6 +2528,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Uses ILIKE to match the given text in the specified key field. The fields ` + "`" + `from` + "`" + ` and ` + "`" + `to` + "`" + ` are populated in the result.",
@@ -2622,6 +2697,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Retrieves a paginated list of the latest messages per conversation, enriched with contact information.",
@@ -2774,6 +2852,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Counts distinct conversations based on the provided filters.",
@@ -2909,6 +2990,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Counts messages exchanged with the specified messaging product contact based on filters.",
@@ -3051,6 +3135,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Counts messages from a messaging product contact matching a \"like\" pattern on sender, receiver, or product data.",
@@ -3200,6 +3287,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Retrieves a paginated list of messages sent or received by the specified messaging product contact.",
@@ -3359,6 +3449,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Returns messages filtered by a \"like\" match on sender, receiver, or product data.",
@@ -3525,6 +3618,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Returns the total number of messages matching the specified filters.",
@@ -3674,6 +3770,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Returns the number of messages where the provided text matches content fields like sender_data, receiver_data, or product_data.",
@@ -3830,6 +3929,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Sends a WhatsApp message and stores it in the database if the operation is successful.",
@@ -3881,6 +3983,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Marks the latest WhatsApp message in the conversation as read so the user sees the double blue check.",
@@ -4030,6 +4135,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Queries for messages and uses the message.id value to mark the message as read and display a typing indicator so the WhatsApp user knows you are preparing a response. This is good practice if it will take you a few seconds to respond. The typing indicator will be dismissed once you respond, or after 25 seconds, whichever comes first. To prevent a poor user experience, only display a typing indicator if you are going to respond.",
@@ -4179,6 +4287,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Fetches a paginated list of messages where the wamID matches and filters are applied.",
@@ -4338,6 +4449,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Fetches a paginated list of messaging products using optional filters.",
@@ -4467,6 +4581,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Fetches a paginated list of messaging product contacts, joining with the contact entity.",
@@ -4617,6 +4734,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Creates and stores a new contact associated with a messaging product.",
@@ -4666,6 +4786,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Deletes a messaging product contact using the provided ID.",
@@ -4714,6 +4837,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Unblocks a messaging product contact by ID so it can send messages again.",
@@ -4763,6 +4889,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Blocks a messaging product contact by ID. Messages from this contact will be ignored.",
@@ -4814,6 +4943,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Returns a paginated list of messaging product contacts where the provided text matches contact name, email, or product_details fields using ILIKE.",
@@ -4973,6 +5105,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Returns the number of messaging product contacts that match the provided text (with ILIKE operator) in fields like name, email, and product_details.",
@@ -5115,6 +5250,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Sets the ` + "`" + `last_read_at` + "`" + ` field of the specified messaging product contact to the current timestamp.",
@@ -5164,6 +5302,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Fetches a paginated list of WhatsApp messaging product contacts, including WhatsApp-specific fields and joining with the contact entity.",
@@ -5314,6 +5455,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Creates and stores a WhatsApp contact linked to a messaging product, using WhatsApp-specific product details.",
@@ -6725,6 +6869,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Returns a paginated list of registered webhooks.",
@@ -6864,6 +7011,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Updates a webhook identified by its ID with new URL, authorization, event, and method settings.",
@@ -6913,6 +7063,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Creates a new webhook with the specified URL, authorization header, method, timeout, and event type.",
@@ -6962,6 +7115,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Deletes a webhook using the provided unique ID.",
@@ -7102,6 +7258,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Filters webhooks using the ILIKE operator on a specified field and partial value.",
@@ -7257,6 +7416,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Returns a paginated list of webhook execution logs.",
@@ -7380,6 +7542,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Upgrades the connection to WebSocket to start sending a campaign and receive real-time status and results. Use message types: \"send\", \"cancel\", \"status\", and \"ping\".",
@@ -7437,6 +7602,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Establishes a WebSocket connection and streams incoming and outgoing WhatsApp messages in real-time for a specific workspace.",
@@ -7589,6 +7757,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Retrieves a paginated list of WhatsApp templates using the Graph API.",
@@ -7776,6 +7947,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Returns a list of all workspaces the authenticated user is a member of.",
@@ -7808,6 +7982,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Creates a new workspace and adds the creator as admin member.",
@@ -7859,6 +8036,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Returns a specific workspace by its ID.",
@@ -7897,6 +8077,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Deletes a workspace. Requires workspace.admin policy.",
@@ -7938,6 +8121,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Updates an existing workspace. Requires workspace.settings policy.",
@@ -8002,6 +8188,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Returns a list of pending invitations for the workspace.",
@@ -8043,6 +8232,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Creates an invitation for a user to join the workspace.",
@@ -8107,6 +8299,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Revokes a pending workspace invitation.",
@@ -8157,6 +8352,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Returns a list of all members in the workspace with their policies.",
@@ -8198,6 +8396,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Adds a new member to the workspace with specified policies. Requires workspace.members policy.",
@@ -8262,6 +8463,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Removes a member from the workspace. Requires workspace.members policy.",
@@ -8316,6 +8520,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Updates the policies for a workspace member. Requires workspace.members policy.",
@@ -8393,6 +8600,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Returns a paginated list of phone configurations for the workspace.",
@@ -8534,6 +8744,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Creates a new phone configuration for the workspace.",
@@ -8592,6 +8805,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Returns a specific phone configuration by ID.",
@@ -8643,6 +8859,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Deletes a phone configuration from the workspace.",
@@ -8691,6 +8910,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
                     }
                 ],
                 "description": "Updates an existing phone configuration.",
@@ -12085,6 +12307,12 @@ const docTemplate = `{
         "ApiKeyAuth": {
             "type": "apiKey",
             "name": "Authorization",
+            "in": "header"
+        },
+        "WorkspaceAuth": {
+            "description": "Workspace ID (UUID) for multi-tenant access. Required for all workspace-scoped endpoints.",
+            "type": "apiKey",
+            "name": "X-Workspace-ID",
             "in": "header"
         }
     }

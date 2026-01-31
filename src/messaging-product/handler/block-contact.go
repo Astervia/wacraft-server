@@ -22,6 +22,7 @@ import (
 //	@Failure		400		{object}	common_model.DescriptiveError						"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError						"Failed to block contact"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/messaging-product/contact/block [patch]
 func BlockContact(c *fiber.Ctx) error {
 	var data common_model.RequiredID
@@ -69,6 +70,7 @@ func BlockContact(c *fiber.Ctx) error {
 //	@Failure		400		{object}	common_model.DescriptiveError						"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError						"Failed to unblock contact"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/messaging-product/contact/block [delete]
 func UnblockContact(c *fiber.Ctx) error {
 	var data common_model.RequiredID

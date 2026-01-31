@@ -17,21 +17,25 @@ func Route(app *fiber.App) {
 func mainRoutes(group fiber.Router) {
 	group.Get("/",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyContactRead),
 		contact_handler.Get)
 	group.Post("/",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyContactManage),
 		contact_handler.CreateContact)
 	group.Put("/",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyContactManage),
 		contact_handler.UpdateContact)
 	group.Delete("/",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyContactManage),
 		contact_handler.DeleteContactByID)

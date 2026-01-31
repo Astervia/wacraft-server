@@ -24,6 +24,7 @@ import (
 //	@Failure		400							{object}	common_model.DescriptiveError						"Invalid contact ID format"
 //	@Failure		500							{object}	common_model.DescriptiveError						"Failed to update last_read_at"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/messaging-product/contact/last-read-at/{messagingProductContactID} [put]
 func UpdateContactLastReadAt(c *fiber.Ctx) error {
 	mpcID, err := uuid.Parse(c.Params("messagingProductContactID"))

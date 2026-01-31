@@ -19,30 +19,35 @@ func Route(app *fiber.App) {
 func mainRoutes(group fiber.Router) {
 	group.Get("",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageRead),
 		message_handler.Get)
 
 	group.Get("/count",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageRead),
 		message_handler.Count)
 
 	group.Get("/content/like/:likeText",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageRead),
 		message_handler.ContentLike)
 
 	group.Get("/count/content/like/:likeText",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageRead),
 		message_handler.CountContentLike)
 
 	group.Get("/content/:keyName/like/:likeText",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageRead),
 		message_handler.ContentKeyLike)

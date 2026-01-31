@@ -26,6 +26,7 @@ import (
 //	@Failure		400			{object}	common_model.DescriptiveError			"Invalid query or likeText"
 //	@Failure		500			{object}	common_model.DescriptiveError			"Failed to count contacts"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/messaging-product/contact/count/content/like/{likeText} [get]
 func ContactContentLikeCount(c *fiber.Ctx) error {
 	encodedText := c.Params("likeText")

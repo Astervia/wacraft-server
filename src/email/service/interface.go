@@ -3,7 +3,7 @@ package email_service
 // EmailService defines the interface for sending emails
 type EmailService interface {
 	SendVerificationEmail(to, name, token, baseURL string) error
-	SendWorkspaceInvitation(to, workspaceName, inviterName, token string) error
+	SendWorkspaceInvitation(to, workspaceName, inviterName, token, baseURL string) error
 	SendPasswordReset(to, name, token string) error
 }
 
