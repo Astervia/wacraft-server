@@ -100,10 +100,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Password reset email sent",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_model.ForgotPasswordResponse"
                         }
                     },
                     "400": {
@@ -199,10 +196,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_model.ResendVerificationRequest"
                         }
                     }
                 ],
@@ -210,10 +204,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Verification email sent",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_model.ResendVerificationResponse"
                         }
                     },
                     "400": {
@@ -259,10 +250,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Password reset successful",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_model.ResetPasswordResponse"
                         }
                     },
                     "400": {
@@ -303,10 +291,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Email verified",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_model.VerifyEmailResponse"
                         }
                     },
                     "400": {
@@ -10483,6 +10468,15 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_Astervia_wacraft-core_src_user_model.ForgotPasswordResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "If your email is registered, you will receive a password reset link"
+                }
+            }
+        },
         "github_com_Astervia_wacraft-core_src_user_model.RegisterRequest": {
             "type": "object",
             "required": [
@@ -10517,6 +10511,26 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_Astervia_wacraft-core_src_user_model.ResendVerificationRequest": {
+            "type": "object",
+            "required": [
+                "email"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_Astervia_wacraft-core_src_user_model.ResendVerificationResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "If your email is registered, you will receive a verification link"
+                }
+            }
+        },
         "github_com_Astervia_wacraft-core_src_user_model.ResetPasswordRequest": {
             "type": "object",
             "required": [
@@ -10531,6 +10545,15 @@ const docTemplate = `{
                 },
                 "token": {
                     "type": "string"
+                }
+            }
+        },
+        "github_com_Astervia_wacraft-core_src_user_model.ResetPasswordResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Password reset successful"
                 }
             }
         },
@@ -10563,6 +10586,15 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                }
+            }
+        },
+        "github_com_Astervia_wacraft-core_src_user_model.VerifyEmailResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Email verified successfully"
                 }
             }
         },

@@ -1038,6 +1038,12 @@ definitions:
     required:
     - email
     type: object
+  github_com_Astervia_wacraft-core_src_user_model.ForgotPasswordResponse:
+    properties:
+      message:
+        example: If your email is registered, you will receive a password reset link
+        type: string
+    type: object
   github_com_Astervia_wacraft-core_src_user_model.RegisterRequest:
     properties:
       email:
@@ -1062,6 +1068,19 @@ definitions:
       user_id:
         type: string
     type: object
+  github_com_Astervia_wacraft-core_src_user_model.ResendVerificationRequest:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  github_com_Astervia_wacraft-core_src_user_model.ResendVerificationResponse:
+    properties:
+      message:
+        example: If your email is registered, you will receive a verification link
+        type: string
+    type: object
   github_com_Astervia_wacraft-core_src_user_model.ResetPasswordRequest:
     properties:
       password:
@@ -1073,6 +1092,12 @@ definitions:
     required:
     - password
     - token
+    type: object
+  github_com_Astervia_wacraft-core_src_user_model.ResetPasswordResponse:
+    properties:
+      message:
+        example: Password reset successful
+        type: string
     type: object
   github_com_Astervia_wacraft-core_src_user_model.UpdateWithID:
     properties:
@@ -1093,6 +1118,12 @@ definitions:
       name:
         type: string
       password:
+        type: string
+    type: object
+  github_com_Astervia_wacraft-core_src_user_model.VerifyEmailResponse:
+    properties:
+      message:
+        example: Email verified successfully
         type: string
     type: object
   github_com_Astervia_wacraft-core_src_webhook_entity.Webhook:
@@ -2422,9 +2453,7 @@ paths:
         "200":
           description: Password reset email sent
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_model.ForgotPasswordResponse'
         "400":
           description: Invalid request
           schema:
@@ -2485,18 +2514,14 @@ paths:
         name: body
         required: true
         schema:
-          additionalProperties:
-            type: string
-          type: object
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_model.ResendVerificationRequest'
       produces:
       - application/json
       responses:
         "200":
           description: Verification email sent
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_model.ResendVerificationResponse'
         "400":
           description: Invalid request
           schema:
@@ -2526,9 +2551,7 @@ paths:
         "200":
           description: Password reset successful
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_model.ResetPasswordResponse'
         "400":
           description: Invalid or expired token
           schema:
@@ -2556,9 +2579,7 @@ paths:
         "200":
           description: Email verified
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_user_model.VerifyEmailResponse'
         "400":
           description: Invalid or expired token
           schema:

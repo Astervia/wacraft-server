@@ -5,6 +5,7 @@ import (
 
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	user_entity "github.com/Astervia/wacraft-core/src/user/entity"
+	user_model "github.com/Astervia/wacraft-core/src/user/model"
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/gofiber/fiber/v2"
 )
@@ -16,7 +17,7 @@ import (
 //	@Tags			Auth
 //	@Produce		json
 //	@Param			token	query		string	true	"Verification token"
-//	@Success		200		{object}	map[string]string	"Email verified"
+//	@Success		200		{object}	user_model.VerifyEmailResponse	"Email verified"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid or expired token"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Router			/auth/verify-email [get]
@@ -38,8 +39,8 @@ func VerifyEmail(c *fiber.Ctx) error {
 
 	// Check if already verified
 	if verification.Verified {
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"message": "Email already verified",
+		return c.Status(fiber.StatusOK).JSON(user_model.VerifyEmailResponse{
+			Message: "Email already verified",
 		})
 	}
 
@@ -81,8 +82,8 @@ func VerifyEmail(c *fiber.Ctx) error {
 		)
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "Email verified successfully",
+	return c.Status(fiber.StatusOK).JSON(user_model.VerifyEmailResponse{
+		Message: "Email verified successfully",
 	})
 }
 
@@ -93,15 +94,13 @@ func VerifyEmail(c *fiber.Ctx) error {
 //	@Tags			Auth
 //	@Accept			json
 //	@Produce		json
-//	@Param			body	body		map[string]string	true	"Email address"
-//	@Success		200		{object}	map[string]string	"Verification email sent"
-//	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request"
-//	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
+//	@Param			body	body		user_model.ResendVerificationRequest	true	"Email address"
+//	@Success		200		{object}	user_model.ResendVerificationResponse	"Verification email sent"
+//	@Failure		400		{object}	common_model.DescriptiveError			"Invalid request"
+//	@Failure		500		{object}	common_model.DescriptiveError			"Internal server error"
 //	@Router			/auth/resend-verification [post]
 func ResendVerification(c *fiber.Ctx) error {
-	var req struct {
-		Email string `json:"email" validate:"required,email"`
-	}
+	var req user_model.ResendVerificationRequest
 
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -109,26 +108,24 @@ func ResendVerification(c *fiber.Ctx) error {
 		)
 	}
 
+	successResponse := user_model.ResendVerificationResponse{
+		Message: "If your email is registered, you will receive a verification link",
+	}
+
 	// Find user
 	var user user_entity.User
 	if err := database.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
 		// Don't reveal if email exists
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"message": "If your email is registered, you will receive a verification link",
-		})
+		return c.Status(fiber.StatusOK).JSON(successResponse)
 	}
 
 	// Check if already verified
 	if user.EmailVerified {
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"message": "If your email is registered, you will receive a verification link",
-		})
+		return c.Status(fiber.StatusOK).JSON(successResponse)
 	}
 
 	// Invalidate existing tokens and create new one
 	// (Implementation similar to Register, omitted for brevity)
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "If your email is registered, you will receive a verification link",
-	})
+	return c.Status(fiber.StatusOK).JSON(successResponse)
 }
