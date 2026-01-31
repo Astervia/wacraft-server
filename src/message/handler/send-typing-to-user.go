@@ -23,6 +23,7 @@ import (
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid query parameters"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Failed to send typing"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/message/whatsapp/send-typing [post]
 func SendTypingToUser(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)

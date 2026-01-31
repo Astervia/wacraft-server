@@ -18,26 +18,31 @@ func Route(app *fiber.App) {
 func mainRoutes(group fiber.Router) {
 	group.Get("/",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookRead),
 		webhook_handler.GetWebhooks)
 	group.Post("/",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookManage),
 		webhook_handler.CreateWebhook)
 	group.Put("/",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookManage),
 		webhook_handler.UpdateWebhook)
 	group.Delete("/",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookManage),
 		webhook_handler.DeleteWebhookByID)
 	group.Get("/content/:keyName/like/:likeText",
 		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookRead),
 		webhook_handler.ContentKeyLike)

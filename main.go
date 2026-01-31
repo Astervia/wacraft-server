@@ -27,6 +27,10 @@ import (
 // @securityDefinitions.apikey	ApiKeyAuth
 // @in							header
 // @name						Authorization
+// @securityDefinitions.apikey	WorkspaceAuth
+// @in							header
+// @name						X-Workspace-ID
+// @description					Workspace ID (UUID) for multi-tenant access. Required for all workspace-scoped endpoints.
 func main() {
 	// Check for CLI commands
 	if len(os.Args) > 1 {

@@ -23,6 +23,7 @@ import (
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid query parameters"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Failed to mark conversation as read"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/message/whatsapp/mark-as-read [post]
 func MarkWhatsAppMessageAsReadToUser(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)

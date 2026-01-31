@@ -31,6 +31,7 @@ import (
 //	@Failure		409				{object}	common_model.DescriptiveError		"User already member"
 //	@Failure		500				{object}	common_model.DescriptiveError		"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/workspace/{workspace_id}/invitation [post]
 func CreateInvitation(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -105,9 +106,10 @@ func CreateInvitation(c *fiber.Ctx) error {
 	}
 
 	// Send invitation email (async)
+	origin := strings.TrimRight(c.Get("Origin"), "/")
 	go func() {
 		if err := email_service.DefaultEmailService.SendWorkspaceInvitation(
-			email, workspace.Name, user.Name, token,
+			email, workspace.Name, user.Name, token, origin,
 		); err != nil {
 			// Log error but don't fail
 			_ = err
@@ -134,6 +136,7 @@ func CreateInvitation(c *fiber.Ctx) error {
 //	@Success		200				{array}		workspace_model.InvitationResponse	"Invitations"
 //	@Failure		500				{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/workspace/{workspace_id}/invitation [get]
 func GetInvitations(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -173,6 +176,7 @@ func GetInvitations(c *fiber.Ctx) error {
 //	@Failure		404				{object}	common_model.DescriptiveError	"Invitation not found"
 //	@Failure		500				{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/workspace/{workspace_id}/invitation/{invitation_id} [delete]
 func RevokeInvitation(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)

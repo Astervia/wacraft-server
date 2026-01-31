@@ -28,6 +28,7 @@ import (
 //	@Failure		400			{object}	common_model.DescriptiveError		"Invalid request body"
 //	@Failure		500			{object}	common_model.DescriptiveError		"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/workspace [post]
 func Create(c *fiber.Ctx) error {
 	var newWorkspace workspace_model.CreateWorkspace
@@ -126,6 +127,7 @@ func Create(c *fiber.Ctx) error {
 //	@Success		200		{array}		workspace_entity.Workspace			"List of workspaces"
 //	@Failure		500		{object}	common_model.DescriptiveError		"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/workspace [get]
 func Get(c *fiber.Ctx) error {
 	user, ok := c.Locals("user").(*user_entity.User)
@@ -160,6 +162,7 @@ func Get(c *fiber.Ctx) error {
 //	@Success		200				{object}	workspace_entity.Workspace		"Workspace details"
 //	@Failure		404				{object}	common_model.DescriptiveError	"Workspace not found"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/workspace/{workspace_id} [get]
 func GetByID(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -186,6 +189,7 @@ func GetByID(c *fiber.Ctx) error {
 //	@Failure		403				{object}	common_model.DescriptiveError		"Forbidden"
 //	@Failure		500				{object}	common_model.DescriptiveError		"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/workspace/{workspace_id} [patch]
 func Update(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -238,6 +242,7 @@ func Update(c *fiber.Ctx) error {
 //	@Failure		403				{object}	common_model.DescriptiveError	"Forbidden"
 //	@Failure		500				{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/workspace/{workspace_id} [delete]
 func Delete(c *fiber.Ctx) error {
 	workspaceIDStr := c.Params("workspace_id")

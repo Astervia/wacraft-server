@@ -23,6 +23,7 @@ import (
 //	@Failure		400			{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		500			{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/campaign [post]
 func Create(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
@@ -68,6 +69,7 @@ func Create(c *fiber.Ctx) error {
 //	@Failure		400					{object}	common_model.DescriptiveError			"Invalid request body"
 //	@Failure		500					{object}	common_model.DescriptiveError			"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/campaign/message [post]
 func CreateMessage(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)

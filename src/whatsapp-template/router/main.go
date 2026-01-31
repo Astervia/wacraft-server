@@ -3,6 +3,7 @@ package whatsapp_template_router
 import (
 	auth_middleware "github.com/Astervia/wacraft-server/src/auth/middleware"
 	whatsapp_template_handler "github.com/Astervia/wacraft-server/src/whatsapp-template/handler"
+	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -13,5 +14,8 @@ func Route(app *fiber.App) {
 }
 
 func mainRoutes(group fiber.Router) {
-	group.Get("/", auth_middleware.UserMiddleware, whatsapp_template_handler.Get)
+	group.Get("/", auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		whatsapp_template_handler.Get)
 }

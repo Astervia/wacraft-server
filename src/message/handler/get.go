@@ -23,6 +23,7 @@ import (
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid query parameters"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Failed to retrieve messages"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/message [get]
 func Get(c *fiber.Ctx) error {
 	query := new(message_model.QueryPaginated)

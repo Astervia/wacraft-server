@@ -21,6 +21,7 @@ import (
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
+//	@Security		WorkspaceAuth
 //	@Router			/contact [delete]
 func DeleteContactByID(c *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(c)
