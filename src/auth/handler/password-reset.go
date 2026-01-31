@@ -22,9 +22,9 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Param			body	body		user_model.ForgotPasswordRequest	true	"Email address"
-//	@Success		200		{object}	map[string]string	"Password reset email sent"
-//	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request"
-//	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
+//	@Success		200		{object}	user_model.ForgotPasswordResponse	"Password reset email sent"
+//	@Failure		400		{object}	common_model.DescriptiveError		"Invalid request"
+//	@Failure		500		{object}	common_model.DescriptiveError		"Internal server error"
 //	@Router			/auth/forgot-password [post]
 func ForgotPassword(c *fiber.Ctx) error {
 	var req user_model.ForgotPasswordRequest
@@ -44,8 +44,8 @@ func ForgotPassword(c *fiber.Ctx) error {
 	req.Email = strings.ToLower(strings.TrimSpace(req.Email))
 
 	// Always return success to prevent email enumeration
-	successResponse := fiber.Map{
-		"message": "If your email is registered, you will receive a password reset link",
+	successResponse := user_model.ForgotPasswordResponse{
+		Message: "If your email is registered, you will receive a password reset link",
 	}
 
 	// Find user
@@ -97,9 +97,9 @@ func ForgotPassword(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Param			body	body		user_model.ResetPasswordRequest	true	"Reset token and new password"
-//	@Success		200		{object}	map[string]string	"Password reset successful"
-//	@Failure		400		{object}	common_model.DescriptiveError	"Invalid or expired token"
-//	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
+//	@Success		200		{object}	user_model.ResetPasswordResponse	"Password reset successful"
+//	@Failure		400		{object}	common_model.DescriptiveError		"Invalid or expired token"
+//	@Failure		500		{object}	common_model.DescriptiveError		"Internal server error"
 //	@Router			/auth/reset-password [post]
 func ResetPassword(c *fiber.Ctx) error {
 	var req user_model.ResetPasswordRequest
@@ -170,7 +170,7 @@ func ResetPassword(c *fiber.Ctx) error {
 		)
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "Password reset successful",
+	return c.Status(fiber.StatusOK).JSON(user_model.ResetPasswordResponse{
+		Message: "Password reset successful",
 	})
 }
