@@ -43,7 +43,10 @@ func Count(c *fiber.Ctx) error {
 	}
 
 	workspace := workspace_middleware.GetWorkspace(c)
-	db := database.DB.Joins("JOIN messaging_products ON messages.messaging_product_id = messaging_products.id AND messaging_products.workspace_id = ?", workspace.ID).Model(&message_entity.Message{})
+	db := database.DB.
+		Table("messages AS m").
+		Joins("JOIN messaging_products ON m.messaging_product_id = messaging_products.id AND messaging_products.workspace_id = ?", workspace.ID).
+		Model(&message_entity.Message{})
 
 	messages, err := repository.Count(
 		message_entity.Message{
@@ -60,7 +63,7 @@ func Count(c *fiber.Ctx) error {
 		},
 		&query.DateOrder,
 		&query.DateWhereWithDeletedAt,
-		"", db,
+		"m", db,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
