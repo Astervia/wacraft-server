@@ -9,10 +9,10 @@ import (
 
 var (
 	// Registration settings
-	AllowRegistration         bool
-	RequireEmailVerification  bool
-	RateLimitRegistration     int // Per hour per IP
-	RateLimitLogin            int // Per 15 min per IP+email
+	AllowRegistration        bool
+	RequireEmailVerification bool
+	RateLimitRegistration    int // Per hour per IP
+	RateLimitLogin           int // Per 15 min per IP+email
 )
 
 func loadRegistrationEnv() {
