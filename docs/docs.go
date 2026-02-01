@@ -9255,6 +9255,13 @@ const docTemplate = `{
                 "Service": "Indicates that the conversation opened by a business replying to a customer within a customer service window.",
                 "Utility": "Indicates the conversation was opened by a business sending template categorized as UTILITY to the customer. This applies any time it has been more than 24 hours since the last customer message."
             },
+            "x-enum-descriptions": [
+                "Indicates the conversation was opened by a business sending template categorized as AUTHENTICATION to the customer. This applies any time it has been more than 24 hours since the last customer message.",
+                "Indicates the conversation was opened by a business sending template categorized as MARKETING to the customer. This applies any time it has been more than 24 hours since the last customer message.",
+                "Indicates the conversation was opened by a business sending template categorized as UTILITY to the customer. This applies any time it has been more than 24 hours since the last customer message.",
+                "Indicates that the conversation opened by a business replying to a customer within a customer service window.",
+                "Indicates a free entry point conversation."
+            ],
             "x-enum-varnames": [
                 "Authentication",
                 "Marketing",
