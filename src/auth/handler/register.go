@@ -93,9 +93,9 @@ func Register(c *fiber.Ctx) error {
 	workspaceSlug = workspaceSlug + "-" + user.ID.String()[:8]
 
 	workspace := workspace_entity.Workspace{
-		Name:        req.Name + "'s Workspace",
-		Slug:        workspaceSlug,
-		CreatedBy:   user.ID,
+		Name:      req.Name + "'s Workspace",
+		Slug:      workspaceSlug,
+		CreatedBy: user.ID,
 	}
 
 	if err := tx.Create(&workspace).Error; err != nil {

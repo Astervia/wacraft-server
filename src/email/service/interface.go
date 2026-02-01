@@ -9,9 +9,9 @@ type EmailService interface {
 
 // EmailData contains common email template data
 type EmailData struct {
-	Name         string
-	Token        string
-	BaseURL      string
+	Name          string
+	Token         string
+	BaseURL       string
 	WorkspaceName string
-	InviterName  string
+	InviterName   string
 }
