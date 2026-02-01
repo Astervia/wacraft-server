@@ -43,7 +43,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.AcceptInvitationRequest"
+                            "$ref": "#/definitions/workspace_model.AcceptInvitationRequest"
                         }
                     }
                 ],
@@ -60,13 +60,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid or expired invitation",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -92,7 +92,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_model.ForgotPasswordRequest"
+                            "$ref": "#/definitions/user_model.ForgotPasswordRequest"
                         }
                     }
                 ],
@@ -100,19 +100,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Password reset email sent",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_model.ForgotPasswordResponse"
+                            "$ref": "#/definitions/user_model.ForgotPasswordResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -138,7 +138,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_model.RegisterRequest"
+                            "$ref": "#/definitions/user_model.RegisterRequest"
                         }
                     }
                 ],
@@ -146,31 +146,31 @@ const docTemplate = `{
                     "201": {
                         "description": "User created",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_model.RegisterResponse"
+                            "$ref": "#/definitions/user_model.RegisterResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "403": {
                         "description": "Registration disabled",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "409": {
                         "description": "Email already exists",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -196,7 +196,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_model.ResendVerificationRequest"
+                            "$ref": "#/definitions/user_model.ResendVerificationRequest"
                         }
                     }
                 ],
@@ -204,19 +204,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Verification email sent",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_model.ResendVerificationResponse"
+                            "$ref": "#/definitions/user_model.ResendVerificationResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -242,7 +242,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_model.ResetPasswordRequest"
+                            "$ref": "#/definitions/user_model.ResetPasswordRequest"
                         }
                     }
                 ],
@@ -250,19 +250,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Password reset successful",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_model.ResetPasswordResponse"
+                            "$ref": "#/definitions/user_model.ResetPasswordResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid or expired token",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -291,19 +291,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Email verified",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_model.VerifyEmailResponse"
+                            "$ref": "#/definitions/user_model.VerifyEmailResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid or expired token",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -421,20 +421,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.Campaign"
+                                "$ref": "#/definitions/campaign_entity.Campaign"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -466,7 +466,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_campaign_model.CreateCampaign"
+                            "$ref": "#/definitions/campaign_model.CreateCampaign"
                         }
                     }
                 ],
@@ -474,19 +474,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created campaign",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.Campaign"
+                            "$ref": "#/definitions/campaign_entity.Campaign"
                         }
                     },
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -518,7 +518,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.RequiredID"
+                            "$ref": "#/definitions/common_model.RequiredID"
                         }
                     }
                 ],
@@ -532,13 +532,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -570,7 +570,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_campaign_model.UpdateCampaign"
+                            "$ref": "#/definitions/campaign_model.UpdateCampaign"
                         }
                     }
                 ],
@@ -578,19 +578,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Updated campaign object",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.Campaign"
+                            "$ref": "#/definitions/campaign_entity.Campaign"
                         }
                     },
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -722,20 +722,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.Campaign"
+                                "$ref": "#/definitions/campaign_entity.Campaign"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid input (e.g., decoding or query error)",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -848,20 +848,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.CampaignMessageSendError"
+                                "$ref": "#/definitions/campaign_entity.CampaignMessageSendError"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -974,20 +974,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.CampaignMessage"
+                                "$ref": "#/definitions/campaign_entity.CampaignMessage"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -1019,7 +1019,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_campaign_model.CreateCampaignMessage"
+                            "$ref": "#/definitions/campaign_model.CreateCampaignMessage"
                         }
                     }
                 ],
@@ -1027,19 +1027,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created campaign message",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.CampaignMessage"
+                            "$ref": "#/definitions/campaign_entity.CampaignMessage"
                         }
                     },
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -1071,7 +1071,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.RequiredID"
+                            "$ref": "#/definitions/common_model.RequiredID"
                         }
                     }
                 ],
@@ -1085,13 +1085,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -1194,13 +1194,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid query",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -1303,13 +1303,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid query",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -1412,13 +1412,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid query",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -1531,20 +1531,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.CampaignMessage"
+                                "$ref": "#/definitions/campaign_entity.CampaignMessage"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -1657,20 +1657,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.CampaignMessage"
+                                "$ref": "#/definitions/campaign_entity.CampaignMessage"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -1793,20 +1793,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_contact_entity.Contact"
+                                "$ref": "#/definitions/contact_entity.Contact"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query parameters",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -1838,7 +1838,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_contact_model.UpdateContact"
+                            "$ref": "#/definitions/contact_model.UpdateContact"
                         }
                     }
                 ],
@@ -1846,19 +1846,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Updated contact",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_contact_entity.Contact"
+                            "$ref": "#/definitions/contact_entity.Contact"
                         }
                     },
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -1890,7 +1890,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_contact_model.CreateContact"
+                            "$ref": "#/definitions/contact_model.CreateContact"
                         }
                     }
                 ],
@@ -1898,19 +1898,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created contact",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_contact_entity.Contact"
+                            "$ref": "#/definitions/contact_entity.Contact"
                         }
                     },
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -1942,7 +1942,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.RequiredID"
+                            "$ref": "#/definitions/common_model.RequiredID"
                         }
                     }
                 ],
@@ -1956,13 +1956,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -2008,13 +2008,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Missing or invalid media ID",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to download media",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -2062,13 +2062,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid MediaInfo",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to download media",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -2121,19 +2121,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Missing file or MIME type",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "415": {
                         "description": "Unsupported media type",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to upload media",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -2179,13 +2179,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Missing or invalid media ID",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to retrieve media URL",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -2327,20 +2327,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message"
+                                "$ref": "#/definitions/message_entity.Message"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query parameters",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to retrieve messages",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -2489,20 +2489,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message"
+                                "$ref": "#/definitions/message_entity.Message"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid likeText or query",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to query messages",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -2658,20 +2658,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message"
+                                "$ref": "#/definitions/message_entity.Message"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid keyName, likeText, or query",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to query messages",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -2813,20 +2813,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message"
+                                "$ref": "#/definitions/message_entity.Message"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to retrieve conversations",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -2958,13 +2958,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid query",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to count conversations",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -3103,13 +3103,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid query or ID",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to count messages",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -3255,13 +3255,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid query or likeText",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to count messages",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -3410,20 +3410,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message"
+                                "$ref": "#/definitions/message_entity.Message"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query or ID",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to retrieve messages",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -3579,20 +3579,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message"
+                                "$ref": "#/definitions/message_entity.Message"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid ID, query, or likeText",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to retrieve messages",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -3738,13 +3738,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid query parameters",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to count messages",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -3897,13 +3897,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid likeText or query",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to count messages",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -3937,7 +3937,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_message_model.SendWhatsAppMessage"
+                            "$ref": "#/definitions/message_model.SendWhatsAppMessage"
                         }
                     }
                 ],
@@ -3945,19 +3945,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Message sent successfully",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message"
+                            "$ref": "#/definitions/message_entity.Message"
                         }
                     },
                     "400": {
                         "description": "Invalid message payload",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to send or save the message",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -4103,13 +4103,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid query parameters",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to mark conversation as read",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -4255,13 +4255,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid query parameters",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to send typing",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -4410,20 +4410,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message"
+                                "$ref": "#/definitions/message_entity.Message"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid wamID or query parameters",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to retrieve messages",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -4542,20 +4542,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProduct"
+                                "$ref": "#/definitions/messaging_product_entity.MessagingProduct"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query parameters",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to retrieve products",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -4697,20 +4697,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact"
+                                "$ref": "#/definitions/messaging_product_entity.MessagingProductContact"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query parameters",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to retrieve contacts",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -4742,7 +4742,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_model.CreateContact"
+                            "$ref": "#/definitions/messaging_product_model.CreateContact"
                         }
                     }
                 ],
@@ -4750,19 +4750,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created contact",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact"
+                            "$ref": "#/definitions/messaging_product_entity.MessagingProductContact"
                         }
                     },
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to create contact",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -4794,7 +4794,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.RequiredID"
+                            "$ref": "#/definitions/common_model.RequiredID"
                         }
                     }
                 ],
@@ -4805,13 +4805,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to delete contact",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -4845,7 +4845,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.RequiredID"
+                            "$ref": "#/definitions/common_model.RequiredID"
                         }
                     }
                 ],
@@ -4853,19 +4853,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Unblocked contact",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact"
+                            "$ref": "#/definitions/messaging_product_entity.MessagingProductContact"
                         }
                     },
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to unblock contact",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -4897,7 +4897,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.RequiredID"
+                            "$ref": "#/definitions/common_model.RequiredID"
                         }
                     }
                 ],
@@ -4905,19 +4905,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Blocked contact",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact"
+                            "$ref": "#/definitions/messaging_product_entity.MessagingProductContact"
                         }
                     },
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to block contact",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -5066,20 +5066,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact"
+                                "$ref": "#/definitions/messaging_product_entity.MessagingProductContact"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query or likeText",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to retrieve contacts",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -5218,13 +5218,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid query or likeText",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to count contacts",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -5264,19 +5264,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Updated messaging product contact",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact"
+                            "$ref": "#/definitions/messaging_product_entity.MessagingProductContact"
                         }
                     },
                     "400": {
                         "description": "Invalid contact ID format",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to update last_read_at",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -5418,20 +5418,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact"
+                                "$ref": "#/definitions/messaging_product_entity.MessagingProductContact"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query parameters",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to retrieve WhatsApp contacts",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -5463,7 +5463,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_model.CreateWhatsAppContact"
+                            "$ref": "#/definitions/messaging_product_model.CreateWhatsAppContact"
                         }
                     }
                 ],
@@ -5471,19 +5471,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created contact",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact"
+                            "$ref": "#/definitions/messaging_product_entity.MessagingProductContact"
                         }
                     },
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to create contact",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -5612,20 +5612,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_status_entity.Status"
+                                "$ref": "#/definitions/status_entity.Status"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query parameters",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to retrieve statuses",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -5761,20 +5761,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_status_entity.Status"
+                                "$ref": "#/definitions/status_entity.Status"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query or path parameter",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to retrieve statuses",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -5917,20 +5917,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_status_entity.Status"
+                                "$ref": "#/definitions/status_entity.Status"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query or path parameter",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to retrieve statuses",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -6063,13 +6063,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid query parameters",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to count statuses",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -6205,20 +6205,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_status_entity.Status"
+                                "$ref": "#/definitions/status_entity.Status"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid wamID or query parameters",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Failed to fetch statuses",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -6333,26 +6333,26 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_entity.User"
+                                "$ref": "#/definitions/user_entity.User"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query parameters",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "403": {
                         "description": "Forbidden - Admin role required",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -6381,7 +6381,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_model.UpdateWithID"
+                            "$ref": "#/definitions/user_model.UpdateWithID"
                         }
                     }
                 ],
@@ -6389,31 +6389,31 @@ const docTemplate = `{
                     "200": {
                         "description": "User updated successfully",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_entity.User"
+                            "$ref": "#/definitions/user_entity.User"
                         }
                     },
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "403": {
                         "description": "Forbidden - Admin role required",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -6442,7 +6442,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_model.Create"
+                            "$ref": "#/definitions/user_model.Create"
                         }
                     }
                 ],
@@ -6450,25 +6450,25 @@ const docTemplate = `{
                     "201": {
                         "description": "Created user",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_entity.User"
+                            "$ref": "#/definitions/user_entity.User"
                         }
                     },
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "403": {
                         "description": "Forbidden - Admin role required",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -6497,7 +6497,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.RequiredID"
+                            "$ref": "#/definitions/common_model.RequiredID"
                         }
                     }
                 ],
@@ -6511,25 +6511,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "401": {
                         "description": "Cannot delete su@sudo user",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "403": {
                         "description": "Forbidden - Admin role required",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -6658,26 +6658,26 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_entity.User"
+                                "$ref": "#/definitions/user_entity.User"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid path or query parameters",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "403": {
                         "description": "Forbidden - Admin role required",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -6705,13 +6705,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Current user",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_entity.User"
+                            "$ref": "#/definitions/user_entity.User"
                         }
                     },
                     "401": {
                         "description": "Unauthorized or invalid user context",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -6740,7 +6740,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_model.UpdateWithPassword"
+                            "$ref": "#/definitions/user_model.UpdateWithPassword"
                         }
                     }
                 ],
@@ -6748,19 +6748,19 @@ const docTemplate = `{
                     "200": {
                         "description": "User updated successfully",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_entity.User"
+                            "$ref": "#/definitions/user_entity.User"
                         }
                     },
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -6786,7 +6786,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -6817,7 +6817,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_auth_model.TokenRequest"
+                            "$ref": "#/definitions/auth_model.TokenRequest"
                         }
                     }
                 ],
@@ -6825,25 +6825,25 @@ const docTemplate = `{
                     "200": {
                         "description": "Token issued successfully",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_auth_model.TokenResponse"
+                            "$ref": "#/definitions/auth_model.TokenResponse"
                         }
                     },
                     "400": {
                         "description": "Bad request or missing fields",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "401": {
                         "description": "Unauthorized or invalid credentials",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -6974,20 +6974,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_webhook_entity.Webhook"
+                                "$ref": "#/definitions/webhook_entity.Webhook"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query parameters",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -7019,7 +7019,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_webhook_model.UpdateWebhook"
+                            "$ref": "#/definitions/webhook_model.UpdateWebhook"
                         }
                     }
                 ],
@@ -7027,19 +7027,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Updated webhook",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_webhook_entity.Webhook"
+                            "$ref": "#/definitions/webhook_entity.Webhook"
                         }
                     },
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -7071,7 +7071,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_webhook_model.CreateWebhook"
+                            "$ref": "#/definitions/webhook_model.CreateWebhook"
                         }
                     }
                 ],
@@ -7079,19 +7079,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created webhook",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_webhook_entity.Webhook"
+                            "$ref": "#/definitions/webhook_entity.Webhook"
                         }
                     },
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -7123,7 +7123,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.RequiredID"
+                            "$ref": "#/definitions/common_model.RequiredID"
                         }
                     }
                 ],
@@ -7134,13 +7134,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -7377,20 +7377,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_webhook_entity.Webhook"
+                                "$ref": "#/definitions/webhook_entity.Webhook"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query or path parameters",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -7503,20 +7503,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_webhook_entity.WebhookLog"
+                                "$ref": "#/definitions/webhook_entity.WebhookLog"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid query parameters",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -7570,13 +7570,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid campaign ID or bad request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -7621,13 +7621,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid connection request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -7669,19 +7669,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid WebSocket handshake",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -7915,13 +7915,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid query parameters",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Unable to retrieve templates from API",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -7951,14 +7951,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace"
+                                "$ref": "#/definitions/workspace_entity.Workspace"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -7990,7 +7990,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.CreateWorkspace"
+                            "$ref": "#/definitions/workspace_model.CreateWorkspace"
                         }
                     }
                 ],
@@ -7998,19 +7998,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created workspace",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace"
+                            "$ref": "#/definitions/workspace_entity.Workspace"
                         }
                     },
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -8047,13 +8047,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Workspace details",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace"
+                            "$ref": "#/definitions/workspace_entity.Workspace"
                         }
                     },
                     "404": {
                         "description": "Workspace not found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -8091,13 +8091,13 @@ const docTemplate = `{
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -8136,7 +8136,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.UpdateWorkspace"
+                            "$ref": "#/definitions/workspace_model.UpdateWorkspace"
                         }
                     }
                 ],
@@ -8144,25 +8144,25 @@ const docTemplate = `{
                     "200": {
                         "description": "Updated workspace",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace"
+                            "$ref": "#/definitions/workspace_entity.Workspace"
                         }
                     },
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -8201,14 +8201,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.InvitationResponse"
+                                "$ref": "#/definitions/workspace_model.InvitationResponse"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -8247,7 +8247,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.CreateInvitationRequest"
+                            "$ref": "#/definitions/workspace_model.CreateInvitationRequest"
                         }
                     }
                 ],
@@ -8255,25 +8255,25 @@ const docTemplate = `{
                     "201": {
                         "description": "Invitation created",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.InvitationResponse"
+                            "$ref": "#/definitions/workspace_model.InvitationResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "409": {
                         "description": "User already member",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -8320,13 +8320,13 @@ const docTemplate = `{
                     "404": {
                         "description": "Invitation not found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -8372,7 +8372,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -8411,7 +8411,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.CreateMember"
+                            "$ref": "#/definitions/workspace_model.CreateMember"
                         }
                     }
                 ],
@@ -8425,19 +8425,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -8484,19 +8484,19 @@ const docTemplate = `{
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "404": {
                         "description": "Member not found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -8542,7 +8542,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.UpdateMemberPolicies"
+                            "$ref": "#/definitions/workspace_model.UpdateMemberPolicies"
                         }
                     }
                 ],
@@ -8556,25 +8556,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "404": {
                         "description": "Member not found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -8707,20 +8707,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_phone-config_entity.PhoneConfig"
+                                "$ref": "#/definitions/phone_config_entity.PhoneConfig"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -8759,7 +8759,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_phone-config_model.CreatePhoneConfig"
+                            "$ref": "#/definitions/phone_config_model.CreatePhoneConfig"
                         }
                     }
                 ],
@@ -8767,19 +8767,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created phone config",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_phone-config_entity.PhoneConfig"
+                            "$ref": "#/definitions/phone_config_entity.PhoneConfig"
                         }
                     },
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -8823,19 +8823,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Phone config",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_phone-config_entity.PhoneConfig"
+                            "$ref": "#/definitions/phone_config_entity.PhoneConfig"
                         }
                     },
                     "404": {
                         "description": "Not found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -8880,13 +8880,13 @@ const docTemplate = `{
                     "404": {
                         "description": "Not found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -8932,7 +8932,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_phone-config_model.UpdatePhoneConfig"
+                            "$ref": "#/definitions/phone_config_model.UpdatePhoneConfig"
                         }
                     }
                 ],
@@ -8940,25 +8940,25 @@ const docTemplate = `{
                     "200": {
                         "description": "Updated phone config",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_phone-config_entity.PhoneConfig"
+                            "$ref": "#/definitions/phone_config_entity.PhoneConfig"
                         }
                     },
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "404": {
                         "description": "Not found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                            "$ref": "#/definitions/common_model.DescriptiveError"
                         }
                     }
                 }
@@ -8966,6 +8966,189 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "auth_model.TokenRequest": {
+            "type": "object",
+            "properties": {
+                "grant_type": {
+                    "description": "password | refresh_token",
+                    "type": "string",
+                    "example": "password"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "123456"
+                },
+                "refresh_token": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "user@mail.com"
+                }
+            }
+        },
+        "auth_model.TokenResponse": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "description": "JWT",
+                    "type": "string",
+                    "example": "eyJhbGciOi..."
+                },
+                "expires_in": {
+                    "description": "seconds",
+                    "type": "integer",
+                    "example": 3600
+                },
+                "refresh_token": {
+                    "description": "JWT",
+                    "type": "string",
+                    "example": "eyJhbGciOi..."
+                },
+                "token_type": {
+                    "description": "Always \"bearer\"",
+                    "type": "string",
+                    "example": "bearer"
+                }
+            }
+        },
+        "campaign_entity.Campaign": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "messaging_product": {
+                    "description": "Null if manager received the message.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/messaging_product_entity.MessagingProduct"
+                        }
+                    ]
+                },
+                "messaging_product_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "workspace": {
+                    "$ref": "#/definitions/workspace_entity.Workspace"
+                },
+                "workspace_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "campaign_entity.CampaignMessage": {
+            "type": "object",
+            "properties": {
+                "campaign": {
+                    "$ref": "#/definitions/campaign_entity.Campaign"
+                },
+                "campaign_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "message": {
+                    "$ref": "#/definitions/message_entity.Message"
+                },
+                "message_id": {
+                    "type": "string"
+                },
+                "sender_data": {
+                    "description": "Specific data that allows to send message.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/message_model.SenderData"
+                        }
+                    ]
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "campaign_entity.CampaignMessageSendError": {
+            "type": "object",
+            "properties": {
+                "campaign_message": {
+                    "$ref": "#/definitions/campaign_entity.CampaignMessage"
+                },
+                "campaign_message_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "error_data": {
+                    "description": "Error message.",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "campaign_model.CreateCampaign": {
+            "type": "object",
+            "required": [
+                "messaging_product_id"
+            ],
+            "properties": {
+                "messaging_product_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "campaign_model.CreateCampaignMessage": {
+            "type": "object",
+            "properties": {
+                "campaign_id": {
+                    "type": "string"
+                },
+                "sender_data": {
+                    "description": "Specific data that allows to send message.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/message_model.SenderData"
+                        }
+                    ]
+                }
+            }
+        },
+        "campaign_model.UpdateCampaign": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "The unique identifier.",
+                    "type": "string"
+                },
+                "messaging_product_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "common.BusinessAccount": {
             "type": "string",
             "enum": [
@@ -9088,6 +9271,27 @@ const docTemplate = `{
                 }
             }
         },
+        "common_model.DescriptiveError": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "Additional information about the error provided by the service that generated it. E. g. if an ORM returns an error, it will be propagated here as the raw error."
+                },
+                "message": {
+                    "description": "Short text describing the error as best as we can for humans.",
+                    "type": "string"
+                }
+            }
+        },
+        "common_model.RequiredID": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "The unique identifier.",
+                    "type": "string"
+                }
+            }
+        },
         "contact.Address": {
             "type": "object",
             "properties": {
@@ -9183,6 +9387,67 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "contact_entity.Contact": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "photo_path": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "workspace": {
+                    "$ref": "#/definitions/workspace_entity.Workspace"
+                },
+                "workspace_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "contact_model.CreateContact": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "photo_path": {
+                    "type": "string"
+                }
+            }
+        },
+        "contact_model.UpdateContact": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "description": "The unique identifier.",
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "photo_path": {
                     "type": "string"
                 }
             }
@@ -9495,272 +9760,7 @@ const docTemplate = `{
                 "Order"
             ]
         },
-        "github_com_Astervia_wacraft-core_src_auth_model.TokenRequest": {
-            "type": "object",
-            "properties": {
-                "grant_type": {
-                    "description": "password | refresh_token",
-                    "type": "string",
-                    "example": "password"
-                },
-                "password": {
-                    "type": "string",
-                    "example": "123456"
-                },
-                "refresh_token": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string",
-                    "example": "user@mail.com"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_auth_model.TokenResponse": {
-            "type": "object",
-            "properties": {
-                "access_token": {
-                    "description": "JWT",
-                    "type": "string",
-                    "example": "eyJhbGciOi..."
-                },
-                "expires_in": {
-                    "description": "seconds",
-                    "type": "integer",
-                    "example": 3600
-                },
-                "refresh_token": {
-                    "description": "JWT",
-                    "type": "string",
-                    "example": "eyJhbGciOi..."
-                },
-                "token_type": {
-                    "description": "Always \"bearer\"",
-                    "type": "string",
-                    "example": "bearer"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_campaign_entity.Campaign": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "messaging_product": {
-                    "description": "Null if manager received the message.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProduct"
-                        }
-                    ]
-                },
-                "messaging_product_id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "workspace": {
-                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace"
-                },
-                "workspace_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_campaign_entity.CampaignMessage": {
-            "type": "object",
-            "properties": {
-                "campaign": {
-                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.Campaign"
-                },
-                "campaign_id": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "message": {
-                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message"
-                },
-                "message_id": {
-                    "type": "string"
-                },
-                "sender_data": {
-                    "description": "Specific data that allows to send message.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_message_model.SenderData"
-                        }
-                    ]
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_campaign_entity.CampaignMessageSendError": {
-            "type": "object",
-            "properties": {
-                "campaign_message": {
-                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_campaign_entity.CampaignMessage"
-                },
-                "campaign_message_id": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "error_data": {
-                    "description": "Error message.",
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_campaign_model.CreateCampaign": {
-            "type": "object",
-            "required": [
-                "messaging_product_id"
-            ],
-            "properties": {
-                "messaging_product_id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_campaign_model.CreateCampaignMessage": {
-            "type": "object",
-            "properties": {
-                "campaign_id": {
-                    "type": "string"
-                },
-                "sender_data": {
-                    "description": "Specific data that allows to send message.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_message_model.SenderData"
-                        }
-                    ]
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_campaign_model.UpdateCampaign": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "description": "The unique identifier.",
-                    "type": "string"
-                },
-                "messaging_product_id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_common_model.DescriptiveError": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "description": "Additional information about the error provided by the service that generated it. E. g. if an ORM returns an error, it will be propagated here as the raw error."
-                },
-                "message": {
-                    "description": "Short text describing the error as best as we can for humans.",
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_common_model.RequiredID": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "description": "The unique identifier.",
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_contact_entity.Contact": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "photo_path": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "workspace": {
-                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace"
-                },
-                "workspace_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_contact_model.CreateContact": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "photo_path": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_contact_model.UpdateContact": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "description": "The unique identifier.",
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "photo_path": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_database_model.DateOrderEnum": {
+        "database_model.DateOrderEnum": {
             "type": "string",
             "enum": [
                 "asc",
@@ -9770,1171 +9770,6 @@ const docTemplate = `{
                 "Asc",
                 "Desc"
             ]
-        },
-        "github_com_Astervia_wacraft-core_src_message_entity.Message": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "deleted_at": {
-                    "type": "string"
-                },
-                "from": {
-                    "description": "Null if manager sent the message.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact"
-                        }
-                    ]
-                },
-                "from_id": {
-                    "description": "Null if manager sent the message.",
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "messaging_product": {
-                    "description": "Null if manager received the message.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProduct"
-                        }
-                    ]
-                },
-                "messaging_product_id": {
-                    "type": "string"
-                },
-                "product_data": {
-                    "description": "Specific data about the product. For example, the webhook data received.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_message_model.ProductData"
-                        }
-                    ]
-                },
-                "receiver_data": {
-                    "description": "Specific data about the product. For example, the webhook data received.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_message_model.ReceiverData"
-                        }
-                    ]
-                },
-                "sender_data": {
-                    "description": "Specific data that allows to send message.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_message_model.SenderData"
-                        }
-                    ]
-                },
-                "statuses": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_status_model.StatusFields"
-                    }
-                },
-                "to": {
-                    "description": "Null if manager received the message.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact"
-                        }
-                    ]
-                },
-                "to_id": {
-                    "description": "Null if manager received the message.",
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_message_model.ProductData": {
-            "type": "object",
-            "properties": {
-                "contacts": {
-                    "description": "Contacts that received messages.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/message.ResponseContact"
-                    }
-                },
-                "messages": {
-                    "description": "IDs of sent messages.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/message.MessageResponse"
-                    }
-                },
-                "messaging_product": {
-                    "description": "Default is \"whatsapp\".",
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_message_model.ReceiverData": {
-            "type": "object",
-            "properties": {
-                "audio": {
-                    "$ref": "#/definitions/media.UseMedia"
-                },
-                "button": {
-                    "$ref": "#/definitions/content.ButtonData"
-                },
-                "contacts": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/content.Contact"
-                    }
-                },
-                "context": {
-                    "$ref": "#/definitions/message.ReceivedContext"
-                },
-                "document": {
-                    "$ref": "#/definitions/media.UseMedia"
-                },
-                "errors": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/common.Error"
-                    }
-                },
-                "from": {
-                    "description": "The customer's WhatsApp ID. A business can respond to a customer using this ID. This ID may not match the customer's phone number, which is returned by the API as input when sending a message to the customer.",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "The ID for the message that was received by the business. You could use messages endpoint to mark this specific message as read.",
-                    "type": "string"
-                },
-                "image": {
-                    "$ref": "#/definitions/media.UseMedia"
-                },
-                "interactive": {
-                    "$ref": "#/definitions/content.ReceivedInteractive"
-                },
-                "location": {
-                    "$ref": "#/definitions/content.LocationData"
-                },
-                "order": {
-                    "$ref": "#/definitions/content.OrderData"
-                },
-                "reaction": {
-                    "$ref": "#/definitions/content.ReactionData"
-                },
-                "referral": {
-                    "$ref": "#/definitions/message.Referral"
-                },
-                "sticker": {
-                    "$ref": "#/definitions/media.UseMedia"
-                },
-                "system": {
-                    "$ref": "#/definitions/message.System"
-                },
-                "template": {
-                    "$ref": "#/definitions/template.UseTemplate"
-                },
-                "text": {
-                    "$ref": "#/definitions/content.TextData"
-                },
-                "timestamp": {
-                    "description": "Unix timestamp indicating when the WhatsApp server received the message from the customer.",
-                    "type": "string"
-                },
-                "type": {
-                    "$ref": "#/definitions/content.ReceiveType"
-                },
-                "video": {
-                    "$ref": "#/definitions/media.UseMedia"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_message_model.SendWhatsAppMessage": {
-            "type": "object",
-            "required": [
-                "sender_data",
-                "to_id"
-            ],
-            "properties": {
-                "sender_data": {
-                    "description": "Specific data that allows to send message.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/message.Message"
-                        }
-                    ]
-                },
-                "to_id": {
-                    "description": "Messaging product contact id to send message.",
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_message_model.SenderData": {
-            "type": "object",
-            "required": [
-                "type"
-            ],
-            "properties": {
-                "audio": {
-                    "$ref": "#/definitions/media.UseMedia"
-                },
-                "biz_opaque_callback_data": {
-                    "description": "Arbitrary string used for tracking messages, groups of messages, you name it...",
-                    "type": "string"
-                },
-                "button": {
-                    "$ref": "#/definitions/content.ButtonData"
-                },
-                "contacts": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/content.Contact"
-                    }
-                },
-                "context": {
-                    "description": "Used to answer a message.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/message.Context"
-                        }
-                    ]
-                },
-                "document": {
-                    "$ref": "#/definitions/media.UseMedia"
-                },
-                "image": {
-                    "$ref": "#/definitions/media.UseMedia"
-                },
-                "interactive": {
-                    "$ref": "#/definitions/content.Interactive"
-                },
-                "location": {
-                    "$ref": "#/definitions/content.LocationData"
-                },
-                "messaging_product": {
-                    "description": "Default is \"whatsapp\".",
-                    "type": "string"
-                },
-                "order": {
-                    "$ref": "#/definitions/content.OrderData"
-                },
-                "reaction": {
-                    "$ref": "#/definitions/content.ReactionData"
-                },
-                "recipient_identity_key_hash": {
-                    "description": "To use it you need to allow identity check at code.service. If the field is provided, this message will only be sent if \"recipient_identity_key_hash\" matches client's current hash.",
-                    "type": "string"
-                },
-                "recipient_type": {
-                    "description": "Default is \"individual\"",
-                    "type": "string"
-                },
-                "sticker": {
-                    "$ref": "#/definitions/media.UseMedia"
-                },
-                "template": {
-                    "$ref": "#/definitions/template.UseTemplate"
-                },
-                "text": {
-                    "$ref": "#/definitions/content.TextData"
-                },
-                "to": {
-                    "description": "Whatsapp ID of receiver.",
-                    "type": "string"
-                },
-                "type": {
-                    "description": "Type of message.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/content.Type"
-                        }
-                    ]
-                },
-                "video": {
-                    "$ref": "#/definitions/media.UseMedia"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProduct": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "description": "Add type:enum('WhatsApp'); when it becomes supported by GORM and PostgreSQL",
-                    "enum": [
-                        "WhatsApp"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_model.MessagingProductName"
-                        }
-                    ]
-                },
-                "phone_config": {
-                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_phone-config_entity.PhoneConfig"
-                },
-                "phone_config_id": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "workspace": {
-                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace"
-                },
-                "workspace_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProductContact": {
-            "type": "object",
-            "properties": {
-                "blocked": {
-                    "type": "boolean"
-                },
-                "contact": {
-                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_contact_entity.Contact"
-                },
-                "contact_id": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "last_read_at": {
-                    "description": "Timestamp of the last read action.",
-                    "type": "string"
-                },
-                "messaging_product": {
-                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_entity.MessagingProduct"
-                },
-                "messaging_product_id": {
-                    "type": "string"
-                },
-                "product_details": {
-                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_model.ProductDetails"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_messaging-product_model.CreateContact": {
-            "type": "object",
-            "properties": {
-                "contact_id": {
-                    "type": "string"
-                },
-                "messaging_product_id": {
-                    "type": "string"
-                },
-                "product_details": {
-                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_model.ProductDetails"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_messaging-product_model.CreateWhatsAppContact": {
-            "type": "object",
-            "properties": {
-                "contact_id": {
-                    "type": "string"
-                },
-                "product_details": {
-                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_messaging-product_model.WhatsAppProductDetails"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_messaging-product_model.MessagingProductName": {
-            "type": "string",
-            "enum": [
-                "WhatsApp"
-            ],
-            "x-enum-varnames": [
-                "WhatsApp"
-            ]
-        },
-        "github_com_Astervia_wacraft-core_src_messaging-product_model.ProductDetails": {
-            "type": "object",
-            "properties": {
-                "phone_number": {
-                    "description": "Available at from field on received messages.",
-                    "type": "string"
-                },
-                "wa_id": {
-                    "description": "Available at from field on received messages.",
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_messaging-product_model.WhatsAppProductDetails": {
-            "type": "object",
-            "properties": {
-                "phone_number": {
-                    "description": "Available at from field on received messages.",
-                    "type": "string"
-                },
-                "wa_id": {
-                    "description": "Available at from field on received messages.",
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_phone-config_entity.PhoneConfig": {
-            "type": "object",
-            "properties": {
-                "access_token": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "display_phone": {
-                    "description": "Display phone number (e.g., +1234567890)",
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "is_active": {
-                    "type": "boolean"
-                },
-                "meta_app_secret": {
-                    "type": "string"
-                },
-                "name": {
-                    "description": "Friendly name for this configuration",
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "waba_account_id": {
-                    "description": "WhatsApp Business Account ID",
-                    "type": "string"
-                },
-                "waba_id": {
-                    "description": "Phone Number ID from Meta (unique when active)",
-                    "type": "string"
-                },
-                "webhook_verify_token": {
-                    "type": "string"
-                },
-                "workspace": {
-                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace"
-                },
-                "workspace_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_phone-config_model.CreatePhoneConfig": {
-            "type": "object",
-            "required": [
-                "access_token",
-                "display_phone",
-                "meta_app_secret",
-                "name",
-                "waba_account_id",
-                "waba_id",
-                "webhook_verify_token"
-            ],
-            "properties": {
-                "access_token": {
-                    "type": "string"
-                },
-                "display_phone": {
-                    "type": "string"
-                },
-                "is_active": {
-                    "type": "boolean"
-                },
-                "meta_app_secret": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "waba_account_id": {
-                    "description": "WhatsApp Business Account ID",
-                    "type": "string"
-                },
-                "waba_id": {
-                    "description": "Phone Number ID from Meta",
-                    "type": "string"
-                },
-                "webhook_verify_token": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_phone-config_model.UpdatePhoneConfig": {
-            "type": "object",
-            "properties": {
-                "access_token": {
-                    "type": "string"
-                },
-                "display_phone": {
-                    "type": "string"
-                },
-                "is_active": {
-                    "type": "boolean"
-                },
-                "meta_app_secret": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "waba_account_id": {
-                    "type": "string"
-                },
-                "waba_id": {
-                    "type": "string"
-                },
-                "webhook_verify_token": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_status_entity.Status": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "json": {
-                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_message_entity.Message"
-                },
-                "message_id": {
-                    "type": "string"
-                },
-                "product_data": {
-                    "description": "Specific data about the product. For example, the webhook data received.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_status_model.ProductData"
-                        }
-                    ]
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_status_model.ProductData": {
-            "type": "object",
-            "properties": {
-                "biz_opaque_callback_data": {
-                    "description": "Arbitrary string used for tracking messages, groups of messages, you name it...",
-                    "type": "string"
-                },
-                "conversation": {
-                    "description": "Information about the conversation.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/webhook.Conversation"
-                        }
-                    ]
-                },
-                "errors": {
-                    "description": "An array of error objects describing the error. Error objects have the following properties, which map to their equivalent properties in API error response payloads.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/common.Error"
-                    }
-                },
-                "id": {
-                    "description": "The ID for the message that the business that is subscribed to the webhooks sent to a customer",
-                    "type": "string"
-                },
-                "pricing": {
-                    "description": "An object containing pricing information.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/common.Pricing"
-                        }
-                    ]
-                },
-                "recipient_id": {
-                    "description": "The customer's WhatsApp ID. A business can respond to a customer using this ID. This ID may not match the customer's phone number, which is returned by the API as input when sending a message to the customer.",
-                    "type": "string"
-                },
-                "status": {
-                    "$ref": "#/definitions/message.SendingStatus"
-                },
-                "timestamp": {
-                    "description": "Date for the status message",
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_status_model.StatusFields": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "message_id": {
-                    "type": "string"
-                },
-                "product_data": {
-                    "description": "Specific data about the product. For example, the webhook data received.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_status_model.ProductData"
-                        }
-                    ]
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_user_entity.User": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "email_verified": {
-                    "type": "boolean"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "role": {
-                    "description": "Deprecated: use workspace policies",
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_user_model.Create": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "role": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_user_model.ForgotPasswordRequest": {
-            "type": "object",
-            "required": [
-                "email"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_user_model.ForgotPasswordResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "If your email is registered, you will receive a password reset link"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_user_model.RegisterRequest": {
-            "type": "object",
-            "required": [
-                "email",
-                "name",
-                "password"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
-                },
-                "password": {
-                    "type": "string",
-                    "maxLength": 72,
-                    "minLength": 8
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_user_model.RegisterResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_user_model.ResendVerificationRequest": {
-            "type": "object",
-            "required": [
-                "email"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_user_model.ResendVerificationResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "If your email is registered, you will receive a verification link"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_user_model.ResetPasswordRequest": {
-            "type": "object",
-            "required": [
-                "password",
-                "token"
-            ],
-            "properties": {
-                "password": {
-                    "type": "string",
-                    "maxLength": 72,
-                    "minLength": 8
-                },
-                "token": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_user_model.ResetPasswordResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "Password reset successful"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_user_model.UpdateWithID": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "description": "The unique identifier.",
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "role": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_user_model.UpdateWithPassword": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_user_model.VerifyEmailResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "Email verified successfully"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_webhook_entity.Webhook": {
-            "type": "object",
-            "properties": {
-                "authorization": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "event": {
-                    "type": "string"
-                },
-                "http_method": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "timeout": {
-                    "description": "The timeout in seconds. 0 means no timeout",
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "url": {
-                    "type": "string"
-                },
-                "workspace": {
-                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace"
-                },
-                "workspace_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_webhook_entity.WebhookLog": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "http_response_code": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "payload": {},
-                "response_data": {},
-                "updated_at": {
-                    "type": "string"
-                },
-                "webhook": {
-                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_webhook_entity.Webhook"
-                },
-                "webhook_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_webhook_model.CreateWebhook": {
-            "type": "object",
-            "required": [
-                "event",
-                "http_method",
-                "url"
-            ],
-            "properties": {
-                "authorization": {
-                    "description": "Optional authorization token",
-                    "type": "string"
-                },
-                "event": {
-                    "description": "Event type associated with the webhook, required",
-                    "type": "string"
-                },
-                "http_method": {
-                    "type": "string",
-                    "enum": [
-                        "GET",
-                        "POST",
-                        "PUT",
-                        "DELETE",
-                        "PATCH"
-                    ]
-                },
-                "timeout": {
-                    "type": "integer",
-                    "maximum": 60,
-                    "minimum": 1
-                },
-                "url": {
-                    "description": "Webhook URL, required and must be a valid URL",
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_webhook_model.UpdateWebhook": {
-            "type": "object",
-            "properties": {
-                "authorization": {
-                    "description": "Optional updated authorization token",
-                    "type": "string"
-                },
-                "event": {
-                    "description": "Optional updated event associated with the webhook",
-                    "type": "string"
-                },
-                "http_method": {
-                    "type": "string",
-                    "enum": [
-                        "GET",
-                        "POST",
-                        "PUT",
-                        "DELETE",
-                        "PATCH"
-                    ]
-                },
-                "id": {
-                    "description": "The unique identifier.",
-                    "type": "string"
-                },
-                "timeout": {
-                    "type": "integer",
-                    "maximum": 60,
-                    "minimum": 1
-                },
-                "url": {
-                    "description": "Optional updated URL, validated to be a valid URL",
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_workspace_entity.Workspace": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "created_by": {
-                    "type": "string"
-                },
-                "creator": {
-                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_entity.User"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "slug": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_workspace_model.AcceptInvitationRequest": {
-            "type": "object",
-            "required": [
-                "token"
-            ],
-            "properties": {
-                "name": {
-                    "description": "Required if user doesn't exist",
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
-                },
-                "password": {
-                    "description": "Required if user doesn't exist",
-                    "type": "string",
-                    "maxLength": 72,
-                    "minLength": 8
-                },
-                "token": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_workspace_model.CreateInvitationRequest": {
-            "type": "object",
-            "required": [
-                "email",
-                "policies"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "policies": {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.Policy"
-                    }
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_workspace_model.CreateMember": {
-            "type": "object",
-            "required": [
-                "policies",
-                "user_id"
-            ],
-            "properties": {
-                "policies": {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.Policy"
-                    }
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_workspace_model.CreateWorkspace": {
-            "type": "object",
-            "required": [
-                "name",
-                "slug"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "slug": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_workspace_model.InvitationResponse": {
-            "type": "object",
-            "properties": {
-                "accepted_at": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "expires_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "invited_by": {
-                    "type": "string"
-                },
-                "policies": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.Policy"
-                    }
-                },
-                "workspace_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_workspace_model.Policy": {
-            "type": "string",
-            "enum": [
-                "workspace.admin",
-                "workspace.settings",
-                "workspace.members",
-                "phone_config.read",
-                "phone_config.manage",
-                "contact.read",
-                "contact.manage",
-                "message.read",
-                "message.send",
-                "campaign.read",
-                "campaign.manage",
-                "campaign.run",
-                "webhook.read",
-                "webhook.manage"
-            ],
-            "x-enum-varnames": [
-                "PolicyWorkspaceAdmin",
-                "PolicyWorkspaceSettings",
-                "PolicyWorkspaceMembers",
-                "PolicyPhoneConfigRead",
-                "PolicyPhoneConfigManage",
-                "PolicyContactRead",
-                "PolicyContactManage",
-                "PolicyMessageRead",
-                "PolicyMessageSend",
-                "PolicyCampaignRead",
-                "PolicyCampaignManage",
-                "PolicyCampaignRun",
-                "PolicyWebhookRead",
-                "PolicyWebhookManage"
-            ]
-        },
-        "github_com_Astervia_wacraft-core_src_workspace_model.UpdateMemberPolicies": {
-            "type": "object",
-            "required": [
-                "policies"
-            ],
-            "properties": {
-                "policies": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.Policy"
-                    }
-                }
-            }
-        },
-        "github_com_Astervia_wacraft-core_src_workspace_model.UpdateWorkspace": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "description": "The unique identifier.",
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "slug": {
-                    "type": "string"
-                }
-            }
         },
         "interactive.Action": {
             "type": "object",
@@ -11640,6 +10475,645 @@ const docTemplate = `{
                 }
             }
         },
+        "message_entity.Message": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "from": {
+                    "description": "Null if manager sent the message.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/messaging_product_entity.MessagingProductContact"
+                        }
+                    ]
+                },
+                "from_id": {
+                    "description": "Null if manager sent the message.",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "messaging_product": {
+                    "description": "Null if manager received the message.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/messaging_product_entity.MessagingProduct"
+                        }
+                    ]
+                },
+                "messaging_product_id": {
+                    "type": "string"
+                },
+                "product_data": {
+                    "description": "Specific data about the product. For example, the webhook data received.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/message_model.ProductData"
+                        }
+                    ]
+                },
+                "receiver_data": {
+                    "description": "Specific data about the product. For example, the webhook data received.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/message_model.ReceiverData"
+                        }
+                    ]
+                },
+                "sender_data": {
+                    "description": "Specific data that allows to send message.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/message_model.SenderData"
+                        }
+                    ]
+                },
+                "statuses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/status_model.StatusFields"
+                    }
+                },
+                "to": {
+                    "description": "Null if manager received the message.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/messaging_product_entity.MessagingProductContact"
+                        }
+                    ]
+                },
+                "to_id": {
+                    "description": "Null if manager received the message.",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "message_model.ProductData": {
+            "type": "object",
+            "properties": {
+                "contacts": {
+                    "description": "Contacts that received messages.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/message.ResponseContact"
+                    }
+                },
+                "messages": {
+                    "description": "IDs of sent messages.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/message.MessageResponse"
+                    }
+                },
+                "messaging_product": {
+                    "description": "Default is \"whatsapp\".",
+                    "type": "string"
+                }
+            }
+        },
+        "message_model.ReceiverData": {
+            "type": "object",
+            "properties": {
+                "audio": {
+                    "$ref": "#/definitions/media.UseMedia"
+                },
+                "button": {
+                    "$ref": "#/definitions/content.ButtonData"
+                },
+                "contacts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/content.Contact"
+                    }
+                },
+                "context": {
+                    "$ref": "#/definitions/message.ReceivedContext"
+                },
+                "document": {
+                    "$ref": "#/definitions/media.UseMedia"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/common.Error"
+                    }
+                },
+                "from": {
+                    "description": "The customer's WhatsApp ID. A business can respond to a customer using this ID. This ID may not match the customer's phone number, which is returned by the API as input when sending a message to the customer.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "The ID for the message that was received by the business. You could use messages endpoint to mark this specific message as read.",
+                    "type": "string"
+                },
+                "image": {
+                    "$ref": "#/definitions/media.UseMedia"
+                },
+                "interactive": {
+                    "$ref": "#/definitions/content.ReceivedInteractive"
+                },
+                "location": {
+                    "$ref": "#/definitions/content.LocationData"
+                },
+                "order": {
+                    "$ref": "#/definitions/content.OrderData"
+                },
+                "reaction": {
+                    "$ref": "#/definitions/content.ReactionData"
+                },
+                "referral": {
+                    "$ref": "#/definitions/message.Referral"
+                },
+                "sticker": {
+                    "$ref": "#/definitions/media.UseMedia"
+                },
+                "system": {
+                    "$ref": "#/definitions/message.System"
+                },
+                "template": {
+                    "$ref": "#/definitions/template.UseTemplate"
+                },
+                "text": {
+                    "$ref": "#/definitions/content.TextData"
+                },
+                "timestamp": {
+                    "description": "Unix timestamp indicating when the WhatsApp server received the message from the customer.",
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/content.ReceiveType"
+                },
+                "video": {
+                    "$ref": "#/definitions/media.UseMedia"
+                }
+            }
+        },
+        "message_model.SendWhatsAppMessage": {
+            "type": "object",
+            "required": [
+                "sender_data",
+                "to_id"
+            ],
+            "properties": {
+                "sender_data": {
+                    "description": "Specific data that allows to send message.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/message.Message"
+                        }
+                    ]
+                },
+                "to_id": {
+                    "description": "Messaging product contact id to send message.",
+                    "type": "string"
+                }
+            }
+        },
+        "message_model.SenderData": {
+            "type": "object",
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "audio": {
+                    "$ref": "#/definitions/media.UseMedia"
+                },
+                "biz_opaque_callback_data": {
+                    "description": "Arbitrary string used for tracking messages, groups of messages, you name it...",
+                    "type": "string"
+                },
+                "button": {
+                    "$ref": "#/definitions/content.ButtonData"
+                },
+                "contacts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/content.Contact"
+                    }
+                },
+                "context": {
+                    "description": "Used to answer a message.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/message.Context"
+                        }
+                    ]
+                },
+                "document": {
+                    "$ref": "#/definitions/media.UseMedia"
+                },
+                "image": {
+                    "$ref": "#/definitions/media.UseMedia"
+                },
+                "interactive": {
+                    "$ref": "#/definitions/content.Interactive"
+                },
+                "location": {
+                    "$ref": "#/definitions/content.LocationData"
+                },
+                "messaging_product": {
+                    "description": "Default is \"whatsapp\".",
+                    "type": "string"
+                },
+                "order": {
+                    "$ref": "#/definitions/content.OrderData"
+                },
+                "reaction": {
+                    "$ref": "#/definitions/content.ReactionData"
+                },
+                "recipient_identity_key_hash": {
+                    "description": "To use it you need to allow identity check at code.service. If the field is provided, this message will only be sent if \"recipient_identity_key_hash\" matches client's current hash.",
+                    "type": "string"
+                },
+                "recipient_type": {
+                    "description": "Default is \"individual\"",
+                    "type": "string"
+                },
+                "sticker": {
+                    "$ref": "#/definitions/media.UseMedia"
+                },
+                "template": {
+                    "$ref": "#/definitions/template.UseTemplate"
+                },
+                "text": {
+                    "$ref": "#/definitions/content.TextData"
+                },
+                "to": {
+                    "description": "Whatsapp ID of receiver.",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "Type of message.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/content.Type"
+                        }
+                    ]
+                },
+                "video": {
+                    "$ref": "#/definitions/media.UseMedia"
+                }
+            }
+        },
+        "messaging_product_entity.MessagingProduct": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Add type:enum('WhatsApp'); when it becomes supported by GORM and PostgreSQL",
+                    "enum": [
+                        "WhatsApp"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/messaging_product_model.MessagingProductName"
+                        }
+                    ]
+                },
+                "phone_config": {
+                    "$ref": "#/definitions/phone_config_entity.PhoneConfig"
+                },
+                "phone_config_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "workspace": {
+                    "$ref": "#/definitions/workspace_entity.Workspace"
+                },
+                "workspace_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "messaging_product_entity.MessagingProductContact": {
+            "type": "object",
+            "properties": {
+                "blocked": {
+                    "type": "boolean"
+                },
+                "contact": {
+                    "$ref": "#/definitions/contact_entity.Contact"
+                },
+                "contact_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_read_at": {
+                    "description": "Timestamp of the last read action.",
+                    "type": "string"
+                },
+                "messaging_product": {
+                    "$ref": "#/definitions/messaging_product_entity.MessagingProduct"
+                },
+                "messaging_product_id": {
+                    "type": "string"
+                },
+                "product_details": {
+                    "$ref": "#/definitions/messaging_product_model.ProductDetails"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "messaging_product_model.CreateContact": {
+            "type": "object",
+            "properties": {
+                "contact_id": {
+                    "type": "string"
+                },
+                "messaging_product_id": {
+                    "type": "string"
+                },
+                "product_details": {
+                    "$ref": "#/definitions/messaging_product_model.ProductDetails"
+                }
+            }
+        },
+        "messaging_product_model.CreateWhatsAppContact": {
+            "type": "object",
+            "properties": {
+                "contact_id": {
+                    "type": "string"
+                },
+                "product_details": {
+                    "$ref": "#/definitions/messaging_product_model.WhatsAppProductDetails"
+                }
+            }
+        },
+        "messaging_product_model.MessagingProductName": {
+            "type": "string",
+            "enum": [
+                "WhatsApp"
+            ],
+            "x-enum-varnames": [
+                "WhatsApp"
+            ]
+        },
+        "messaging_product_model.ProductDetails": {
+            "type": "object",
+            "properties": {
+                "phone_number": {
+                    "description": "Available at from field on received messages.",
+                    "type": "string"
+                },
+                "wa_id": {
+                    "description": "Available at from field on received messages.",
+                    "type": "string"
+                }
+            }
+        },
+        "messaging_product_model.WhatsAppProductDetails": {
+            "type": "object",
+            "properties": {
+                "phone_number": {
+                    "description": "Available at from field on received messages.",
+                    "type": "string"
+                },
+                "wa_id": {
+                    "description": "Available at from field on received messages.",
+                    "type": "string"
+                }
+            }
+        },
+        "phone_config_entity.PhoneConfig": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "display_phone": {
+                    "description": "Display phone number (e.g., +1234567890)",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "meta_app_secret": {
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Friendly name for this configuration",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "waba_account_id": {
+                    "description": "WhatsApp Business Account ID",
+                    "type": "string"
+                },
+                "waba_id": {
+                    "description": "Phone Number ID from Meta (unique when active)",
+                    "type": "string"
+                },
+                "webhook_verify_token": {
+                    "type": "string"
+                },
+                "workspace": {
+                    "$ref": "#/definitions/workspace_entity.Workspace"
+                },
+                "workspace_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "phone_config_model.CreatePhoneConfig": {
+            "type": "object",
+            "required": [
+                "access_token",
+                "display_phone",
+                "meta_app_secret",
+                "name",
+                "waba_account_id",
+                "waba_id",
+                "webhook_verify_token"
+            ],
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "display_phone": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "meta_app_secret": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "waba_account_id": {
+                    "description": "WhatsApp Business Account ID",
+                    "type": "string"
+                },
+                "waba_id": {
+                    "description": "Phone Number ID from Meta",
+                    "type": "string"
+                },
+                "webhook_verify_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "phone_config_model.UpdatePhoneConfig": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "display_phone": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "meta_app_secret": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "waba_account_id": {
+                    "type": "string"
+                },
+                "waba_id": {
+                    "type": "string"
+                },
+                "webhook_verify_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "status_entity.Status": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "json": {
+                    "$ref": "#/definitions/message_entity.Message"
+                },
+                "message_id": {
+                    "type": "string"
+                },
+                "product_data": {
+                    "description": "Specific data about the product. For example, the webhook data received.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/status_model.ProductData"
+                        }
+                    ]
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "status_model.ProductData": {
+            "type": "object",
+            "properties": {
+                "biz_opaque_callback_data": {
+                    "description": "Arbitrary string used for tracking messages, groups of messages, you name it...",
+                    "type": "string"
+                },
+                "conversation": {
+                    "description": "Information about the conversation.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/webhook.Conversation"
+                        }
+                    ]
+                },
+                "errors": {
+                    "description": "An array of error objects describing the error. Error objects have the following properties, which map to their equivalent properties in API error response payloads.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/common.Error"
+                    }
+                },
+                "id": {
+                    "description": "The ID for the message that the business that is subscribed to the webhooks sent to a customer",
+                    "type": "string"
+                },
+                "pricing": {
+                    "description": "An object containing pricing information.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/common.Pricing"
+                        }
+                    ]
+                },
+                "recipient_id": {
+                    "description": "The customer's WhatsApp ID. A business can respond to a customer using this ID. This ID may not match the customer's phone number, which is returned by the API as input when sending a message to the customer.",
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/message.SendingStatus"
+                },
+                "timestamp": {
+                    "description": "Date for the status message",
+                    "type": "string"
+                }
+            }
+        },
+        "status_model.StatusFields": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "message_id": {
+                    "type": "string"
+                },
+                "product_data": {
+                    "description": "Specific data about the product. For example, the webhook data received.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/status_model.ProductData"
+                        }
+                    ]
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "template.ButtonData": {
             "type": "object",
             "required": [
@@ -12071,6 +11545,194 @@ const docTemplate = `{
                 }
             }
         },
+        "user_entity.User": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "email_verified": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "description": "Deprecated: use workspace policies",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "user_model.Create": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "user_model.ForgotPasswordRequest": {
+            "type": "object",
+            "required": [
+                "email"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "user_model.ForgotPasswordResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "If your email is registered, you will receive a password reset link"
+                }
+            }
+        },
+        "user_model.RegisterRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "name",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 72,
+                    "minLength": 8
+                }
+            }
+        },
+        "user_model.RegisterResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "user_model.ResendVerificationRequest": {
+            "type": "object",
+            "required": [
+                "email"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "user_model.ResendVerificationResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "If your email is registered, you will receive a verification link"
+                }
+            }
+        },
+        "user_model.ResetPasswordRequest": {
+            "type": "object",
+            "required": [
+                "password",
+                "token"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "maxLength": 72,
+                    "minLength": 8
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "user_model.ResetPasswordResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Password reset successful"
+                }
+            }
+        },
+        "user_model.UpdateWithID": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "description": "The unique identifier.",
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "user_model.UpdateWithPassword": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "user_model.VerifyEmailResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Email verified successfully"
+                }
+            }
+        },
         "webhook.Change": {
             "type": "object",
             "properties": {
@@ -12302,6 +11964,169 @@ const docTemplate = `{
                 }
             }
         },
+        "webhook_entity.Webhook": {
+            "type": "object",
+            "properties": {
+                "authorization": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "event": {
+                    "type": "string"
+                },
+                "http_method": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "timeout": {
+                    "description": "The timeout in seconds. 0 means no timeout",
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "workspace": {
+                    "$ref": "#/definitions/workspace_entity.Workspace"
+                },
+                "workspace_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "webhook_entity.WebhookLog": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "http_response_code": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "payload": {},
+                "response_data": {},
+                "updated_at": {
+                    "type": "string"
+                },
+                "webhook": {
+                    "$ref": "#/definitions/webhook_entity.Webhook"
+                },
+                "webhook_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "webhook_model.CreateWebhook": {
+            "type": "object",
+            "required": [
+                "event",
+                "http_method",
+                "url"
+            ],
+            "properties": {
+                "authorization": {
+                    "description": "Optional authorization token",
+                    "type": "string"
+                },
+                "event": {
+                    "description": "Event type associated with the webhook, required",
+                    "type": "string"
+                },
+                "http_method": {
+                    "type": "string",
+                    "enum": [
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE",
+                        "PATCH"
+                    ]
+                },
+                "timeout": {
+                    "type": "integer",
+                    "maximum": 60,
+                    "minimum": 1
+                },
+                "url": {
+                    "description": "Webhook URL, required and must be a valid URL",
+                    "type": "string"
+                }
+            }
+        },
+        "webhook_model.UpdateWebhook": {
+            "type": "object",
+            "properties": {
+                "authorization": {
+                    "description": "Optional updated authorization token",
+                    "type": "string"
+                },
+                "event": {
+                    "description": "Optional updated event associated with the webhook",
+                    "type": "string"
+                },
+                "http_method": {
+                    "type": "string",
+                    "enum": [
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE",
+                        "PATCH"
+                    ]
+                },
+                "id": {
+                    "description": "The unique identifier.",
+                    "type": "string"
+                },
+                "timeout": {
+                    "type": "integer",
+                    "maximum": 60,
+                    "minimum": 1
+                },
+                "url": {
+                    "description": "Optional updated URL, validated to be a valid URL",
+                    "type": "string"
+                }
+            }
+        },
+        "workspace_entity.Workspace": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "creator": {
+                    "$ref": "#/definitions/user_entity.User"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "workspace_handler.MemberResponse": {
             "type": "object",
             "properties": {
@@ -12314,22 +12139,197 @@ const docTemplate = `{
                 "policies": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.Policy"
+                        "$ref": "#/definitions/workspace_model.Policy"
                     }
                 },
                 "updated_at": {
                     "type": "string"
                 },
                 "user": {
-                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_user_entity.User"
+                    "$ref": "#/definitions/user_entity.User"
                 },
                 "user_id": {
                     "type": "string"
                 },
                 "workspace": {
-                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_entity.Workspace"
+                    "$ref": "#/definitions/workspace_entity.Workspace"
                 },
                 "workspace_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "workspace_model.AcceptInvitationRequest": {
+            "type": "object",
+            "required": [
+                "token"
+            ],
+            "properties": {
+                "name": {
+                    "description": "Required if user doesn't exist",
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
+                },
+                "password": {
+                    "description": "Required if user doesn't exist",
+                    "type": "string",
+                    "maxLength": 72,
+                    "minLength": 8
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "workspace_model.CreateInvitationRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "policies"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "policies": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/workspace_model.Policy"
+                    }
+                }
+            }
+        },
+        "workspace_model.CreateMember": {
+            "type": "object",
+            "required": [
+                "policies",
+                "user_id"
+            ],
+            "properties": {
+                "policies": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/workspace_model.Policy"
+                    }
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "workspace_model.CreateWorkspace": {
+            "type": "object",
+            "required": [
+                "name",
+                "slug"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
+        "workspace_model.InvitationResponse": {
+            "type": "object",
+            "properties": {
+                "accepted_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "invited_by": {
+                    "type": "string"
+                },
+                "policies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/workspace_model.Policy"
+                    }
+                },
+                "workspace_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "workspace_model.Policy": {
+            "type": "string",
+            "enum": [
+                "workspace.admin",
+                "workspace.settings",
+                "workspace.members",
+                "phone_config.read",
+                "phone_config.manage",
+                "contact.read",
+                "contact.manage",
+                "message.read",
+                "message.send",
+                "campaign.read",
+                "campaign.manage",
+                "campaign.run",
+                "webhook.read",
+                "webhook.manage"
+            ],
+            "x-enum-varnames": [
+                "PolicyWorkspaceAdmin",
+                "PolicyWorkspaceSettings",
+                "PolicyWorkspaceMembers",
+                "PolicyPhoneConfigRead",
+                "PolicyPhoneConfigManage",
+                "PolicyContactRead",
+                "PolicyContactManage",
+                "PolicyMessageRead",
+                "PolicyMessageSend",
+                "PolicyCampaignRead",
+                "PolicyCampaignManage",
+                "PolicyCampaignRun",
+                "PolicyWebhookRead",
+                "PolicyWebhookManage"
+            ]
+        },
+        "workspace_model.UpdateMemberPolicies": {
+            "type": "object",
+            "required": [
+                "policies"
+            ],
+            "properties": {
+                "policies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/workspace_model.Policy"
+                    }
+                }
+            }
+        },
+        "workspace_model.UpdateWorkspace": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "description": "The unique identifier.",
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "slug": {
                     "type": "string"
                 }
             }
