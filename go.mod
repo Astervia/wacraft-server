@@ -1,6 +1,6 @@
 module github.com/Astervia/wacraft-server
 
-go 1.25.5
+go 1.25.6
 
 require (
 	github.com/Astervia/wacraft-core v0.2.0-pre
