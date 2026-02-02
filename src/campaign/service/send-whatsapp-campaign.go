@@ -21,7 +21,9 @@ import (
 	message_handler "github.com/Astervia/wacraft-server/src/message/handler"
 	message_service "github.com/Astervia/wacraft-server/src/message/service"
 	messaging_product_service "github.com/Astervia/wacraft-server/src/messaging-product/service"
+	phone_config_service "github.com/Astervia/wacraft-server/src/phone-config/service"
 	webhook_service "github.com/Astervia/wacraft-server/src/webhook/service"
+	bootstrap_module "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -53,6 +55,14 @@ func SendWhatsAppCampaign(
 		MessagingProduct: &messaging_product_entity.MessagingProduct{Name: messaging_product_model.WhatsApp},
 	}
 	if err := database.DB.Model(&campaign).Where(&campaign).First(&campaign).Error; err != nil {
+		return campaign_model.CampaignResults{}, err
+	}
+
+	if campaign.MessagingProductID == nil {
+		return campaign_model.CampaignResults{}, errors.New("empty messaging product ID for campaign")
+	}
+	wabaApi, err := phone_config_service.GetWhatsAppAPIByMessagingProductID(*campaign.MessagingProductID)
+	if err != nil {
 		return campaign_model.CampaignResults{}, err
 	}
 
@@ -100,6 +110,7 @@ func SendWhatsAppCampaign(
 			default:
 				err := SendWhatsAppCampaignMessage(
 					campaignID,
+					wabaApi,
 					*campaign.MessagingProductID,
 					&offset,
 					&offsetMu,
@@ -132,6 +143,7 @@ var contactSynchronizer *synch_service.MutexSwapper[string] = CreateContactSynch
 // Gets first message not sent at campaign, gets related WhatsApp contact or save and sends message.
 func SendWhatsAppCampaignMessage(
 	campaignID uuid.UUID,
+	wabaApi *bootstrap_module.WhatsAppAPI,
 	messagingProductID uuid.UUID,
 	offset *int,
 	offsetMu *sync.Mutex,
@@ -193,12 +205,13 @@ func SendWhatsAppCampaignMessage(
 	}
 
 	var msg message_entity.Message
-	msg, err = message_service.SendWhatsAppMessageAtTransactionWithoutWaitingForStatus(
+	msg, err = message_service.SendWhatsAppMessageWithAPIWithoutWaitingForStatus(
 		message_model.SendWhatsAppMessage{
 			ToID:       mpc.ID,
 			SenderData: *senderData.Message,
 		},
 		messagingProductID,
+		wabaApi,
 		tx,
 	)
 	if err != nil {

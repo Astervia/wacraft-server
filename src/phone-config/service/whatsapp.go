@@ -1,9 +1,11 @@
 package phone_config_service
 
 import (
+	"errors"
 	"net/http"
 
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
+	messaging_product_entity "github.com/Astervia/wacraft-core/src/messaging-product/entity"
 	phone_config_entity "github.com/Astervia/wacraft-core/src/phone-config/entity"
 	"github.com/Astervia/wacraft-core/src/repository"
 	"github.com/Astervia/wacraft-server/src/database"
@@ -66,6 +68,24 @@ func BuildWhatsAppAPI(phoneConfig *phone_config_entity.PhoneConfig) (*bootstrap_
 	wabaApi, err := bootstrap_module.FromConfigWithClient(cfg, sharedHTTPClient)
 
 	return wabaApi, err
+}
+
+func GetWhatsAppAPIByMessagingProductID(messagingProductID uuid.UUID) (*bootstrap_module.WhatsAppAPI, error) {
+	messagingProduct, err := repository.First(
+		messaging_product_entity.MessagingProduct{
+			Audit: common_model.Audit{ID: messagingProductID},
+		},
+		0, nil, nil, "", database.DB,
+	)
+	if err != nil {
+		return nil, err
+	}
+	phoneConfigID := messagingProduct.PhoneConfigID
+	if phoneConfigID == nil {
+		return nil, errors.New("empty phone config ID in messagign product")
+	}
+
+	return GetWhatsAppAPIByPhoneConfigID(*phoneConfigID)
 }
 
 func GetWhatsAppAPIByPhoneConfigID(configID uuid.UUID) (*bootstrap_module.WhatsAppAPI, error) {

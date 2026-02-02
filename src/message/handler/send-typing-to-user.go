@@ -67,19 +67,9 @@ func SendTypingToUser(c *fiber.Ctx) error {
 		nil,
 	)
 	if err != nil {
-		r, err = message_service.SendTypingToUser(
-			entity,
-			&query.Paginate,
-			&query.DateOrder,
-			&query.DateWhereWithDeletedAt,
-			"",
-			nil,
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			common_model.NewApiError("unable to send typing to user", err, "message_service").Send(),
 		)
-		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(
-				common_model.NewApiError("unable to send typing to user", err, "message_service").Send(),
-			)
-		}
 	}
 
 	return c.Status(fiber.StatusOK).JSON(r)

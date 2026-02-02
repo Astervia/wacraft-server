@@ -6,46 +6,14 @@ import (
 
 	cmn_model "github.com/Astervia/wacraft-core/src/common/model"
 	common_service "github.com/Astervia/wacraft-core/src/common/service"
-	messaging_product_entity "github.com/Astervia/wacraft-core/src/messaging-product/entity"
-	messaging_product_model "github.com/Astervia/wacraft-core/src/messaging-product/model"
-	workspace_entity "github.com/Astervia/wacraft-core/src/workspace/entity"
-	"github.com/Astervia/wacraft-server/src/database"
-	"github.com/Astervia/wacraft-server/src/integration/whatsapp"
 	phone_config_service "github.com/Astervia/wacraft-server/src/phone-config/service"
 	"github.com/Astervia/wacraft-server/src/validators"
 	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
-	bootstrap_module "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap"
 	common_model "github.com/Rfluid/whatsapp-cloud-api/src/common"
 	media_model "github.com/Rfluid/whatsapp-cloud-api/src/media"
 	media_service "github.com/Rfluid/whatsapp-cloud-api/src/media"
 	"github.com/gofiber/fiber/v2"
 )
-
-// getWorkspaceWhatsAppAPI retrieves the workspace-specific WhatsApp API client
-// Falls back to global API if no phone config is configured for the workspace
-func getWorkspaceWhatsAppAPI(workspace *workspace_entity.Workspace) *bootstrap_module.WhatsAppAPI {
-	// Find messaging product for workspace
-	mp := messaging_product_entity.MessagingProduct{
-		Name:        messaging_product_model.WhatsApp,
-		WorkspaceID: &workspace.ID,
-	}
-
-	if err := database.DB.Model(&mp).Where(&mp).First(&mp).Error; err != nil {
-		// No messaging product found, use global API
-		return &whatsapp.WabaApi
-	}
-
-	// If phone config is available, use workspace-specific API
-	if mp.PhoneConfigID != nil {
-		wabaApi, err := phone_config_service.GetWhatsAppAPIByPhoneConfigID(*mp.PhoneConfigID)
-		if err == nil {
-			return wabaApi
-		}
-	}
-
-	// Fallback to global API
-	return &whatsapp.WabaApi
-}
 
 // GetWhatsAppMediaURL retrieves a temporary download URL for a WhatsApp media item.
 //
@@ -63,7 +31,12 @@ func getWorkspaceWhatsAppAPI(workspace *workspace_entity.Workspace) *bootstrap_m
 //	@Router			/media/whatsapp/{mediaID} [get]
 func GetWhatsAppMediaURL(ctx *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(ctx)
-	wabaApi := getWorkspaceWhatsAppAPI(workspace)
+	wabaApi, err := phone_config_service.GetWorkspaceWhatsAppAPI(workspace)
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(
+			cmn_model.NewApiError("workspace WhatsApp API not found", err, "service").Send(),
+		)
+	}
 
 	mediaID := ctx.Params("mediaID")
 	if mediaID == "" {
@@ -98,7 +71,12 @@ func GetWhatsAppMediaURL(ctx *fiber.Ctx) error {
 //	@Router			/media/whatsapp/download/{mediaID} [get]
 func DownloadWhatsAppMedia(ctx *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(ctx)
-	wabaApi := getWorkspaceWhatsAppAPI(workspace)
+	wabaApi, err := phone_config_service.GetWorkspaceWhatsAppAPI(workspace)
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(
+			cmn_model.NewApiError("workspace WhatsApp API not found", err, "service").Send(),
+		)
+	}
 
 	mediaID := ctx.Params("mediaID")
 	if mediaID == "" {
@@ -144,7 +122,12 @@ func DownloadWhatsAppMedia(ctx *fiber.Ctx) error {
 //	@Router			/media/whatsapp/media-info/download [post]
 func DownloadFromMediaInfo(ctx *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(ctx)
-	wabaApi := getWorkspaceWhatsAppAPI(workspace)
+	wabaApi, err := phone_config_service.GetWorkspaceWhatsAppAPI(workspace)
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(
+			cmn_model.NewApiError("workspace WhatsApp API not found", err, "service").Send(),
+		)
+	}
 
 	var mediaInfo media_model.MediaInfo
 	if err := ctx.BodyParser(&mediaInfo); err != nil {
@@ -191,7 +174,12 @@ func DownloadFromMediaInfo(ctx *fiber.Ctx) error {
 //	@Router			/media/whatsapp/upload [post]
 func UploadWhatsAppMedia(ctx *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(ctx)
-	wabaApi := getWorkspaceWhatsAppAPI(workspace)
+	wabaApi, err := phone_config_service.GetWorkspaceWhatsAppAPI(workspace)
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(
+			cmn_model.NewApiError("workspace WhatsApp API not found", err, "service").Send(),
+		)
+	}
 
 	fileHeader, err := ctx.FormFile("file")
 	if err != nil {
