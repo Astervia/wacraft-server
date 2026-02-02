@@ -8,7 +8,6 @@ import (
 	"github.com/Astervia/wacraft-server/src/database"
 	_ "github.com/Astervia/wacraft-server/src/database"
 	_ "github.com/Astervia/wacraft-server/src/database/migrate"
-	_ "github.com/Astervia/wacraft-server/src/integration"
 	_ "github.com/Astervia/wacraft-server/src/server"
 	"github.com/pressly/goose/v3"
 	"github.com/pterm/pterm"
