@@ -2,6 +2,9 @@ package server
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
 
 	auth_router "github.com/Astervia/wacraft-server/src/auth/router"
 	// PREMIUM STARTS
@@ -20,6 +23,7 @@ import (
 	"github.com/Astervia/wacraft-server/src/validators"
 	webhook_config "github.com/Astervia/wacraft-server/src/webhook-in/config"
 	webhook_router "github.com/Astervia/wacraft-server/src/webhook/router"
+	webhook_worker "github.com/Astervia/wacraft-server/src/webhook/worker"
 	"github.com/Astervia/wacraft-server/src/websocket"
 	whatsapp_template_router "github.com/Astervia/wacraft-server/src/whatsapp-template/router"
 	workspace_router "github.com/Astervia/wacraft-server/src/workspace/router"
@@ -60,6 +64,21 @@ func serve() {
 	campaign_websocket.Route(websocketRouter)
 	// PREMIUM ENDS
 	status_websocket.Route(websocketRouter)
+
+	// Start webhook delivery worker
+	deliveryWorker := webhook_worker.NewDeliveryWorker()
+	deliveryWorker.Start()
+
+	// Setup graceful shutdown
+	go func() {
+		sigChan := make(chan os.Signal, 1)
+		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+		<-sigChan
+
+		pterm.DefaultLogger.Info("Shutdown signal received, stopping services...")
+		deliveryWorker.Stop()
+		app.Shutdown()
+	}()
 
 	err := app.Listen(fmt.Sprintf(":%s", env.ServerPort))
 	pterm.DefaultLogger.Fatal(

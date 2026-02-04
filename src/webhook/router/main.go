@@ -46,4 +46,10 @@ func mainRoutes(group fiber.Router) {
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookRead),
 		webhook_handler.ContentKeyLike)
+	group.Post("/test",
+		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookManage),
+		webhook_handler.TestWebhook)
 }

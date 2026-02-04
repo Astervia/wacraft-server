@@ -41,14 +41,30 @@ func UpdateWebhook(c *fiber.Ctx) error {
 		)
 	}
 
+	// Build update struct
+	updateData := webhook_entity.Webhook{
+		Url:           editWebhook.Url,
+		Authorization: editWebhook.Authorization,
+		Event:         editWebhook.Event,
+		HttpMethod:    editWebhook.HttpMethod,
+		Timeout:       editWebhook.Timeout,
+		CustomHeaders: editWebhook.CustomHeaders,
+		EventFilter:   editWebhook.EventFilter,
+	}
+
+	// Handle pointer fields
+	if editWebhook.MaxRetries != nil {
+		updateData.MaxRetries = *editWebhook.MaxRetries
+	}
+	if editWebhook.RetryDelayMs != nil {
+		updateData.RetryDelayMs = *editWebhook.RetryDelayMs
+	}
+	if editWebhook.IsActive != nil {
+		updateData.IsActive = *editWebhook.IsActive
+	}
+
 	webhook, err := repository.Updates(
-		webhook_entity.Webhook{
-			Url:           editWebhook.Url,
-			Authorization: editWebhook.Authorization,
-			Event:         editWebhook.Event,
-			HttpMethod:    editWebhook.HttpMethod,
-			Timeout:       editWebhook.Timeout,
-		},
+		updateData,
 		&webhook_entity.Webhook{
 			Audit: common_model.Audit{
 				ID: editWebhook.ID,
