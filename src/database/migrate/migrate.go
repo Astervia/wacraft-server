@@ -55,6 +55,7 @@ func automaticMigrations() {
 		// PREMIUM ENDS
 		&webhook_entity.Webhook{},
 		&webhook_entity.WebhookLog{},
+		&webhook_entity.WebhookDelivery{},
 		&status_entity.Status{},
 	)
 	if err != nil {
