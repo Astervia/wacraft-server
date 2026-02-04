@@ -2140,18 +2140,56 @@ definitions:
         description: The specific webhook a business is subscribed to. The webhook
           is whatsapp_business_account.
     type: object
+  webhook_entity.CircuitState:
+    enum:
+    - closed
+    - open
+    - half_open
+    type: string
+    x-enum-varnames:
+    - CircuitClosed
+    - CircuitOpen
+    - CircuitHalfOpen
   webhook_entity.Webhook:
     properties:
       authorization:
         type: string
+      circuit_opened_at:
+        type: string
+      circuit_state:
+        allOf:
+        - $ref: '#/definitions/webhook_entity.CircuitState'
+        description: Circuit breaker
       created_at:
         type: string
+      custom_headers:
+        additionalProperties:
+          type: string
+        description: Custom headers
+        type: object
       event:
         type: string
+      event_filter:
+        allOf:
+        - $ref: '#/definitions/webhook_model.EventFilter'
+        description: Event filtering
+      failure_count:
+        type: integer
       http_method:
         type: string
       id:
         type: string
+      is_active:
+        type: boolean
+      last_failure_at:
+        type: string
+      max_retries:
+        description: Reliability
+        type: integer
+      retry_delay_ms:
+        type: integer
+      signing_enabled:
+        type: boolean
       timeout:
         description: The timeout in seconds. 0 means no timeout
         type: integer
@@ -2166,14 +2204,32 @@ definitions:
     type: object
   webhook_entity.WebhookLog:
     properties:
+      attempt_number:
+        type: integer
       created_at:
         type: string
+      delivery_id:
+        description: Delivery tracking
+        type: string
+      duration_ms:
+        type: integer
       http_response_code:
         type: integer
       id:
         type: string
+      idempotency_key:
+        type: string
       payload: {}
+      request_headers:
+        additionalProperties:
+          type: string
+        type: object
+      request_url:
+        type: string
       response_data: {}
+      signature_sent:
+        description: Request details
+        type: boolean
       updated_at:
         type: string
       webhook:
@@ -2181,14 +2237,50 @@ definitions:
       webhook_id:
         type: string
     type: object
+  webhook_handler.TestWebhookRequest:
+    properties:
+      payload:
+        description: Optional custom payload, defaults to test payload
+      webhook_id:
+        type: string
+    required:
+    - webhook_id
+    type: object
+  webhook_handler.TestWebhookResponse:
+    properties:
+      duration_ms:
+        type: integer
+      error:
+        type: string
+      headers_sent:
+        additionalProperties:
+          type: string
+        type: object
+      response: {}
+      response_body:
+        type: string
+      status_code:
+        type: integer
+      success:
+        type: boolean
+    type: object
   webhook_model.CreateWebhook:
     properties:
       authorization:
         description: Optional authorization token
         type: string
+      custom_headers:
+        additionalProperties:
+          type: string
+        description: Custom headers to send with requests
+        type: object
       event:
         description: Event type associated with the webhook, required
         type: string
+      event_filter:
+        allOf:
+        - $ref: '#/definitions/webhook_model.EventFilter'
+        description: Filter to match specific events
       http_method:
         enum:
         - GET
@@ -2197,6 +2289,19 @@ definitions:
         - DELETE
         - PATCH
         type: string
+      max_retries:
+        description: Max retry attempts (0-10)
+        maximum: 10
+        minimum: 0
+        type: integer
+      retry_delay_ms:
+        description: Base retry delay in ms (100-60000)
+        maximum: 60000
+        minimum: 100
+        type: integer
+      signing_enabled:
+        description: New fields for enhanced webhook functionality
+        type: boolean
       timeout:
         maximum: 60
         minimum: 1
@@ -2209,14 +2314,67 @@ definitions:
     - http_method
     - url
     type: object
+  webhook_model.EventFilter:
+    properties:
+      conditions:
+        description: List of conditions to evaluate
+        items:
+          $ref: '#/definitions/webhook_model.FilterCondition'
+        type: array
+      logic:
+        allOf:
+        - $ref: '#/definitions/webhook_model.FilterLogic'
+        description: 'AND or OR (default: AND)'
+    type: object
+  webhook_model.FilterCondition:
+    properties:
+      operator:
+        allOf:
+        - $ref: '#/definitions/webhook_model.FilterOperator'
+        description: Comparison operator
+      path:
+        description: JSON path to the field (e.g., "data.type")
+        type: string
+      value:
+        description: Value to compare against (not needed for "exists")
+    type: object
+  webhook_model.FilterLogic:
+    enum:
+    - AND
+    - OR
+    type: string
+    x-enum-varnames:
+    - FilterLogicAnd
+    - FilterLogicOr
+  webhook_model.FilterOperator:
+    enum:
+    - equals
+    - contains
+    - regex
+    - exists
+    type: string
+    x-enum-varnames:
+    - FilterOpEquals
+    - FilterOpContains
+    - FilterOpRegex
+    - FilterOpExists
   webhook_model.UpdateWebhook:
     properties:
       authorization:
         description: Optional updated authorization token
         type: string
+      custom_headers:
+        additionalProperties:
+          type: string
+        description: Custom headers
+        type: object
       event:
         description: Optional updated event associated with the webhook
         type: string
+      event_filter:
+        allOf:
+        - $ref: '#/definitions/webhook_model.EventFilter'
+        description: Event filter
       http_method:
         enum:
         - GET
@@ -2228,6 +2386,19 @@ definitions:
       id:
         description: The unique identifier.
         type: string
+      is_active:
+        description: Enable/disable webhook
+        type: boolean
+      max_retries:
+        description: New fields for enhanced webhook functionality
+        maximum: 10
+        minimum: 0
+        type: integer
+      retry_delay_ms:
+        description: Base retry delay in ms
+        maximum: 60000
+        minimum: 100
+        type: integer
       timeout:
         maximum: 60
         minimum: 1
@@ -7285,6 +7456,44 @@ paths:
       summary: Get webhook logs paginated
       tags:
       - Webhook log
+  /webhook/test:
+    post:
+      consumes:
+      - application/json
+      description: Sends a test payload to the specified webhook URL and returns the
+        response details.
+      parameters:
+      - description: Test request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/webhook_handler.TestWebhookRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Test result
+          schema:
+            $ref: '#/definitions/webhook_handler.TestWebhookResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "404":
+          description: Webhook not found
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      - WorkspaceAuth: []
+      summary: Test a webhook
+      tags:
+      - Webhook
   /websocket/{channel}:
     get:
       consumes:

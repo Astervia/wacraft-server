@@ -7522,6 +7522,66 @@ const docTemplate = `{
                 }
             }
         },
+        "/webhook/test": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
+                    }
+                ],
+                "description": "Sends a test payload to the specified webhook URL and returns the response details.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Webhook"
+                ],
+                "summary": "Test a webhook",
+                "parameters": [
+                    {
+                        "description": "Test request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/webhook_handler.TestWebhookRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Test result",
+                        "schema": {
+                            "$ref": "#/definitions/webhook_handler.TestWebhookResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "404": {
+                        "description": "Webhook not found",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    }
+                }
+            }
+        },
         "/websocket/campaign/whatsapp/send/{campaignID}": {
             "get": {
                 "security": [
@@ -11971,23 +12031,81 @@ const docTemplate = `{
                 }
             }
         },
+        "webhook_entity.CircuitState": {
+            "type": "string",
+            "enum": [
+                "closed",
+                "open",
+                "half_open"
+            ],
+            "x-enum-varnames": [
+                "CircuitClosed",
+                "CircuitOpen",
+                "CircuitHalfOpen"
+            ]
+        },
         "webhook_entity.Webhook": {
             "type": "object",
             "properties": {
                 "authorization": {
                     "type": "string"
                 },
+                "circuit_opened_at": {
+                    "type": "string"
+                },
+                "circuit_state": {
+                    "description": "Circuit breaker",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/webhook_entity.CircuitState"
+                        }
+                    ]
+                },
                 "created_at": {
                     "type": "string"
                 },
+                "custom_headers": {
+                    "description": "Custom headers",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "event": {
                     "type": "string"
+                },
+                "event_filter": {
+                    "description": "Event filtering",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/webhook_model.EventFilter"
+                        }
+                    ]
+                },
+                "failure_count": {
+                    "type": "integer"
                 },
                 "http_method": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "last_failure_at": {
+                    "type": "string"
+                },
+                "max_retries": {
+                    "description": "Reliability",
+                    "type": "integer"
+                },
+                "retry_delay_ms": {
+                    "type": "integer"
+                },
+                "signing_enabled": {
+                    "type": "boolean"
                 },
                 "timeout": {
                     "description": "The timeout in seconds. 0 means no timeout",
@@ -12010,8 +12128,18 @@ const docTemplate = `{
         "webhook_entity.WebhookLog": {
             "type": "object",
             "properties": {
+                "attempt_number": {
+                    "type": "integer"
+                },
                 "created_at": {
                     "type": "string"
+                },
+                "delivery_id": {
+                    "description": "Delivery tracking",
+                    "type": "string"
+                },
+                "duration_ms": {
+                    "type": "integer"
                 },
                 "http_response_code": {
                     "type": "integer"
@@ -12019,8 +12147,24 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "idempotency_key": {
+                    "type": "string"
+                },
                 "payload": {},
+                "request_headers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "request_url": {
+                    "type": "string"
+                },
                 "response_data": {},
+                "signature_sent": {
+                    "description": "Request details",
+                    "type": "boolean"
+                },
                 "updated_at": {
                     "type": "string"
                 },
@@ -12029,6 +12173,47 @@ const docTemplate = `{
                 },
                 "webhook_id": {
                     "type": "string"
+                }
+            }
+        },
+        "webhook_handler.TestWebhookRequest": {
+            "type": "object",
+            "required": [
+                "webhook_id"
+            ],
+            "properties": {
+                "payload": {
+                    "description": "Optional custom payload, defaults to test payload"
+                },
+                "webhook_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "webhook_handler.TestWebhookResponse": {
+            "type": "object",
+            "properties": {
+                "duration_ms": {
+                    "type": "integer"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "headers_sent": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "response": {},
+                "response_body": {
+                    "type": "string"
+                },
+                "status_code": {
+                    "type": "integer"
+                },
+                "success": {
+                    "type": "boolean"
                 }
             }
         },
@@ -12044,9 +12229,24 @@ const docTemplate = `{
                     "description": "Optional authorization token",
                     "type": "string"
                 },
+                "custom_headers": {
+                    "description": "Custom headers to send with requests",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "event": {
                     "description": "Event type associated with the webhook, required",
                     "type": "string"
+                },
+                "event_filter": {
+                    "description": "Filter to match specific events",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/webhook_model.EventFilter"
+                        }
+                    ]
                 },
                 "http_method": {
                     "type": "string",
@@ -12057,6 +12257,22 @@ const docTemplate = `{
                         "DELETE",
                         "PATCH"
                     ]
+                },
+                "max_retries": {
+                    "description": "Max retry attempts (0-10)",
+                    "type": "integer",
+                    "maximum": 10,
+                    "minimum": 0
+                },
+                "retry_delay_ms": {
+                    "description": "Base retry delay in ms (100-60000)",
+                    "type": "integer",
+                    "maximum": 60000,
+                    "minimum": 100
+                },
+                "signing_enabled": {
+                    "description": "New fields for enhanced webhook functionality",
+                    "type": "boolean"
                 },
                 "timeout": {
                     "type": "integer",
@@ -12069,6 +12285,72 @@ const docTemplate = `{
                 }
             }
         },
+        "webhook_model.EventFilter": {
+            "type": "object",
+            "properties": {
+                "conditions": {
+                    "description": "List of conditions to evaluate",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/webhook_model.FilterCondition"
+                    }
+                },
+                "logic": {
+                    "description": "AND or OR (default: AND)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/webhook_model.FilterLogic"
+                        }
+                    ]
+                }
+            }
+        },
+        "webhook_model.FilterCondition": {
+            "type": "object",
+            "properties": {
+                "operator": {
+                    "description": "Comparison operator",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/webhook_model.FilterOperator"
+                        }
+                    ]
+                },
+                "path": {
+                    "description": "JSON path to the field (e.g., \"data.type\")",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "Value to compare against (not needed for \"exists\")"
+                }
+            }
+        },
+        "webhook_model.FilterLogic": {
+            "type": "string",
+            "enum": [
+                "AND",
+                "OR"
+            ],
+            "x-enum-varnames": [
+                "FilterLogicAnd",
+                "FilterLogicOr"
+            ]
+        },
+        "webhook_model.FilterOperator": {
+            "type": "string",
+            "enum": [
+                "equals",
+                "contains",
+                "regex",
+                "exists"
+            ],
+            "x-enum-varnames": [
+                "FilterOpEquals",
+                "FilterOpContains",
+                "FilterOpRegex",
+                "FilterOpExists"
+            ]
+        },
         "webhook_model.UpdateWebhook": {
             "type": "object",
             "properties": {
@@ -12076,9 +12358,24 @@ const docTemplate = `{
                     "description": "Optional updated authorization token",
                     "type": "string"
                 },
+                "custom_headers": {
+                    "description": "Custom headers",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "event": {
                     "description": "Optional updated event associated with the webhook",
                     "type": "string"
+                },
+                "event_filter": {
+                    "description": "Event filter",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/webhook_model.EventFilter"
+                        }
+                    ]
                 },
                 "http_method": {
                     "type": "string",
@@ -12093,6 +12390,22 @@ const docTemplate = `{
                 "id": {
                     "description": "The unique identifier.",
                     "type": "string"
+                },
+                "is_active": {
+                    "description": "Enable/disable webhook",
+                    "type": "boolean"
+                },
+                "max_retries": {
+                    "description": "New fields for enhanced webhook functionality",
+                    "type": "integer",
+                    "maximum": 10,
+                    "minimum": 0
+                },
+                "retry_delay_ms": {
+                    "description": "Base retry delay in ms",
+                    "type": "integer",
+                    "maximum": 60000,
+                    "minimum": 100
                 },
                 "timeout": {
                     "type": "integer",
