@@ -14,7 +14,7 @@ import (
 )
 
 // @title						wacraft Server API
-// @version					0.1.0
+// @version					0.2.0
 // @description				Backend server for the wacraft project. Handles WhatsApp Cloud API operations, including message sending, receiving, and webhook handling.
 // @contact.name				Astervia Dev Team
 // @contact.url				https://github.com/Astervia
