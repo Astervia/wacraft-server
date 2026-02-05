@@ -13,7 +13,7 @@ import (
 
 // EnqueueDelivery creates a new delivery record for a webhook
 // It checks the circuit breaker and event filter before enqueuing
-func EnqueueDelivery(webhook *webhook_entity.Webhook, payload interface{}, eventType string) error {
+func EnqueueDelivery(webhook *webhook_entity.Webhook, payload any, eventType string) error {
 	// Check if webhook is active
 	if !webhook.IsActive {
 		return nil // Silently skip inactive webhooks
@@ -70,7 +70,7 @@ func EnqueueDelivery(webhook *webhook_entity.Webhook, payload interface{}, event
 }
 
 // generateIdempotencyKey creates a unique key for deduplication
-func generateIdempotencyKey(webhookID uuid.UUID, eventType string, payload interface{}) string {
+func generateIdempotencyKey(webhookID uuid.UUID, eventType string, payload any) string {
 	// Use a combination of webhook ID, event type, timestamp, and a random UUID
 	// The random UUID ensures uniqueness even for identical payloads at the same timestamp
 	return fmt.Sprintf("%s:%s:%d:%s", webhookID.String(), eventType, time.Now().UnixNano(), uuid.New().String())
@@ -78,7 +78,7 @@ func generateIdempotencyKey(webhookID uuid.UUID, eventType string, payload inter
 
 // EnqueueDeliveryWithCustomKey creates a delivery with a custom idempotency key
 // This is useful when the caller wants to control deduplication
-func EnqueueDeliveryWithCustomKey(webhook *webhook_entity.Webhook, payload interface{}, eventType string, idempotencyKey string) error {
+func EnqueueDeliveryWithCustomKey(webhook *webhook_entity.Webhook, payload any, eventType string, idempotencyKey string) error {
 	// Check if webhook is active
 	if !webhook.IsActive {
 		return nil
@@ -145,7 +145,6 @@ func GetPendingDeliveries(limit int) ([]webhook_entity.WebhookDelivery, error) {
 		Order("next_attempt_at ASC").
 		Limit(limit).
 		Find(&deliveries).Error
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to get pending deliveries: %w", err)
 	}
@@ -195,6 +194,6 @@ func UpdateDeliveryStatus(delivery *webhook_entity.WebhookDelivery, success bool
 }
 
 // payloadToJSON converts a payload to JSON bytes
-func payloadToJSON(payload interface{}) ([]byte, error) {
+func payloadToJSON(payload any) ([]byte, error) {
 	return json.Marshal(payload)
 }
