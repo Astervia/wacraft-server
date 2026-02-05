@@ -885,7 +885,7 @@ type AuditLog struct {
 Update WebSocket handlers to only broadcast to workspace members:
 
 ```go
-func BroadcastToWorkspace(workspaceID uuid.UUID, event string, data interface{}) {
+func BroadcastToWorkspace(workspaceID uuid.UUID, event string, data any) {
     // Only send to connections belonging to workspace members
 }
 ```

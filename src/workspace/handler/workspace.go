@@ -142,7 +142,6 @@ func Get(c *fiber.Ctx) error {
 		Joins("JOIN workspace_members ON workspace_members.workspace_id = workspaces.id").
 		Where("workspace_members.user_id = ?", user.ID).
 		Find(&workspaces).Error
-
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("Unable to fetch workspaces", err, "database").Send(),
@@ -207,7 +206,7 @@ func Update(c *fiber.Ctx) error {
 	}
 
 	// Build update map
-	updates := make(map[string]interface{})
+	updates := make(map[string]any)
 	if updateData.Name != nil {
 		updates["name"] = *updateData.Name
 	}
