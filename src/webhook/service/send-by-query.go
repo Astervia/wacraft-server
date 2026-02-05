@@ -11,7 +11,7 @@ import (
 // that supports retries, signatures, and circuit breakers.
 func SendAllByQuery(
 	entity webhook_entity.Webhook,
-	payload interface{},
+	payload any,
 ) error {
 	var webhooks []webhook_entity.Webhook
 

@@ -20,15 +20,15 @@ import (
 
 // TestWebhookRequest represents the request body for testing a webhook
 type TestWebhookRequest struct {
-	WebhookID uuid.UUID   `json:"webhook_id" validate:"required"`
-	Payload   interface{} `json:"payload,omitempty"` // Optional custom payload, defaults to test payload
+	WebhookID uuid.UUID `json:"webhook_id" validate:"required"`
+	Payload   any       `json:"payload,omitempty"` // Optional custom payload, defaults to test payload
 }
 
 // TestWebhookResponse represents the response from testing a webhook
 type TestWebhookResponse struct {
 	Success      bool              `json:"success"`
 	StatusCode   int               `json:"status_code,omitempty"`
-	Response     interface{}       `json:"response,omitempty"`
+	Response     any               `json:"response,omitempty"`
 	ResponseBody string            `json:"response_body,omitempty"`
 	DurationMs   int64             `json:"duration_ms"`
 	HeadersSent  map[string]string `json:"headers_sent"`
@@ -77,7 +77,7 @@ func TestWebhook(c *fiber.Ctx) error {
 	// Use default test payload if none provided
 	payload := req.Payload
 	if payload == nil {
-		payload = map[string]interface{}{
+		payload = map[string]any{
 			"test":       true,
 			"timestamp":  time.Now().UTC().Format(time.RFC3339),
 			"webhook_id": webhook.ID.String(),
@@ -92,7 +92,7 @@ func TestWebhook(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(result)
 }
 
-func executeTestWebhook(webhook *webhook_entity.Webhook, payload interface{}) TestWebhookResponse {
+func executeTestWebhook(webhook *webhook_entity.Webhook, payload any) TestWebhookResponse {
 	result := TestWebhookResponse{
 		HeadersSent: make(map[string]string),
 	}
@@ -178,7 +178,7 @@ func executeTestWebhook(webhook *webhook_entity.Webhook, payload interface{}) Te
 	result.ResponseBody = string(bodyBytes)
 
 	// Try to parse as JSON
-	var jsonResponse interface{}
+	var jsonResponse any
 	if err := json.Unmarshal(bodyBytes, &jsonResponse); err == nil {
 		result.Response = jsonResponse
 	}
