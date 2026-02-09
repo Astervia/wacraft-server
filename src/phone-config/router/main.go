@@ -56,4 +56,50 @@ func Route(workspaceGroup fiber.Router) {
 		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigManage),
 		phone_config_handler.Delete,
 	)
+
+	// Phone registration routes - work with inactive phone configs
+	// Request verification code
+	group.Post("/:id/request-code",
+		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigManage),
+		phone_config_handler.RequestCode,
+	)
+
+	// Verify code
+	group.Post("/:id/verify-code",
+		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigManage),
+		phone_config_handler.VerifyCode,
+	)
+
+	// PIN authenticate (two-step verification)
+	group.Post("/:id/pin-authenticate",
+		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigManage),
+		phone_config_handler.PinAuthenticate,
+	)
+
+	// Register phone number
+	group.Post("/:id/register",
+		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigManage),
+		phone_config_handler.Register,
+	)
+
+	// Deregister phone number
+	group.Post("/:id/deregister",
+		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigManage),
+		phone_config_handler.DeRegister,
+	)
 }

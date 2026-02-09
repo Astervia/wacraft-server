@@ -21,6 +21,10 @@ github.com/MarvinJWendt/testza v0.5.2 h1:53KDo64C1z/h/d/stCYCPY69bt/OSwjq5KpFNwi
 github.com/MarvinJWendt/testza v0.5.2/go.mod h1:xu53QFE5sCdjtMCKk8YMQ2MnymimEctc4n3EjyIYvEY=
 github.com/Rfluid/whatsapp-cloud-api v0.2.0-pre h1:qOzKWHHwdn3kKGsHHIY2NTvu8uW2DY/6RUU+J1m4DkQ=
 github.com/Rfluid/whatsapp-cloud-api v0.2.0-pre/go.mod h1:+Mq2pNdiC6X7MEfZlgOOvdDCaCs7gBsuBLCsaMvkByo=
+github.com/Rfluid/whatsapp-cloud-api v0.2.0-pre.1 h1:34y7/OmG23fwlTiTjMNlJTSQncu4iMTY+Ex2jtAprqA=
+github.com/Rfluid/whatsapp-cloud-api v0.2.0-pre.1/go.mod h1:+Mq2pNdiC6X7MEfZlgOOvdDCaCs7gBsuBLCsaMvkByo=
+github.com/Rfluid/whatsapp-cloud-api v0.2.0-pre.2 h1:3NHELPT+ZLYIvqKT4vfqHidhf522dj6y5caKAc+wXic=
+github.com/Rfluid/whatsapp-cloud-api v0.2.0-pre.2/go.mod h1:+Mq2pNdiC6X7MEfZlgOOvdDCaCs7gBsuBLCsaMvkByo=
 github.com/Rfluid/whatsapp-webhook-server v0.2.0-pre h1:IXfE1e4aXVB7woqPE2xZYdTgVwWeb46B7nah1DpyuGo=
 github.com/Rfluid/whatsapp-webhook-server v0.2.0-pre/go.mod h1:NuIRyyim/eREXMP/UBMdEiTzROeyNvqoxFPzIZY1a1E=
 github.com/andybalholm/brotli v1.2.0 h1:ukwgCxwYrmACq68yiUqwIWnGY0cTPox/M94sVwToPjQ=
