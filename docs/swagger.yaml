@@ -133,10 +133,18 @@ definitions:
         type: integer
       error_data:
         $ref: '#/definitions/common.ErrorData'
+      error_subcode:
+        type: integer
+      error_user_msg:
+        type: string
+      error_user_title:
+        type: string
       fbtrace_id:
         description: Unique identifier for the error. Use this ID when contacting
           support.
         type: string
+      is_transient:
+        type: boolean
       message:
         description: A combination of the error code and title.
         type: string
@@ -1380,6 +1388,47 @@ definitions:
         description: Available at from field on received messages.
         type: string
     type: object
+  phone.CodeMethod:
+    enum:
+    - SMS
+    - VOICE
+    type: string
+    x-enum-varnames:
+    - SMS
+    - Voice
+  phone.Pin:
+    properties:
+      pin:
+        type: string
+    type: object
+  phone.RegisterPayload:
+    properties:
+      data_localization_region:
+        description: If included, enables local storage on the business phone number.
+          Value must be a 2-letter ISO 3166 country code (e.g. IN) indicating the
+          country where you want data-at-rest to be stored.
+        type: string
+      messaging_product:
+        description: Default is "whatsapp".
+        type: string
+      pin:
+        type: string
+    type: object
+  phone.RequestCodePayload:
+    properties:
+      code_method:
+        allOf:
+        - $ref: '#/definitions/phone.CodeMethod'
+        description: Verification method.
+      language:
+        description: Two characters language code.
+        type: string
+    type: object
+  phone.VerifyCodePayload:
+    properties:
+      code:
+        type: string
+    type: object
   phone_config_entity.PhoneConfig:
     properties:
       access_token:
@@ -2585,7 +2634,7 @@ info:
     name: MIT
     url: https://opensource.org/licenses/MIT
   title: wacraft Server API
-  version: 0.1.0
+  version: 0.2.0
 paths:
   /auth/accept-invitation:
     post:
@@ -8428,6 +8477,238 @@ paths:
       - ApiKeyAuth: []
       - WorkspaceAuth: []
       summary: Update phone configuration
+      tags:
+      - Phone Config
+  /workspace/{workspace_id}/phone-config/{id}/deregister:
+    post:
+      description: Deregisters the phone number from WhatsApp Cloud API. The phone
+        config does not need to be active.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Phone Config ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/common.SuccessResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      - WorkspaceAuth: []
+      summary: Deregister phone number
+      tags:
+      - Phone Config
+  /workspace/{workspace_id}/phone-config/{id}/pin-authenticate:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates the phone number with a two-step verification PIN.
+        The phone config does not need to be active.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Phone Config ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: PIN data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/phone.Pin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/common.SuccessResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      - WorkspaceAuth: []
+      summary: Authenticate with two-step verification PIN
+      tags:
+      - Phone Config
+  /workspace/{workspace_id}/phone-config/{id}/register:
+    post:
+      consumes:
+      - application/json
+      description: Registers the phone number to WhatsApp Cloud API. Requires the
+        two-step verification PIN. The phone config does not need to be active.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Phone Config ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Register data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/phone.RegisterPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/common.SuccessResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      - WorkspaceAuth: []
+      summary: Register phone number
+      tags:
+      - Phone Config
+  /workspace/{workspace_id}/phone-config/{id}/request-code:
+    post:
+      consumes:
+      - application/json
+      description: Requests a verification code for the phone number associated with
+        the phone config. The phone config does not need to be active.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Phone Config ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Request code data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/phone.RequestCodePayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/common.SuccessResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      - WorkspaceAuth: []
+      summary: Request phone verification code
+      tags:
+      - Phone Config
+  /workspace/{workspace_id}/phone-config/{id}/verify-code:
+    post:
+      consumes:
+      - application/json
+      description: Verifies the code received on the phone number associated with
+        the phone config. The phone config does not need to be active.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Phone Config ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Verify code data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/phone.VerifyCodePayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/common.SuccessResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      - WorkspaceAuth: []
+      summary: Verify phone verification code
       tags:
       - Phone Config
 schemes:

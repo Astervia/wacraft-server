@@ -4,7 +4,7 @@ go 1.25.6
 
 require (
 	github.com/Astervia/wacraft-core v0.2.0-pre.2
-	github.com/Rfluid/whatsapp-cloud-api v0.2.0-pre
+	github.com/Rfluid/whatsapp-cloud-api v0.2.0-pre.2
 	github.com/Rfluid/whatsapp-webhook-server v0.2.0-pre
 	github.com/go-playground/validator/v10 v10.28.0
 	github.com/gofiber/contrib/websocket v1.3.4

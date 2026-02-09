@@ -9023,6 +9023,364 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/workspace/{workspace_id}/phone-config/{id}/deregister": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
+                    }
+                ],
+                "description": "Deregisters the phone number from WhatsApp Cloud API. The phone config does not need to be active.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Phone Config"
+                ],
+                "summary": "Deregister phone number",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workspace ID",
+                        "name": "workspace_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Phone Config ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/common.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    }
+                }
+            }
+        },
+        "/workspace/{workspace_id}/phone-config/{id}/pin-authenticate": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
+                    }
+                ],
+                "description": "Authenticates the phone number with a two-step verification PIN. The phone config does not need to be active.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Phone Config"
+                ],
+                "summary": "Authenticate with two-step verification PIN",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workspace ID",
+                        "name": "workspace_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Phone Config ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "PIN data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/phone.Pin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/common.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    }
+                }
+            }
+        },
+        "/workspace/{workspace_id}/phone-config/{id}/register": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
+                    }
+                ],
+                "description": "Registers the phone number to WhatsApp Cloud API. Requires the two-step verification PIN. The phone config does not need to be active.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Phone Config"
+                ],
+                "summary": "Register phone number",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workspace ID",
+                        "name": "workspace_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Phone Config ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Register data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/phone.RegisterPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/common.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    }
+                }
+            }
+        },
+        "/workspace/{workspace_id}/phone-config/{id}/request-code": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
+                    }
+                ],
+                "description": "Requests a verification code for the phone number associated with the phone config. The phone config does not need to be active.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Phone Config"
+                ],
+                "summary": "Request phone verification code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workspace ID",
+                        "name": "workspace_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Phone Config ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request code data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/phone.RequestCodePayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/common.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    }
+                }
+            }
+        },
+        "/workspace/{workspace_id}/phone-config/{id}/verify-code": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
+                    }
+                ],
+                "description": "Verifies the code received on the phone number associated with the phone config. The phone config does not need to be active.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Phone Config"
+                ],
+                "summary": "Verify phone verification code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workspace ID",
+                        "name": "workspace_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Phone Config ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Verify code data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/phone.VerifyCodePayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/common.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -9228,9 +9586,21 @@ const docTemplate = `{
                 "error_data": {
                     "$ref": "#/definitions/common.ErrorData"
                 },
+                "error_subcode": {
+                    "type": "integer"
+                },
+                "error_user_msg": {
+                    "type": "string"
+                },
+                "error_user_title": {
+                    "type": "string"
+                },
                 "fbtrace_id": {
                     "description": "Unique identifier for the error. Use this ID when contacting support.",
                     "type": "string"
+                },
+                "is_transient": {
+                    "type": "boolean"
                 },
                 "message": {
                     "description": "A combination of the error code and title.",
@@ -10964,6 +11334,66 @@ const docTemplate = `{
                 }
             }
         },
+        "phone.CodeMethod": {
+            "type": "string",
+            "enum": [
+                "SMS",
+                "VOICE"
+            ],
+            "x-enum-varnames": [
+                "SMS",
+                "Voice"
+            ]
+        },
+        "phone.Pin": {
+            "type": "object",
+            "properties": {
+                "pin": {
+                    "type": "string"
+                }
+            }
+        },
+        "phone.RegisterPayload": {
+            "type": "object",
+            "properties": {
+                "data_localization_region": {
+                    "description": "If included, enables local storage on the business phone number. Value must be a 2-letter ISO 3166 country code (e.g. IN) indicating the country where you want data-at-rest to be stored.",
+                    "type": "string"
+                },
+                "messaging_product": {
+                    "description": "Default is \"whatsapp\".",
+                    "type": "string"
+                },
+                "pin": {
+                    "type": "string"
+                }
+            }
+        },
+        "phone.RequestCodePayload": {
+            "type": "object",
+            "properties": {
+                "code_method": {
+                    "description": "Verification method.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/phone.CodeMethod"
+                        }
+                    ]
+                },
+                "language": {
+                    "description": "Two characters language code.",
+                    "type": "string"
+                }
+            }
+        },
+        "phone.VerifyCodePayload": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                }
+            }
+        },
         "phone_config_entity.PhoneConfig": {
             "type": "object",
             "properties": {
@@ -12672,7 +13102,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "0.1.0",
+	Version:          "0.2.0",
 	Host:             "",
 	BasePath:         "/",
 	Schemes:          []string{"http", "https"},
