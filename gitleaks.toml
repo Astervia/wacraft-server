@@ -1,0 +1,10 @@
+title = "Gitleaks config"
+
+[[allowlist]]
+  description = "Example webhook secret"
+  regexes = [
+    "whsec_[a-zA-Z0-9]+"
+  ]
+  paths = [
+    "docs/features/WEBHOOK_SYSTEM_IMPLEMENTATION_SUMMARY.md"
+  ]
