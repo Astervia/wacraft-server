@@ -3,8 +3,8 @@ package phone_config_handler
 import (
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	phone_config_entity "github.com/Astervia/wacraft-core/src/phone-config/entity"
-	phone_config_service "github.com/Astervia/wacraft-server/src/phone-config/service"
 	"github.com/Astervia/wacraft-server/src/database"
+	phone_config_service "github.com/Astervia/wacraft-server/src/phone-config/service"
 	"github.com/Astervia/wacraft-server/src/validators"
 	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	phone_module "github.com/Rfluid/whatsapp-cloud-api/src/phone"
