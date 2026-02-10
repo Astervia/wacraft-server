@@ -208,7 +208,7 @@ func RevokeInvitation(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Param			body	body		workspace_model.AcceptInvitationRequest	true	"Invitation acceptance data"
-//	@Success		200		{object}	map[string]string	"Invitation accepted"
+//	@Success		200		{object}	workspace_model.AcceptInvitationResponse	"Invitation accepted"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid or expired invitation"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Router			/auth/accept-invitation [post]
@@ -328,9 +328,9 @@ func AcceptInvitation(c *fiber.Ctx) error {
 		)
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message":      "Invitation accepted",
-		"workspace_id": invitation.WorkspaceID.String(),
-		"user_id":      user.ID.String(),
+	return c.Status(fiber.StatusOK).JSON(workspace_model.AcceptInvitationResponse{
+		Message:     "Invitation accepted",
+		WorkspaceID: invitation.WorkspaceID.String(),
+		UserID:      user.ID.String(),
 	})
 }
