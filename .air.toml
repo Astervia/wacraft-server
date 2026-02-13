@@ -8,10 +8,12 @@ exclude_dir = ["vendor", "node_modules", "tmp", "dist"]
 
 # Build settings
 [build]
-cmd = "go build -buildvcs=false -o ./tmp/main ./main.go"
-bin = "tmp/main"
+cmd = "sh -c 'if [ -d wacraft-core ]; then go build -buildvcs=false -o ./tmp/main ./main.go; else grep -v \"replace.*wacraft-core\" go.mod > /tmp/nolocal.mod && cp go.sum /tmp/nolocal.sum && go build -buildvcs=false -modfile /tmp/nolocal.mod -o ./tmp/main ./main.go; fi'"
+entrypoint = "tmp/main"
 full_bin = "tmp/main"
-include_ext = ["go", "mod"]
+include_ext = ["go", "mod", "sum"]
+include_dir = ["src", "wacraft-core"]
+include_file = ["main.go", "go.mod", "go.sum"]
 exclude_dir = ["assets", "tmp"]
 exclude_file = []
 follow_symlink = true
