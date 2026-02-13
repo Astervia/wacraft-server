@@ -3,6 +3,7 @@ package message_router
 import (
 	workspace_model "github.com/Astervia/wacraft-core/src/workspace/model"
 	auth_middleware "github.com/Astervia/wacraft-server/src/auth/middleware"
+	billing_middleware "github.com/Astervia/wacraft-server/src/billing/middleware"
 	message_handler "github.com/Astervia/wacraft-server/src/message/handler"
 	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
@@ -15,29 +16,34 @@ func whatsappRoutes(group fiber.Router) {
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
-		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageRead))
+		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageRead),
+		billing_middleware.ThroughputMiddleware)
 	wppGroup.Post("",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageSend),
+		billing_middleware.ThroughputMiddleware,
 		message_handler.SendMessage)
 	wppGroup.Get("/wam-id/:wamID",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageRead),
+		billing_middleware.ThroughputMiddleware,
 		message_handler.GetWamID)
 	wppGroup.Post("/mark-as-read",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageSend),
+		billing_middleware.ThroughputMiddleware,
 		message_handler.MarkWhatsAppMessageAsReadToUser)
 	wppGroup.Post("/send-typing",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyMessageSend),
+		billing_middleware.ThroughputMiddleware,
 		message_handler.SendTypingToUser)
 }

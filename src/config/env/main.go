@@ -15,6 +15,7 @@ func init() {
 	loadWhatsAppEnv()
 	loadEmailEnv()
 	loadRegistrationEnv()
+	loadBillingEnv()
 }
 
 func loadEnv() {

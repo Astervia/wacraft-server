@@ -50,17 +50,13 @@ func NewMessageSubscription(ctx *websocket.Conn) {
 	defer func() {
 		var deleteWg sync.WaitGroup
 
-		deleteWg.Add(1)
-		go func() {
-			defer deleteWg.Done()
+		deleteWg.Go(func() {
 			newMessageClientPool.DeleteID(*clientID)
-		}()
+		})
 
-		deleteWg.Add(1)
-		go func() {
-			defer deleteWg.Done()
+		deleteWg.Go(func() {
 			NewMessageWorkspaceManager.RemoveClient(workspace.ID, client.Data.String())
-		}()
+		})
 
 		deleteWg.Wait()
 	}()
