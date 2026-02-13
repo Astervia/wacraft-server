@@ -62,17 +62,13 @@ func SendWhatsAppCampaignSubscription(ctx *websocket.Conn) {
 	defer func() {
 		var deleteWg sync.WaitGroup
 
-		deleteWg.Add(1)
-		go func() {
-			defer deleteWg.Done()
+		deleteWg.Go(func() {
 			sendCampaignClientPool.DeleteID(*clientID)
-		}()
+		})
 
-		deleteWg.Add(1)
-		go func() {
-			defer deleteWg.Done()
+		deleteWg.Go(func() {
 			SendCampaignPool.RemoveUser(clientID.String(), campaignID)
-		}()
+		})
 
 		deleteWg.Wait()
 	}()

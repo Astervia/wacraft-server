@@ -3,6 +3,7 @@ package auth_middleware
 import (
 	"errors"
 	"fmt"
+	"slices"
 
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	user_entity "github.com/Astervia/wacraft-core/src/user/entity"
@@ -23,13 +24,7 @@ func RoleMiddleware(roles ...user_model.Role) func(*fiber.Ctx) error {
 				common_model.NewApiError("user role not allowed", errors.New("user has no role"), "middleware").Send(),
 			)
 		}
-		allowed := false
-		for _, role := range roles {
-			if *user.Role == role {
-				allowed = true
-				break
-			}
-		}
+		allowed := slices.Contains(roles, *user.Role)
 		if !allowed {
 			return c.Status(fiber.StatusForbidden).JSON(
 				common_model.NewApiError("user role not allowed", fmt.Errorf("user's role is not in %v", roles), "middleware").Send(),

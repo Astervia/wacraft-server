@@ -101,9 +101,7 @@ func SendWhatsAppCampaign(
 	var offsetMu sync.Mutex
 
 	for i := 0; i < int(messagesCount); i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			select {
 			case <-ctx.Done():
 				return
@@ -118,7 +116,7 @@ func SendWhatsAppCampaign(
 				)
 				errCh <- err
 			}
-		}()
+		})
 	}
 
 	go func() {

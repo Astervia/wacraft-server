@@ -74,6 +74,16 @@ func WorkspaceMiddleware(c *fiber.Ctx) error {
 	return c.Next()
 }
 
+// OptionalWorkspaceMiddleware behaves like WorkspaceMiddleware but skips
+// silently when X-Workspace-ID is not provided. Useful for endpoints that
+// optionally accept a workspace context (e.g. billing usage).
+func OptionalWorkspaceMiddleware(c *fiber.Ctx) error {
+	if c.Get("X-Workspace-ID") == "" {
+		return c.Next()
+	}
+	return WorkspaceMiddleware(c)
+}
+
 // GetWorkspace retrieves the workspace from context
 func GetWorkspace(c *fiber.Ctx) *workspace_entity.Workspace {
 	workspace, ok := c.Locals("workspace").(*workspace_entity.Workspace)

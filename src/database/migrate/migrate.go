@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	billing_entity "github.com/Astervia/wacraft-core/src/billing/entity"
 	// PREMIUM STARTS
 	campaign_entity "github.com/Astervia/wacraft-core/src/campaign/entity"
 	// PREMIUM ENDS
@@ -57,6 +58,11 @@ func automaticMigrations() {
 		&webhook_entity.WebhookLog{},
 		&webhook_entity.WebhookDelivery{},
 		&status_entity.Status{},
+		// Billing
+		&billing_entity.Plan{},
+		&billing_entity.EndpointWeight{},
+		&billing_entity.Subscription{},
+		&billing_entity.UsageLog{},
 	)
 	if err != nil {
 		pterm.DefaultLogger.Error(fmt.Sprintf("Unable to add automatic migrations: %s", err))
