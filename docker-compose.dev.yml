@@ -5,6 +5,7 @@ services:
         volumes:
             - .:/app # mount source for hot-reload
             - air-cache:/root/.cache/go-build # speed up rebuilds
+            - go-mod-cache:/root/go/pkg/mod # cache downloaded modules (needed when wacraft-core is absent)
             - $SSH_AUTH_SOCK:/ssh-agent # use your ssh socket to download custom modules
             - ~/.gitconfig:/root/.gitconfig:ro # use your git config (contains insteadOf rule)
         depends_on: [db]
@@ -34,6 +35,7 @@ services:
 volumes:
     db_dev_data:
     air-cache:
+    go-mod-cache:
 
 networks:
     dev:
