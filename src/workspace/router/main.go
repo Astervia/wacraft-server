@@ -3,6 +3,7 @@ package workspace_router
 import (
 	workspace_model "github.com/Astervia/wacraft-core/src/workspace/model"
 	auth_middleware "github.com/Astervia/wacraft-server/src/auth/middleware"
+	billing_middleware "github.com/Astervia/wacraft-server/src/billing/middleware"
 	phone_config_router "github.com/Astervia/wacraft-server/src/phone-config/router"
 	workspace_handler "github.com/Astervia/wacraft-server/src/workspace/handler"
 	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
@@ -26,11 +27,11 @@ func Route(app *fiber.App) {
 func mainRoutes(group fiber.Router) {
 	// Create workspace - any authenticated user can create
 	group.Post("", auth_middleware.UserMiddleware,
-		auth_middleware.EmailVerifiedMiddleware, workspace_handler.Create)
+		auth_middleware.EmailVerifiedMiddleware, billing_middleware.ThroughputMiddleware, workspace_handler.Create)
 
 	// List user's workspaces
 	group.Get("", auth_middleware.UserMiddleware,
-		auth_middleware.EmailVerifiedMiddleware, workspace_handler.Get)
+		auth_middleware.EmailVerifiedMiddleware, billing_middleware.ThroughputMiddleware, workspace_handler.Get)
 }
 
 // Routes that require workspace context
@@ -40,6 +41,7 @@ func workspaceRoutes(group fiber.Router) {
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
+		billing_middleware.ThroughputMiddleware,
 		workspace_handler.GetByID,
 	)
 
@@ -49,6 +51,7 @@ func workspaceRoutes(group fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWorkspaceSettings),
+		billing_middleware.ThroughputMiddleware,
 		workspace_handler.Update,
 	)
 
@@ -58,6 +61,7 @@ func workspaceRoutes(group fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWorkspaceAdmin),
+		billing_middleware.ThroughputMiddleware,
 		workspace_handler.Delete,
 	)
 }
@@ -72,6 +76,7 @@ func memberRoutes(group fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWorkspaceMembers),
+		billing_middleware.ThroughputMiddleware,
 		workspace_handler.AddMember,
 	)
 
@@ -80,6 +85,7 @@ func memberRoutes(group fiber.Router) {
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
+		billing_middleware.ThroughputMiddleware,
 		workspace_handler.GetMembers,
 	)
 
@@ -89,6 +95,7 @@ func memberRoutes(group fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWorkspaceMembers),
+		billing_middleware.ThroughputMiddleware,
 		workspace_handler.UpdateMemberPolicies,
 	)
 
@@ -98,6 +105,7 @@ func memberRoutes(group fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWorkspaceMembers),
+		billing_middleware.ThroughputMiddleware,
 		workspace_handler.RemoveMember,
 	)
 }
@@ -112,6 +120,7 @@ func invitationRoutes(group fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWorkspaceMembers),
+		billing_middleware.ThroughputMiddleware,
 		workspace_handler.CreateInvitation,
 	)
 
@@ -121,6 +130,7 @@ func invitationRoutes(group fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWorkspaceMembers),
+		billing_middleware.ThroughputMiddleware,
 		workspace_handler.GetInvitations,
 	)
 
@@ -130,6 +140,7 @@ func invitationRoutes(group fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWorkspaceMembers),
+		billing_middleware.ThroughputMiddleware,
 		workspace_handler.RevokeInvitation,
 	)
 }

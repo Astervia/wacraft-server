@@ -1,6 +1,8 @@
 package workspace_middleware
 
 import (
+	"slices"
+
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	workspace_model "github.com/Astervia/wacraft-core/src/workspace/model"
 	"github.com/gofiber/fiber/v2"
@@ -19,18 +21,14 @@ func RequirePolicy(policies ...workspace_model.Policy) fiber.Handler {
 		}
 
 		// Check if user has workspace.admin (grants all access)
-		for _, p := range userPolicies {
-			if p == workspace_model.PolicyWorkspaceAdmin {
-				return c.Next()
-			}
+		if slices.Contains(userPolicies, workspace_model.PolicyWorkspaceAdmin) {
+			return c.Next()
 		}
 
 		// Check if user has any of the required policies
 		for _, required := range policies {
-			for _, userPolicy := range userPolicies {
-				if required == userPolicy {
-					return c.Next()
-				}
+			if slices.Contains(userPolicies, required) {
+				return c.Next()
 			}
 		}
 

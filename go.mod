@@ -1,6 +1,8 @@
 module github.com/Astervia/wacraft-server
 
-go 1.25.7
+go 1.25.6
+
+replace github.com/Astervia/wacraft-core => ./wacraft-core
 
 require (
 	github.com/Astervia/wacraft-core v0.2.0
@@ -17,6 +19,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/pressly/goose/v3 v3.26.0
 	github.com/pterm/pterm v0.12.82
+	github.com/stripe/stripe-go/v84 v84.3.0
 	github.com/swaggo/swag v1.16.6
 	golang.org/x/sync v0.18.0
 	gorm.io/driver/postgres v1.6.0

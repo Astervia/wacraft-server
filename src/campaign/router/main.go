@@ -3,6 +3,7 @@ package campaign_router
 import (
 	workspace_model "github.com/Astervia/wacraft-core/src/workspace/model"
 	auth_middleware "github.com/Astervia/wacraft-server/src/auth/middleware"
+	billing_middleware "github.com/Astervia/wacraft-server/src/billing/middleware"
 	campaign_handler "github.com/Astervia/wacraft-server/src/campaign/handler"
 	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
@@ -22,30 +23,35 @@ func mainRoutes(group fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyCampaignRead),
+		billing_middleware.ThroughputMiddleware,
 		campaign_handler.Get)
 	group.Post("",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyCampaignManage),
+		billing_middleware.ThroughputMiddleware,
 		campaign_handler.Create)
 	group.Patch("",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyCampaignManage),
+		billing_middleware.ThroughputMiddleware,
 		campaign_handler.Update)
 	group.Delete("",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyCampaignManage),
+		billing_middleware.ThroughputMiddleware,
 		campaign_handler.Delete)
 	group.Get("/content/:keyName/like/:likeText",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyCampaignRead),
+		billing_middleware.ThroughputMiddleware,
 		campaign_handler.ContentKeyLike)
 }
 
@@ -57,48 +63,56 @@ func messageRoutes(group fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyCampaignRead),
+		billing_middleware.ThroughputMiddleware,
 		campaign_handler.GetMessages)
 	messageGroup.Get("/sent",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyCampaignRead),
+		billing_middleware.ThroughputMiddleware,
 		campaign_handler.GetSentMessages)
 	messageGroup.Get("/unsent",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyCampaignRead),
+		billing_middleware.ThroughputMiddleware,
 		campaign_handler.GetUnsentMessages)
 	messageGroup.Post("",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyCampaignRun),
+		billing_middleware.ThroughputMiddleware,
 		campaign_handler.CreateMessage)
 	messageGroup.Delete("",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyCampaignManage),
+		billing_middleware.ThroughputMiddleware,
 		campaign_handler.DeleteMessage)
 	messageGroup.Get("/count",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyCampaignRead),
+		billing_middleware.ThroughputMiddleware,
 		campaign_handler.CountMessages)
 	messageGroup.Get("/count/sent",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyCampaignRead),
+		billing_middleware.ThroughputMiddleware,
 		campaign_handler.CountSentMessages)
 	messageGroup.Get("/count/unsent",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyCampaignRead),
+		billing_middleware.ThroughputMiddleware,
 		campaign_handler.CountUnsentMessages)
 }
 
@@ -110,5 +124,6 @@ func errorRoutes(group fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyCampaignRead),
+		billing_middleware.ThroughputMiddleware,
 		campaign_handler.GetErrors)
 }

@@ -3,6 +3,7 @@ package phone_config_router
 import (
 	workspace_model "github.com/Astervia/wacraft-core/src/workspace/model"
 	auth_middleware "github.com/Astervia/wacraft-server/src/auth/middleware"
+	billing_middleware "github.com/Astervia/wacraft-server/src/billing/middleware"
 	phone_config_handler "github.com/Astervia/wacraft-server/src/phone-config/handler"
 	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
@@ -18,6 +19,7 @@ func Route(workspaceGroup fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigRead),
+		billing_middleware.ThroughputMiddleware,
 		phone_config_handler.Get,
 	)
 
@@ -27,6 +29,7 @@ func Route(workspaceGroup fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigManage),
+		billing_middleware.ThroughputMiddleware,
 		phone_config_handler.Create,
 	)
 
@@ -36,6 +39,7 @@ func Route(workspaceGroup fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigRead),
+		billing_middleware.ThroughputMiddleware,
 		phone_config_handler.GetByID,
 	)
 
@@ -45,6 +49,7 @@ func Route(workspaceGroup fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigManage),
+		billing_middleware.ThroughputMiddleware,
 		phone_config_handler.Update,
 	)
 
@@ -54,6 +59,7 @@ func Route(workspaceGroup fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigManage),
+		billing_middleware.ThroughputMiddleware,
 		phone_config_handler.Delete,
 	)
 
@@ -64,6 +70,7 @@ func Route(workspaceGroup fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigManage),
+		billing_middleware.ThroughputMiddleware,
 		phone_config_handler.RequestCode,
 	)
 
@@ -73,6 +80,7 @@ func Route(workspaceGroup fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigManage),
+		billing_middleware.ThroughputMiddleware,
 		phone_config_handler.VerifyCode,
 	)
 
@@ -82,6 +90,7 @@ func Route(workspaceGroup fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigManage),
+		billing_middleware.ThroughputMiddleware,
 		phone_config_handler.PinAuthenticate,
 	)
 
@@ -91,6 +100,7 @@ func Route(workspaceGroup fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigManage),
+		billing_middleware.ThroughputMiddleware,
 		phone_config_handler.Register,
 	)
 
@@ -100,6 +110,7 @@ func Route(workspaceGroup fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyPhoneConfigManage),
+		billing_middleware.ThroughputMiddleware,
 		phone_config_handler.DeRegister,
 	)
 }
