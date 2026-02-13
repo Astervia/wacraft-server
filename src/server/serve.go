@@ -7,6 +7,8 @@ import (
 	"syscall"
 
 	auth_router "github.com/Astervia/wacraft-server/src/auth/router"
+	billing_router "github.com/Astervia/wacraft-server/src/billing/router"
+	"github.com/Astervia/wacraft-server/src/billing/service/payment"
 	// PREMIUM STARTS
 	campaign_router "github.com/Astervia/wacraft-server/src/campaign/router"
 	campaign_websocket "github.com/Astervia/wacraft-server/src/campaign/websocket-router"
@@ -35,10 +37,16 @@ import (
 func serve() {
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "*",
+		AllowOrigins:  "*",
+		ExposeHeaders: "Retry-After, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-RateLimit-Scope, X-RateLimit-Scope-ID, X-RateLimit-Fallback",
 	}))
 
 	validators.InitValidators()
+
+	// Initialize payment provider
+	if env.StripeSecretKey != "" {
+		payment.ActiveProvider = payment.NewStripeProvider()
+	}
 
 	// Serving http endpoints
 	webhook_config.ServeWebhook(app)
@@ -56,6 +64,7 @@ func serve() {
 	webhook_router.Route(app)
 	whatsapp_template_router.Route(app)
 	status_router.Route(app)
+	billing_router.Route(app)
 
 	// Serving websockets
 	websocketRouter := websocket.Main(app)

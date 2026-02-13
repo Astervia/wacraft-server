@@ -3,6 +3,7 @@ package webhook_router
 import (
 	workspace_model "github.com/Astervia/wacraft-core/src/workspace/model"
 	auth_middleware "github.com/Astervia/wacraft-server/src/auth/middleware"
+	billing_middleware "github.com/Astervia/wacraft-server/src/billing/middleware"
 	webhook_handler "github.com/Astervia/wacraft-server/src/webhook/handler"
 	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
@@ -21,35 +22,41 @@ func mainRoutes(group fiber.Router) {
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookRead),
+		billing_middleware.ThroughputMiddleware,
 		webhook_handler.GetWebhooks)
 	group.Post("/",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookManage),
+		billing_middleware.ThroughputMiddleware,
 		webhook_handler.CreateWebhook)
 	group.Put("/",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookManage),
+		billing_middleware.ThroughputMiddleware,
 		webhook_handler.UpdateWebhook)
 	group.Delete("/",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookManage),
+		billing_middleware.ThroughputMiddleware,
 		webhook_handler.DeleteWebhookByID)
 	group.Get("/content/:keyName/like/:likeText",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookRead),
+		billing_middleware.ThroughputMiddleware,
 		webhook_handler.ContentKeyLike)
 	group.Post("/test",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
 		workspace_middleware.WorkspaceMiddleware,
 		workspace_middleware.RequirePolicy(workspace_model.PolicyWebhookManage),
+		billing_middleware.ThroughputMiddleware,
 		webhook_handler.TestWebhook)
 }
