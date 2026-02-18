@@ -83,6 +83,13 @@ func subscriptionRoutes(group fiber.Router) {
 		billing_middleware.ThroughputMiddleware,
 		billing_handler.CreateManualSubscription)
 
+	// Reactivate subscription (undo pending cancellation)
+	sub.Post("/reactivate",
+		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
+		billing_middleware.ThroughputMiddleware,
+		billing_handler.ReactivateSubscription)
+
 	// Cancel subscription
 	sub.Delete("/",
 		auth_middleware.UserMiddleware,
