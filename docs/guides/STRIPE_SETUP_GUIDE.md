@@ -2,15 +2,11 @@
 
 This guide walks you through configuring Stripe for the wacraft-server billing system.
 
----
-
 ## Prerequisites
 
 - A Stripe account ([stripe.com](https://stripe.com))
 - The wacraft-server deployed or running locally
 - Access to your server's environment variables
-
----
 
 ## 1. Get Your Stripe API Keys
 
@@ -36,8 +32,6 @@ STRIPE_SECRET_KEY=sk_test_your_secret_key_here
 
 Always develop and test with **test mode** keys first. Switch to live keys only when deploying to production.
 
----
-
 ## 2. Create a Webhook Endpoint
 
 The server listens for Stripe events at `POST /billing/webhook/stripe`. You need to register this URL in Stripe so it knows where to send payment notifications.
@@ -50,7 +44,11 @@ The server listens for Stripe events at `POST /billing/webhook/stripe`. You need
     - Production: `https://your-api-domain.com/billing/webhook/stripe`
     - Local development: use a tunnel URL (see [Local Development](#5-local-development) below)
 4. Under **Select events to listen to**, click **Select events**
-5. Search for and select: **`checkout.session.completed`**
+5. Search for and select the following events:
+    - **`checkout.session.completed`** — Activates subscriptions after payment
+    - **`invoice.paid`** — Handles recurring subscription renewals
+    - **`customer.subscription.deleted`** — Marks subscriptions as cancelled when the billing period ends
+    - **`customer.subscription.updated`** — Optional, logged for observability
 6. Click **Add endpoint**
 
 ### Copy the Webhook Signing Secret
@@ -66,8 +64,6 @@ Set the environment variable:
 ```bash
 STRIPE_WEBHOOK_SECRET=whsec_your_webhook_signing_secret_here
 ```
-
----
 
 ## 3. Configure Environment Variables
 
@@ -102,8 +98,6 @@ DEFAULT_FREE_PLAN_WINDOW=60
 - If it is not set, checkout endpoints will return `503 Service Unavailable`.
 - Billing API routes (plans, subscriptions, usage) work regardless of whether Stripe is configured -- admins can manage plans before enabling payments.
 
----
-
 ## 4. Verify the Setup
 
 ### 4.1 Check Server Logs
@@ -133,7 +127,9 @@ curl -X POST https://your-api-domain.com/billing/plan \
 
 ### 4.3 Test the Checkout Flow
 
-Initiate a checkout:
+The checkout endpoint supports two payment modes. The `payment_mode` field determines whether a one-time payment or a recurring subscription is created.
+
+**One-time payment** (default, `payment_mode` can be omitted):
 
 ```bash
 curl -X POST https://your-api-domain.com/billing/subscription/checkout \
@@ -147,7 +143,22 @@ curl -X POST https://your-api-domain.com/billing/subscription/checkout \
   }'
 ```
 
-You should receive a response with a `checkout_url`. Open it in a browser to see the Stripe checkout page.
+**Recurring subscription** (auto-renews every `duration_days`):
+
+```bash
+curl -X POST https://your-api-domain.com/billing/subscription/checkout \
+  -H "Authorization: Bearer <user_token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "plan_id": "<plan_uuid>",
+    "scope": "user",
+    "payment_mode": "subscription",
+    "success_url": "https://your-app.com/billing/success",
+    "cancel_url": "https://your-app.com/billing/cancel"
+  }'
+```
+
+You should receive a response with a `checkout_url`. Open it in a browser to see the Stripe checkout page. Subscription-mode checkouts show "Subscribe to..." instead of "Pay...".
 
 ### 4.4 Use Stripe Test Cards
 
@@ -169,6 +180,7 @@ After a successful test payment:
 2. Click on your endpoint
 3. Check the **Webhook attempts** section
 4. You should see a `checkout.session.completed` event with a `200` response status
+5. For subscription-mode checkouts, you should also see an `invoice.paid` event (the initial invoice)
 
 If the webhook succeeded, the subscription should now be active. Verify:
 
@@ -176,8 +188,6 @@ If the webhook succeeded, the subscription should now be active. Verify:
 curl https://your-api-domain.com/billing/subscription \
   -H "Authorization: Bearer <user_token>"
 ```
-
----
 
 ## 5. Local Development
 
@@ -219,15 +229,19 @@ Use this secret as your `STRIPE_WEBHOOK_SECRET` for local development.
 
 ### Trigger Test Events
 
-In a separate terminal, trigger a checkout completion event:
+In a separate terminal, trigger events:
 
 ```bash
+# One-time payment checkout
 stripe trigger checkout.session.completed
+
+# Subscription-related events
+stripe trigger invoice.paid
+stripe trigger customer.subscription.updated
+stripe trigger customer.subscription.deleted
 ```
 
 Or complete a real test checkout flow in the browser -- the CLI will forward the webhook to your local server.
-
----
 
 ## 6. Going to Production
 
@@ -235,7 +249,7 @@ Or complete a real test checkout flow in the browser -- the CLI will forward the
 
 - [ ] Switch from test keys to live keys (`sk_live_`, `whsec_` from production endpoint)
 - [ ] Create a new webhook endpoint in Stripe Dashboard pointing to your production URL
-- [ ] Select the `checkout.session.completed` event
+- [ ] Select all required events: `checkout.session.completed`, `invoice.paid`, `customer.subscription.deleted`, `customer.subscription.updated`
 - [ ] Update environment variables with production values
 - [ ] Set `BILLING_ENABLED=true`
 - [ ] Create your production plans via the admin API
@@ -247,8 +261,6 @@ Or complete a real test checkout flow in the browser -- the CLI will forward the
 - The webhook endpoint (`/billing/webhook/stripe`) does not use application authentication -- Stripe validates requests via the `Stripe-Signature` header and the webhook signing secret
 - Ensure your production server uses HTTPS -- Stripe requires it for webhook endpoints
 - Restrict access to billing admin endpoints (`billing.admin` policy) to trusted operators
-
----
 
 ## Troubleshooting
 
@@ -272,4 +284,25 @@ The webhook signature validation failed. Common causes:
 
 ### Webhook events arriving but not processed
 
-Only `checkout.session.completed` is handled. Other event types are acknowledged with `200 OK` but no action is taken.
+The following events are handled:
+
+| Event                           | Action                                                     |
+| ------------------------------- | ---------------------------------------------------------- |
+| `checkout.session.completed`    | Activates subscription                                     |
+| `invoice.paid`                  | Extends `expires_at` for recurring subscriptions (renewal) |
+| `customer.subscription.deleted` | Sets `cancelled_at` (subscription ended)                   |
+| `customer.subscription.updated` | Logged for observability, no state change                  |
+
+Other event types are acknowledged with `200 OK` but no action is taken.
+
+### Subscription renews but expires_at not updated
+
+Verify that `invoice.paid` is selected in your Stripe webhook endpoint events. Check the Stripe Dashboard for failed delivery attempts on `invoice.paid` events.
+
+### Cancel returns error for one-time subscriptions
+
+This is expected. Only recurring subscriptions (`payment_mode: "subscription"`) can be cancelled. One-time payment subscriptions expire naturally at `expires_at`.
+
+### Stripe Products/Prices created unexpectedly
+
+The system lazily creates a Stripe Product and Price on the first subscription-mode checkout for each plan. These are cached on the plan entity (`stripe_price_id`, `stripe_product_id`) and reused. This is normal behavior -- you can view them in the Stripe Dashboard under **Products**.

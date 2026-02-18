@@ -1,6 +1,8 @@
 package payment
 
 import (
+	"time"
+
 	billing_entity "github.com/Astervia/wacraft-core/src/billing/entity"
 	billing_model "github.com/Astervia/wacraft-core/src/billing/model"
 	"github.com/google/uuid"
@@ -8,12 +10,19 @@ import (
 
 // WebhookEvent represents a parsed payment webhook event.
 type WebhookEvent struct {
-	Type       string     // e.g. "checkout.session.completed", "payment_intent.succeeded"
-	ExternalID string     // Provider-specific ID (e.g. Stripe checkout session ID)
-	PlanID     uuid.UUID  // Plan being purchased
-	UserID     uuid.UUID  // User who initiated the purchase
-	Scope      billing_model.Scope
+	Type        string // e.g. "checkout.session.completed", "invoice.paid"
+	ExternalID  string // Provider-specific ID (e.g. Stripe checkout session ID)
+	PlanID      uuid.UUID
+	UserID      uuid.UUID
+	Scope       billing_model.Scope
 	WorkspaceID *uuid.UUID
+	PaymentMode billing_model.PaymentMode // "payment" or "subscription" — carried via metadata
+
+	// Subscription mode fields
+	SubscriptionID    string     // Provider-side subscription ID (for recurring plans)
+	CustomerID        string     // Provider-side customer ID
+	PeriodEnd         *time.Time // Current period end (for renewals via invoice.paid)
+	CancelAtPeriodEnd bool       // Whether the subscription is set to cancel at period end
 }
 
 // Provider defines the interface for payment processing integrations.
@@ -23,9 +32,14 @@ type Provider interface {
 	Name() string
 
 	// CreateCheckoutSession initiates a payment flow and returns a checkout URL.
+	// paymentMode determines whether a one-time payment or recurring subscription is created.
+	// For subscription mode, customerID may be provided to reuse an existing customer.
 	CreateCheckoutSession(
 		plan billing_entity.Plan,
+		paymentMode billing_model.PaymentMode,
 		userID uuid.UUID,
+		userEmail string,
+		customerID *string,
 		scope billing_model.Scope,
 		workspaceID *uuid.UUID,
 		successURL string,
@@ -33,7 +47,14 @@ type Provider interface {
 	) (checkoutURL string, externalID string, err error)
 
 	// CancelSubscription cancels an active payment-provider-side subscription.
+	// For payment mode: no-op (nothing to cancel on provider side).
+	// For subscription mode: sets cancel_at_period_end so the subscription
+	// stays active until the current billing period ends.
 	CancelSubscription(externalID string) error
+
+	// ReactivateSubscription reverses a pending cancellation by setting
+	// cancel_at_period_end back to false on the payment provider.
+	ReactivateSubscription(externalID string) error
 
 	// VerifyWebhookSignature validates the authenticity of a webhook payload.
 	VerifyWebhookSignature(payload []byte, signature string) error

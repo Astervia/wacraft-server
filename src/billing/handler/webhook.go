@@ -1,6 +1,9 @@
 package billing_handler
 
 import (
+	"fmt"
+
+	billing_model "github.com/Astervia/wacraft-core/src/billing/model"
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	billing_service "github.com/Astervia/wacraft-server/src/billing/service"
 	"github.com/Astervia/wacraft-server/src/billing/service/payment"
@@ -41,6 +44,12 @@ func StripeWebhook(c *fiber.Ctx) error {
 
 	switch event.Type {
 	case "checkout.session.completed":
+		// Default to payment mode if not specified in metadata
+		paymentMode := event.PaymentMode
+		if paymentMode == "" {
+			paymentMode = billing_model.PaymentModePayment
+		}
+
 		_, err := billing_service.ActivateSubscription(
 			event.PlanID,
 			event.Scope,
@@ -48,11 +57,45 @@ func StripeWebhook(c *fiber.Ctx) error {
 			event.WorkspaceID,
 			payment.ActiveProvider.Name(),
 			event.ExternalID,
+			paymentMode,
+			event.SubscriptionID,
+			event.CustomerID,
 		)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(
 				common_model.NewApiError("failed to activate subscription", err, "billing").Send(),
 			)
+		}
+
+	case "invoice.paid":
+		// Subscription renewal: extend the subscription's ExpiresAt.
+		// The initial invoice (same period as checkout) is handled gracefully —
+		// if the subscription isn't found yet, we log and move on.
+		if event.SubscriptionID != "" && event.PeriodEnd != nil {
+			if err := billing_service.RenewSubscription(event.SubscriptionID, *event.PeriodEnd); err != nil {
+				pterm.DefaultLogger.Warn("invoice.paid renewal skipped: " + err.Error())
+			}
+		}
+
+	case "customer.subscription.deleted":
+		// Stripe has fully ended the subscription (period ended after cancellation).
+		if event.SubscriptionID != "" {
+			if err := billing_service.MarkSubscriptionCancelled(event.SubscriptionID); err != nil {
+				return c.Status(fiber.StatusInternalServerError).JSON(
+					common_model.NewApiError("failed to mark subscription cancelled", err, "billing").Send(),
+				)
+			}
+		}
+
+	case "customer.subscription.updated":
+		pterm.DefaultLogger.Info(fmt.Sprintf(
+			"Subscription %s updated: cancel_at_period_end=%v",
+			event.SubscriptionID, event.CancelAtPeriodEnd,
+		))
+		if event.SubscriptionID != "" {
+			if err := billing_service.SyncCancelAtPeriodEnd(event.SubscriptionID, event.CancelAtPeriodEnd); err != nil {
+				pterm.DefaultLogger.Warn("subscription.updated sync failed: " + err.Error())
+			}
 		}
 	}
 

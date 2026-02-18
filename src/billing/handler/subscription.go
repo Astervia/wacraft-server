@@ -124,8 +124,15 @@ func Checkout(c *fiber.Ctx) error {
 		)
 	}
 
+	// Default to payment (one-time) mode if not specified
+	paymentMode := body.PaymentMode
+	if paymentMode == "" {
+		paymentMode = billing_model.PaymentModePayment
+	}
+
 	checkoutURL, externalID, err := payment.ActiveProvider.CreateCheckoutSession(
-		plan, user.ID, body.Scope, body.WorkspaceID, body.SuccessURL, body.CancelURL,
+		plan, paymentMode, user.ID, user.Email, user.StripeCustomerID,
+		body.Scope, body.WorkspaceID, body.SuccessURL, body.CancelURL,
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
@@ -175,6 +182,44 @@ func CreateManualSubscription(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(sub)
+}
+
+// ReactivateSubscription reverses a pending cancellation, re-enabling auto-renewal.
+//
+//	@Summary		Reactivate a subscription
+//	@Description	Reverses a pending cancellation for a recurring subscription, re-enabling auto-renewal. Only works when cancel_at_period_end is true and cancelled_at is not set.
+//	@Tags			Billing Subscription
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	query		string							true	"Subscription ID"
+//	@Success		204	{string}	string							"No content"
+//	@Failure		400	{object}	common_model.DescriptiveError	"Invalid query parameters"
+//	@Failure		500	{object}	common_model.DescriptiveError	"Internal server error"
+//	@Security		ApiKeyAuth
+//	@Router			/billing/subscription/reactivate [post]
+func ReactivateSubscription(c *fiber.Ctx) error {
+	user := workspace_middleware.GetUser(c)
+
+	id := new(common_model.RequiredID)
+	if err := c.QueryParser(id); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(id); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
+		)
+	}
+
+	if err := billing_service.ReactivateSubscription(id.ID, user.ID); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			common_model.NewApiError("unable to reactivate subscription", err, "billing_service").Send(),
+		)
+	}
+
+	return c.SendStatus(fiber.StatusNoContent)
 }
 
 // CancelSubscription cancels an active subscription.
