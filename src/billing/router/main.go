@@ -83,6 +83,13 @@ func subscriptionRoutes(group fiber.Router) {
 		billing_middleware.ThroughputMiddleware,
 		billing_handler.CreateManualSubscription)
 
+	// Sync subscription state from payment provider
+	sub.Post("/sync",
+		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
+		billing_middleware.ThroughputMiddleware,
+		billing_handler.SyncSubscription)
+
 	// Reactivate subscription (undo pending cancellation)
 	sub.Post("/reactivate",
 		auth_middleware.UserMiddleware,

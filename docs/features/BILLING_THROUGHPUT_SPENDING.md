@@ -2,8 +2,6 @@
 
 This document describes how the throughput middleware decides which scope to charge per request and the headers it returns.
 
----
-
 ## Scope Priority
 
 Only **one scope is charged per request**. The middleware uses a cascade: it tries workspace first, and falls back to user if the workspace budget is exhausted or absent.
@@ -24,8 +22,6 @@ Only **one scope is charged per request**. The middleware uses a cascade: it tri
 
 This means a request inside a workspace with a low limit (e.g. 20/600s) will cascade to the user's own subscription (e.g. 100/60s) once the workspace budget runs out, instead of immediately returning 429.
 
----
-
 ## Fallback Routes
 
 When the user scope's limit is exceeded, most routes return `429`. However, certain routes remain accessible under a **separate fallback budget** using the default free plan limits. This ensures users can always browse plans, manage subscriptions, and upgrade.
@@ -39,8 +35,6 @@ When the user scope's limit is exceeded, most routes return `429`. However, cert
 | `GET`  | `/user/me`              | Get current user profile |
 
 The fallback counter key uses a `-fallback` suffix (e.g. `user-fallback:<user-id>`). This counter is tracked independently from the main counter, so regular API usage cannot exhaust the fallback budget.
-
----
 
 ## Response Headers
 
@@ -64,11 +58,9 @@ Every response from the throughput middleware includes headers that describe the
 
 ### Exceeded Limit Header
 
-| Header        | Description                                       |
-| ------------- | ------------------------------------------------- |
+| Header        | Description                                               |
+| ------------- | --------------------------------------------------------- |
 | `Retry-After` | Seconds until the window resets (only on `429` responses) |
-
----
 
 ## Header Examples
 
@@ -149,8 +141,6 @@ X-RateLimit-Fallback: true
 
 `X-RateLimit-Fallback: true` indicates the request was served under the fallback budget (default free plan limits), not the user's main subscription.
 
----
-
 ## Middleware Flow
 
 ```
@@ -202,8 +192,6 @@ Within fallback limit? --yes--> Set headers (scope=user, fallback=true) -> c.Nex
     v
 429 (scope=user, fallback=true)
 ```
-
----
 
 ## Usage Endpoint
 

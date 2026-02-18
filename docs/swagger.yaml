@@ -3657,6 +3657,43 @@ paths:
       summary: Reactivate a subscription
       tags:
       - Billing Subscription
+  /billing/subscription/sync:
+    post:
+      consumes:
+      - application/json
+      description: Fetches the current subscription state from the payment provider
+        (e.g. Stripe) and updates the local record. Only works for subscription-mode
+        subscriptions.
+      parameters:
+      - description: Subscription ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated subscription
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_billing_entity.Subscription'
+        "400":
+          description: Invalid query parameters
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "503":
+          description: Payment provider not configured
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: Sync subscription with payment provider
+      tags:
+      - Billing Subscription
   /billing/usage:
     get:
       consumes:
