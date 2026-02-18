@@ -25,6 +25,13 @@ type WebhookEvent struct {
 	CancelAtPeriodEnd bool       // Whether the subscription is set to cancel at period end
 }
 
+// SubscriptionDetails holds the current state of a subscription from the payment provider.
+type SubscriptionDetails struct {
+	Status            string     // "active", "canceled", "past_due", etc.
+	CancelAtPeriodEnd bool
+	CurrentPeriodEnd  time.Time
+}
+
 // Provider defines the interface for payment processing integrations.
 // Implement this interface to add support for new payment providers.
 type Provider interface {
@@ -55,6 +62,10 @@ type Provider interface {
 	// ReactivateSubscription reverses a pending cancellation by setting
 	// cancel_at_period_end back to false on the payment provider.
 	ReactivateSubscription(externalID string) error
+
+	// GetSubscriptionDetails fetches the current state of a subscription
+	// from the payment provider for reconciliation purposes.
+	GetSubscriptionDetails(subscriptionID string) (*SubscriptionDetails, error)
 
 	// VerifyWebhookSignature validates the authenticity of a webhook payload.
 	VerifyWebhookSignature(payload []byte, signature string) error
