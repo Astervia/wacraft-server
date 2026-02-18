@@ -535,6 +535,10 @@ definitions:
         description: '"user" or "workspace"'
       starts_at:
         type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/github_com_Astervia_wacraft-core_src_billing_model.SubscriptionStatus'
+        description: '"pending", "active", "cancelled"'
       stripe_subscription_id:
         description: Stripe subscription ID for recurring plans
         type: string
@@ -682,6 +686,16 @@ definitions:
     x-enum-varnames:
     - ScopeUser
     - ScopeWorkspace
+  github_com_Astervia_wacraft-core_src_billing_model.SubscriptionStatus:
+    enum:
+    - pending
+    - active
+    - cancelled
+    type: string
+    x-enum-varnames:
+    - SubscriptionStatusPending
+    - SubscriptionStatusActive
+    - SubscriptionStatusCancelled
   github_com_Astervia_wacraft-core_src_billing_model.UpdatePlan:
     properties:
       active:
