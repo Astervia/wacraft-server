@@ -247,6 +247,26 @@ func (s *StripeProvider) GetSubscriptionDetails(subscriptionID string) (*Subscri
 	}, nil
 }
 
+func (s *StripeProvider) GetCheckoutSessionStatus(sessionID string) (*CheckoutSessionStatus, error) {
+	sess, err := session.Get(sessionID, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get stripe checkout session: %w", err)
+	}
+
+	result := &CheckoutSessionStatus{
+		SessionStatus: string(sess.Status),
+		PaymentStatus: string(sess.PaymentStatus),
+	}
+	if sess.Subscription != nil {
+		result.StripeSubscriptionID = sess.Subscription.ID
+	}
+	if sess.Customer != nil {
+		result.CustomerID = sess.Customer.ID
+	}
+
+	return result, nil
+}
+
 func (s *StripeProvider) VerifyWebhookSignature(payload []byte, signature string) error {
 	if env.StripeWebhookSecret == "" {
 		return errors.New("stripe webhook secret is not configured")

@@ -1,6 +1,8 @@
 package billing_handler
 
 import (
+	"log"
+
 	billing_entity "github.com/Astervia/wacraft-core/src/billing/entity"
 	billing_model "github.com/Astervia/wacraft-core/src/billing/model"
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
@@ -138,6 +140,16 @@ func Checkout(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("unable to create checkout session", err, "payment").Send(),
 		)
+	}
+
+	// Pre-create a pending subscription so a local record exists for sync recovery
+	// if the webhook fails. Errors here are non-fatal — the webhook can still create
+	// the subscription as fallback.
+	if _, err := billing_service.CreatePendingSubscription(
+		body.PlanID, body.Scope, user.ID, body.WorkspaceID,
+		payment.ActiveProvider.Name(), externalID, paymentMode,
+	); err != nil {
+		log.Printf("warning: failed to create pending subscription: %v", err)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(billing_model.CheckoutResponse{
