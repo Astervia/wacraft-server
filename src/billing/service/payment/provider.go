@@ -32,6 +32,14 @@ type SubscriptionDetails struct {
 	CurrentPeriodEnd  time.Time
 }
 
+// CheckoutSessionStatus holds the current state of a checkout session from the payment provider.
+type CheckoutSessionStatus struct {
+	SessionStatus        string // "open", "complete", "expired"
+	PaymentStatus        string // "paid", "unpaid", "no_payment_required"
+	StripeSubscriptionID string
+	CustomerID           string
+}
+
 // Provider defines the interface for payment processing integrations.
 // Implement this interface to add support for new payment providers.
 type Provider interface {
@@ -66,6 +74,10 @@ type Provider interface {
 	// GetSubscriptionDetails fetches the current state of a subscription
 	// from the payment provider for reconciliation purposes.
 	GetSubscriptionDetails(subscriptionID string) (*SubscriptionDetails, error)
+
+	// GetCheckoutSessionStatus fetches the current state of a checkout session
+	// from the payment provider. Used to sync pending subscriptions.
+	GetCheckoutSessionStatus(sessionID string) (*CheckoutSessionStatus, error)
 
 	// VerifyWebhookSignature validates the authenticity of a webhook payload.
 	VerifyWebhookSignature(payload []byte, signature string) error
