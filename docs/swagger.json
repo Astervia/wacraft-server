@@ -1054,6 +1054,55 @@
                 }
             }
         },
+        "/billing/subscription/reactivate": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Reverses a pending cancellation for a recurring subscription, re-enabling auto-renewal. Only works when cancel_at_period_end is true and cancelled_at is not set.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Billing Subscription"
+                ],
+                "summary": "Reactivate a subscription",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Subscription ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid query parameters",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                        }
+                    }
+                }
+            }
+        },
         "/billing/usage": {
             "get": {
                 "security": [
@@ -10875,6 +10924,14 @@
                 "slug": {
                     "type": "string"
                 },
+                "stripe_price_id": {
+                    "description": "Cached Stripe Price ID for subscription checkouts",
+                    "type": "string"
+                },
+                "stripe_product_id": {
+                    "description": "Cached Stripe Product ID for subscription checkouts",
+                    "type": "string"
+                },
                 "throughput_limit": {
                     "description": "Weighted requests allowed per window. \u003c= 0 means unlimited.",
                     "type": "integer"
@@ -10891,6 +10948,10 @@
         "github_com_Astervia_wacraft-core_src_billing_entity.Subscription": {
             "type": "object",
             "properties": {
+                "cancel_at_period_end": {
+                    "description": "True when cancellation is pending (active until ExpiresAt)",
+                    "type": "boolean"
+                },
                 "cancelled_at": {
                     "type": "string"
                 },
@@ -10905,6 +10966,14 @@
                 },
                 "payment_external_id": {
                     "type": "string"
+                },
+                "payment_mode": {
+                    "description": "\"payment\" (one-time) or \"subscription\" (recurring)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_billing_model.PaymentMode"
+                        }
+                    ]
                 },
                 "payment_provider": {
                     "type": "string"
@@ -10924,6 +10993,10 @@
                     ]
                 },
                 "starts_at": {
+                    "type": "string"
+                },
+                "stripe_subscription_id": {
+                    "description": "Stripe subscription ID for recurring plans",
                     "type": "string"
                 },
                 "throughput_override": {
@@ -10960,6 +11033,18 @@
             "properties": {
                 "cancel_url": {
                     "type": "string"
+                },
+                "payment_mode": {
+                    "description": "Defaults to \"payment\" if empty",
+                    "enum": [
+                        "payment",
+                        "subscription"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_billing_model.PaymentMode"
+                        }
+                    ]
                 },
                 "plan_id": {
                     "type": "string"
@@ -11096,6 +11181,25 @@
                     "type": "integer"
                 }
             }
+        },
+        "github_com_Astervia_wacraft-core_src_billing_model.PaymentMode": {
+            "type": "string",
+            "enum": [
+                "payment",
+                "subscription"
+            ],
+            "x-enum-comments": {
+                "PaymentModePayment": "One-time payment (default, current behavior)",
+                "PaymentModeSubscription": "Recurring via Stripe Subscriptions"
+            },
+            "x-enum-descriptions": [
+                "One-time payment (default, current behavior)",
+                "Recurring via Stripe Subscriptions"
+            ],
+            "x-enum-varnames": [
+                "PaymentModePayment",
+                "PaymentModeSubscription"
+            ]
         },
         "github_com_Astervia_wacraft-core_src_billing_model.Scope": {
             "type": "string",
@@ -12078,6 +12182,10 @@
                 },
                 "role": {
                     "description": "Deprecated: use workspace policies",
+                    "type": "string"
+                },
+                "stripe_customer_id": {
+                    "description": "Stripe Customer ID for subscription billing",
                     "type": "string"
                 },
                 "updated_at": {

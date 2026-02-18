@@ -489,6 +489,12 @@ definitions:
         type: integer
       slug:
         type: string
+      stripe_price_id:
+        description: Cached Stripe Price ID for subscription checkouts
+        type: string
+      stripe_product_id:
+        description: Cached Stripe Product ID for subscription checkouts
+        type: string
       throughput_limit:
         description: Weighted requests allowed per window. <= 0 means unlimited.
         type: integer
@@ -500,6 +506,9 @@ definitions:
     type: object
   github_com_Astervia_wacraft-core_src_billing_entity.Subscription:
     properties:
+      cancel_at_period_end:
+        description: True when cancellation is pending (active until ExpiresAt)
+        type: boolean
       cancelled_at:
         type: string
       created_at:
@@ -510,6 +519,10 @@ definitions:
         type: string
       payment_external_id:
         type: string
+      payment_mode:
+        allOf:
+        - $ref: '#/definitions/github_com_Astervia_wacraft-core_src_billing_model.PaymentMode'
+        description: '"payment" (one-time) or "subscription" (recurring)'
       payment_provider:
         type: string
       plan:
@@ -521,6 +534,9 @@ definitions:
         - $ref: '#/definitions/github_com_Astervia_wacraft-core_src_billing_model.Scope'
         description: '"user" or "workspace"'
       starts_at:
+        type: string
+      stripe_subscription_id:
+        description: Stripe subscription ID for recurring plans
         type: string
       throughput_override:
         description: Admin override for custom plans
@@ -542,6 +558,13 @@ definitions:
     properties:
       cancel_url:
         type: string
+      payment_mode:
+        allOf:
+        - $ref: '#/definitions/github_com_Astervia_wacraft-core_src_billing_model.PaymentMode'
+        description: Defaults to "payment" if empty
+        enum:
+        - payment
+        - subscription
       plan_id:
         type: string
       scope:
@@ -637,6 +660,20 @@ definitions:
     - slug
     - window_seconds
     type: object
+  github_com_Astervia_wacraft-core_src_billing_model.PaymentMode:
+    enum:
+    - payment
+    - subscription
+    type: string
+    x-enum-comments:
+      PaymentModePayment: One-time payment (default, current behavior)
+      PaymentModeSubscription: Recurring via Stripe Subscriptions
+    x-enum-descriptions:
+    - One-time payment (default, current behavior)
+    - Recurring via Stripe Subscriptions
+    x-enum-varnames:
+    - PaymentModePayment
+    - PaymentModeSubscription
   github_com_Astervia_wacraft-core_src_billing_model.Scope:
     enum:
     - user
@@ -1298,6 +1335,9 @@ definitions:
         type: string
       role:
         description: 'Deprecated: use workspace policies'
+        type: string
+      stripe_customer_id:
+        description: Stripe Customer ID for subscription billing
         type: string
       updated_at:
         type: string
@@ -3582,6 +3622,39 @@ paths:
       - ApiKeyAuth: []
       - WorkspaceAuth: []
       summary: Create manual subscription
+      tags:
+      - Billing Subscription
+  /billing/subscription/reactivate:
+    post:
+      consumes:
+      - application/json
+      description: Reverses a pending cancellation for a recurring subscription, re-enabling
+        auto-renewal. Only works when cancel_at_period_end is true and cancelled_at
+        is not set.
+      parameters:
+      - description: Subscription ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+          schema:
+            type: string
+        "400":
+          description: Invalid query parameters
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: Reactivate a subscription
       tags:
       - Billing Subscription
   /billing/usage:
