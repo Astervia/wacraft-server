@@ -48,8 +48,10 @@ func CreateManualSubscription(data billing_model.CreateManualSubscription) (bill
 	return sub, nil
 }
 
-// ActivateSubscription creates a subscription after successful payment.
-func ActivateSubscription(
+// CreatePendingSubscription creates a subscription in "pending" state at checkout time.
+// This ensures a local record exists before the webhook fires, enabling sync recovery
+// if the webhook fails.
+func CreatePendingSubscription(
 	planID uuid.UUID,
 	scope billing_model.Scope,
 	userID uuid.UUID,
@@ -57,8 +59,6 @@ func ActivateSubscription(
 	provider string,
 	externalID string,
 	paymentMode billing_model.PaymentMode,
-	stripeSubscriptionID string,
-	customerID string,
 ) (billing_entity.Subscription, error) {
 	var plan billing_entity.Plan
 	if err := database.DB.First(&plan, planID).Error; err != nil {
@@ -76,9 +76,94 @@ func ActivateSubscription(
 		PaymentProvider:   provider,
 		PaymentExternalID: &externalID,
 		PaymentMode:       paymentMode,
+		Status:            billing_model.SubscriptionStatusPending,
 	}
 
-	// For subscription mode, store the Stripe subscription ID
+	if err := database.DB.Create(&sub).Error; err != nil {
+		return sub, err
+	}
+
+	// Do NOT invalidate throughput cache — pending subs don't affect it.
+	return sub, nil
+}
+
+// ActivateSubscription activates a subscription after successful payment.
+// It first looks for a pending subscription by payment_external_id; if found,
+// it transitions it to active. If not found, it falls back to creating a new
+// active subscription (backward compatibility for pre-migration webhooks).
+func ActivateSubscription(
+	planID uuid.UUID,
+	scope billing_model.Scope,
+	userID uuid.UUID,
+	workspaceID *uuid.UUID,
+	provider string,
+	externalID string,
+	paymentMode billing_model.PaymentMode,
+	stripeSubscriptionID string,
+	customerID string,
+) (billing_entity.Subscription, error) {
+	// Idempotency: if already active for this externalID, return it
+	var existing billing_entity.Subscription
+	if err := database.DB.
+		Where("payment_external_id = ? AND status = ?", externalID, billing_model.SubscriptionStatusActive).
+		First(&existing).Error; err == nil {
+		return existing, nil
+	}
+
+	// Look for a pending subscription to activate
+	var pending billing_entity.Subscription
+	if err := database.DB.
+		Where("payment_external_id = ? AND status = ?", externalID, billing_model.SubscriptionStatusPending).
+		First(&pending).Error; err == nil {
+		// Found pending — activate it
+		var plan billing_entity.Plan
+		if err := database.DB.First(&plan, pending.PlanID).Error; err != nil {
+			return billing_entity.Subscription{}, errors.New("plan not found")
+		}
+
+		now := time.Now()
+		pending.Status = billing_model.SubscriptionStatusActive
+		pending.StartsAt = now
+		pending.ExpiresAt = now.AddDate(0, 0, plan.DurationDays)
+		if stripeSubscriptionID != "" {
+			pending.StripeSubscriptionID = &stripeSubscriptionID
+		}
+
+		if err := database.DB.Save(&pending).Error; err != nil {
+			return pending, err
+		}
+
+		// Persist the Stripe Customer ID on the user (if not already set)
+		if customerID != "" {
+			database.DB.Model(&user_entity.User{}).
+				Where("id = ? AND (stripe_customer_id IS NULL OR stripe_customer_id = '')", userID).
+				Update("stripe_customer_id", customerID)
+		}
+
+		invalidateForSubscription(&pending)
+		return pending, nil
+	}
+
+	// Fallback: no pending record found — create a new active subscription
+	var plan billing_entity.Plan
+	if err := database.DB.First(&plan, planID).Error; err != nil {
+		return billing_entity.Subscription{}, errors.New("plan not found")
+	}
+
+	now := time.Now()
+	sub := billing_entity.Subscription{
+		PlanID:            planID,
+		Scope:             scope,
+		UserID:            userID,
+		WorkspaceID:       workspaceID,
+		StartsAt:          now,
+		ExpiresAt:         now.AddDate(0, 0, plan.DurationDays),
+		PaymentProvider:   provider,
+		PaymentExternalID: &externalID,
+		PaymentMode:       paymentMode,
+		Status:            billing_model.SubscriptionStatusActive,
+	}
+
 	if stripeSubscriptionID != "" {
 		sub.StripeSubscriptionID = &stripeSubscriptionID
 	}
@@ -223,6 +308,7 @@ func MarkSubscriptionCancelled(stripeSubscriptionID string) error {
 
 	now := time.Now()
 	sub.CancelledAt = &now
+	sub.Status = billing_model.SubscriptionStatusCancelled
 	if err := database.DB.Save(&sub).Error; err != nil {
 		return err
 	}
@@ -248,7 +334,13 @@ func SyncCancelAtPeriodEnd(stripeSubscriptionID string, cancelAtPeriodEnd bool) 
 }
 
 // SyncSubscription fetches the current subscription state from the payment provider
-// and reconciles the local DB record. Only works for subscription-mode subscriptions.
+// and reconciles the local DB record.
+//
+// Three sync paths:
+//   - Pending subscription (any mode): uses GetCheckoutSessionStatus via PaymentExternalID.
+//     If paid, activates it. If session expired/unpaid, marks cancelled.
+//   - Active subscription-mode with StripeSubscriptionID: existing behavior (fetch from Stripe subscription API).
+//   - Active subscription-mode without StripeSubscriptionID: error (shouldn't happen).
 func SyncSubscription(subscriptionID uuid.UUID, userID uuid.UUID) (billing_entity.Subscription, error) {
 	var sub billing_entity.Subscription
 	if err := database.DB.Preload("Plan").First(&sub, subscriptionID).Error; err != nil {
@@ -259,13 +351,77 @@ func SyncSubscription(subscriptionID uuid.UUID, userID uuid.UUID) (billing_entit
 		return billing_entity.Subscription{}, errors.New("unauthorized: you can only sync your own subscriptions")
 	}
 
-	if sub.PaymentMode != billing_model.PaymentModeSubscription || sub.StripeSubscriptionID == nil {
-		return billing_entity.Subscription{}, errors.New("only subscription-mode subscriptions with a provider subscription can be synced")
+	// Path 1: Pending subscription — sync via checkout session status
+	if sub.Status == billing_model.SubscriptionStatusPending {
+		return syncPendingSubscription(&sub)
 	}
 
+	// Path 2: Active subscription-mode with StripeSubscriptionID
+	if sub.PaymentMode == billing_model.PaymentModeSubscription && sub.StripeSubscriptionID != nil {
+		return syncActiveSubscription(&sub)
+	}
+
+	return billing_entity.Subscription{}, errors.New("this subscription cannot be synced")
+}
+
+// syncPendingSubscription syncs a pending subscription by checking the checkout session status.
+func syncPendingSubscription(sub *billing_entity.Subscription) (billing_entity.Subscription, error) {
+	if sub.PaymentExternalID == nil {
+		return *sub, errors.New("pending subscription has no payment external ID")
+	}
+
+	sessionStatus, err := payment.ActiveProvider.GetCheckoutSessionStatus(*sub.PaymentExternalID)
+	if err != nil {
+		return *sub, fmt.Errorf("failed to get checkout session status: %w", err)
+	}
+
+	if sessionStatus.PaymentStatus == "paid" {
+		// Activate the subscription
+		now := time.Now()
+		sub.Status = billing_model.SubscriptionStatusActive
+		sub.StartsAt = now
+		if sub.Plan != nil {
+			sub.ExpiresAt = now.AddDate(0, 0, sub.Plan.DurationDays)
+		}
+		if sessionStatus.StripeSubscriptionID != "" {
+			sub.StripeSubscriptionID = &sessionStatus.StripeSubscriptionID
+		}
+
+		if err := database.DB.Save(sub).Error; err != nil {
+			return *sub, fmt.Errorf("failed to activate subscription: %w", err)
+		}
+
+		// Persist the Stripe Customer ID on the user
+		if sessionStatus.CustomerID != "" {
+			database.DB.Model(&user_entity.User{}).
+				Where("id = ? AND (stripe_customer_id IS NULL OR stripe_customer_id = '')", sub.UserID).
+				Update("stripe_customer_id", sessionStatus.CustomerID)
+		}
+
+		invalidateForSubscription(sub)
+		return *sub, nil
+	}
+
+	if sessionStatus.SessionStatus == "expired" {
+		// Checkout session expired — mark subscription as cancelled
+		now := time.Now()
+		sub.Status = billing_model.SubscriptionStatusCancelled
+		sub.CancelledAt = &now
+		if err := database.DB.Save(sub).Error; err != nil {
+			return *sub, fmt.Errorf("failed to cancel expired subscription: %w", err)
+		}
+		return *sub, nil
+	}
+
+	// Session still open or unpaid — return as-is
+	return *sub, nil
+}
+
+// syncActiveSubscription syncs an active subscription-mode subscription via the Stripe subscription API.
+func syncActiveSubscription(sub *billing_entity.Subscription) (billing_entity.Subscription, error) {
 	details, err := payment.ActiveProvider.GetSubscriptionDetails(*sub.StripeSubscriptionID)
 	if err != nil {
-		return billing_entity.Subscription{}, fmt.Errorf("failed to get subscription details from provider: %w", err)
+		return *sub, fmt.Errorf("failed to get subscription details from provider: %w", err)
 	}
 
 	sub.ExpiresAt = details.CurrentPeriodEnd
@@ -274,15 +430,16 @@ func SyncSubscription(subscriptionID uuid.UUID, userID uuid.UUID) (billing_entit
 	if details.Status == "canceled" && sub.CancelledAt == nil {
 		now := time.Now()
 		sub.CancelledAt = &now
+		sub.Status = billing_model.SubscriptionStatusCancelled
 	}
 
-	if err := database.DB.Save(&sub).Error; err != nil {
-		return billing_entity.Subscription{}, fmt.Errorf("failed to save synced subscription: %w", err)
+	if err := database.DB.Save(sub).Error; err != nil {
+		return *sub, fmt.Errorf("failed to save synced subscription: %w", err)
 	}
 
-	invalidateForSubscription(&sub)
+	invalidateForSubscription(sub)
 
-	return sub, nil
+	return *sub, nil
 }
 
 // GetActiveSubscriptions returns all active subscriptions for a scope.
@@ -290,7 +447,7 @@ func GetActiveSubscriptions(scope billing_model.Scope, userID *uuid.UUID, worksp
 	now := time.Now()
 	query := database.DB.
 		Preload("Plan").
-		Where("scope = ? AND starts_at <= ? AND expires_at > ? AND cancelled_at IS NULL", scope, now, now)
+		Where("scope = ? AND starts_at <= ? AND expires_at > ? AND cancelled_at IS NULL AND status = 'active'", scope, now, now)
 
 	if scope == billing_model.ScopeUser && userID != nil {
 		query = query.Where("user_id = ?", *userID)
