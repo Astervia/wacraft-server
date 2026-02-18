@@ -11053,6 +11053,14 @@ const docTemplate = `{
                 "starts_at": {
                     "type": "string"
                 },
+                "status": {
+                    "description": "\"pending\", \"active\", \"cancelled\"",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_billing_model.SubscriptionStatus"
+                        }
+                    ]
+                },
                 "stripe_subscription_id": {
                     "description": "Stripe subscription ID for recurring plans",
                     "type": "string"
@@ -11268,6 +11276,19 @@ const docTemplate = `{
             "x-enum-varnames": [
                 "ScopeUser",
                 "ScopeWorkspace"
+            ]
+        },
+        "github_com_Astervia_wacraft-core_src_billing_model.SubscriptionStatus": {
+            "type": "string",
+            "enum": [
+                "pending",
+                "active",
+                "cancelled"
+            ],
+            "x-enum-varnames": [
+                "SubscriptionStatusPending",
+                "SubscriptionStatusActive",
+                "SubscriptionStatusCancelled"
             ]
         },
         "github_com_Astervia_wacraft-core_src_billing_model.UpdatePlan": {
