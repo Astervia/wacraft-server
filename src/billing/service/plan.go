@@ -95,7 +95,7 @@ func queryThroughput(scope billing_model.Scope, userID *uuid.UUID, workspaceID *
 
 	query := database.DB.
 		Preload("Plan").
-		Where("scope = ? AND starts_at <= ? AND expires_at > ? AND cancelled_at IS NULL", scope, now, now)
+		Where("scope = ? AND starts_at <= ? AND expires_at > ? AND cancelled_at IS NULL AND status = 'active'", scope, now, now)
 
 	if scope == billing_model.ScopeUser && userID != nil {
 		query = query.Where("user_id = ?", *userID)
