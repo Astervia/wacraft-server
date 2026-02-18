@@ -247,6 +247,44 @@ func SyncCancelAtPeriodEnd(stripeSubscriptionID string, cancelAtPeriodEnd bool) 
 	return nil
 }
 
+// SyncSubscription fetches the current subscription state from the payment provider
+// and reconciles the local DB record. Only works for subscription-mode subscriptions.
+func SyncSubscription(subscriptionID uuid.UUID, userID uuid.UUID) (billing_entity.Subscription, error) {
+	var sub billing_entity.Subscription
+	if err := database.DB.Preload("Plan").First(&sub, subscriptionID).Error; err != nil {
+		return billing_entity.Subscription{}, errors.New("subscription not found")
+	}
+
+	if sub.UserID != userID {
+		return billing_entity.Subscription{}, errors.New("unauthorized: you can only sync your own subscriptions")
+	}
+
+	if sub.PaymentMode != billing_model.PaymentModeSubscription || sub.StripeSubscriptionID == nil {
+		return billing_entity.Subscription{}, errors.New("only subscription-mode subscriptions with a provider subscription can be synced")
+	}
+
+	details, err := payment.ActiveProvider.GetSubscriptionDetails(*sub.StripeSubscriptionID)
+	if err != nil {
+		return billing_entity.Subscription{}, fmt.Errorf("failed to get subscription details from provider: %w", err)
+	}
+
+	sub.ExpiresAt = details.CurrentPeriodEnd
+	sub.CancelAtPeriodEnd = details.CancelAtPeriodEnd
+
+	if details.Status == "canceled" && sub.CancelledAt == nil {
+		now := time.Now()
+		sub.CancelledAt = &now
+	}
+
+	if err := database.DB.Save(&sub).Error; err != nil {
+		return billing_entity.Subscription{}, fmt.Errorf("failed to save synced subscription: %w", err)
+	}
+
+	invalidateForSubscription(&sub)
+
+	return sub, nil
+}
+
 // GetActiveSubscriptions returns all active subscriptions for a scope.
 func GetActiveSubscriptions(scope billing_model.Scope, userID *uuid.UUID, workspaceID *uuid.UUID) ([]billing_entity.Subscription, error) {
 	now := time.Now()

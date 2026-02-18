@@ -1103,6 +1103,61 @@
                 }
             }
         },
+        "/billing/subscription/sync": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Fetches the current subscription state from the payment provider (e.g. Stripe) and updates the local record. Only works for subscription-mode subscriptions.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Billing Subscription"
+                ],
+                "summary": "Sync subscription with payment provider",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Subscription ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated subscription",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_billing_entity.Subscription"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid query parameters",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                        }
+                    },
+                    "503": {
+                        "description": "Payment provider not configured",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                        }
+                    }
+                }
+            }
+        },
         "/billing/usage": {
             "get": {
                 "security": [

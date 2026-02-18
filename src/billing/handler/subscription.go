@@ -222,6 +222,53 @@ func ReactivateSubscription(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
+// SyncSubscription fetches the current subscription state from the payment provider
+// and reconciles the local DB record.
+//
+//	@Summary		Sync subscription with payment provider
+//	@Description	Fetches the current subscription state from the payment provider (e.g. Stripe) and updates the local record. Only works for subscription-mode subscriptions.
+//	@Tags			Billing Subscription
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	query		string							true	"Subscription ID"
+//	@Success		200	{object}	billing_entity.Subscription		"Updated subscription"
+//	@Failure		400	{object}	common_model.DescriptiveError	"Invalid query parameters"
+//	@Failure		500	{object}	common_model.DescriptiveError	"Internal server error"
+//	@Failure		503	{object}	common_model.DescriptiveError	"Payment provider not configured"
+//	@Security		ApiKeyAuth
+//	@Router			/billing/subscription/sync [post]
+func SyncSubscription(c *fiber.Ctx) error {
+	if payment.ActiveProvider == nil {
+		return c.Status(fiber.StatusServiceUnavailable).JSON(
+			common_model.NewApiError("payment provider is not configured", nil, "billing").Send(),
+		)
+	}
+
+	user := workspace_middleware.GetUser(c)
+
+	id := new(common_model.RequiredID)
+	if err := c.QueryParser(id); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(id); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
+		)
+	}
+
+	sub, err := billing_service.SyncSubscription(id.ID, user.ID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			common_model.NewApiError("unable to sync subscription", err, "billing_service").Send(),
+		)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(sub)
+}
+
 // CancelSubscription cancels an active subscription.
 //
 //	@Summary		Cancel a subscription
