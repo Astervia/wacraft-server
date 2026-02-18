@@ -228,6 +228,25 @@ func (s *StripeProvider) ReactivateSubscription(externalID string) error {
 	return nil
 }
 
+func (s *StripeProvider) GetSubscriptionDetails(subscriptionID string) (*SubscriptionDetails, error) {
+	sub, err := subscription.Get(subscriptionID, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get stripe subscription: %w", err)
+	}
+
+	// In Stripe v84, CurrentPeriodEnd is on subscription items, not the subscription itself.
+	var periodEnd time.Time
+	if sub.Items != nil && len(sub.Items.Data) > 0 {
+		periodEnd = time.Unix(sub.Items.Data[0].CurrentPeriodEnd, 0)
+	}
+
+	return &SubscriptionDetails{
+		Status:            string(sub.Status),
+		CancelAtPeriodEnd: sub.CancelAtPeriodEnd,
+		CurrentPeriodEnd:  periodEnd,
+	}, nil
+}
+
 func (s *StripeProvider) VerifyWebhookSignature(payload []byte, signature string) error {
 	if env.StripeWebhookSecret == "" {
 		return errors.New("stripe webhook secret is not configured")
