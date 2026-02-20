@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	BillingEnabled        bool   // Master toggle for throughput enforcement
+	BillingEnabled        bool // Master toggle for throughput enforcement
 	StripeSecretKey       string
 	StripeWebhookSecret   string
 	DefaultFreeThroughput int // Weighted requests per window for fallback free plan
