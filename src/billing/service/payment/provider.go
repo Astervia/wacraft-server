@@ -27,7 +27,7 @@ type WebhookEvent struct {
 
 // SubscriptionDetails holds the current state of a subscription from the payment provider.
 type SubscriptionDetails struct {
-	Status            string     // "active", "canceled", "past_due", etc.
+	Status            string // "active", "canceled", "past_due", etc.
 	CancelAtPeriodEnd bool
 	CurrentPeriodEnd  time.Time
 }
