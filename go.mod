@@ -5,7 +5,7 @@ go 1.25.6
 //replace github.com/Astervia/wacraft-core => ./wacraft-core
 
 require (
-	github.com/Astervia/wacraft-core v0.2.1-pre.1
+	github.com/Astervia/wacraft-core v0.2.1
 	github.com/Rfluid/whatsapp-cloud-api v0.2.0
 	github.com/Rfluid/whatsapp-webhook-server v0.2.0
 	github.com/go-playground/validator/v10 v10.28.0
