@@ -20,52 +20,6 @@
     },
     "basePath": "/",
     "paths": {
-        "/auth/accept-invitation": {
-            "post": {
-                "description": "Accepts a workspace invitation. Creates user if doesn't exist.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Accept invitation",
-                "parameters": [
-                    {
-                        "description": "Invitation acceptance data",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.AcceptInvitationRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Invitation accepted",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.AcceptInvitationResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid or expired invitation",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
-                        }
-                    }
-                }
-            }
-        },
         "/auth/forgot-password": {
             "post": {
                 "description": "Sends a password reset email to the user if the email exists.",
@@ -99,6 +53,69 @@
                     },
                     "400": {
                         "description": "Invalid request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/invitation/claim": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Claims a workspace invitation. The caller must be authenticated and their email must match the invited email. On success the user is added as a workspace member with the invited policies.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Claim invitation",
+                "parameters": [
+                    {
+                        "description": "Claim data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.ClaimInvitationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Invitation claimed",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.ClaimInvitationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or expired invitation",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                        }
+                    },
+                    "403": {
+                        "description": "Email mismatch",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                        }
+                    },
+                    "409": {
+                        "description": "Already a member",
                         "schema": {
                             "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
                         }
@@ -9212,7 +9229,7 @@
                         "WorkspaceAuth": []
                     }
                 ],
-                "description": "Creates an invitation for a user to join the workspace.",
+                "description": "Creates an invitation for a user to join the workspace. Always returns the invitation token so the inviter can share it out-of-band when email is not configured.",
                 "consumes": [
                     "application/json"
                 ],
@@ -9255,7 +9272,7 @@
                         }
                     },
                     "409": {
-                        "description": "User already member",
+                        "description": "User already member or pending invite",
                         "schema": {
                             "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
                         }
@@ -12802,36 +12819,21 @@
                 }
             }
         },
-        "github_com_Astervia_wacraft-core_src_workspace_model.AcceptInvitationRequest": {
+        "github_com_Astervia_wacraft-core_src_workspace_model.ClaimInvitationRequest": {
             "type": "object",
             "required": [
                 "token"
             ],
             "properties": {
-                "name": {
-                    "description": "Required if user doesn't exist",
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
-                },
-                "password": {
-                    "description": "Required if user doesn't exist",
-                    "type": "string",
-                    "maxLength": 72,
-                    "minLength": 8
-                },
                 "token": {
                     "type": "string"
                 }
             }
         },
-        "github_com_Astervia_wacraft-core_src_workspace_model.AcceptInvitationResponse": {
+        "github_com_Astervia_wacraft-core_src_workspace_model.ClaimInvitationResponse": {
             "type": "object",
             "properties": {
                 "message": {
-                    "type": "string"
-                },
-                "user_id": {
                     "type": "string"
                 },
                 "workspace_id": {
@@ -12918,6 +12920,9 @@
                     "items": {
                         "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.Policy"
                     }
+                },
+                "token": {
+                    "type": "string"
                 },
                 "workspace_id": {
                     "type": "string"

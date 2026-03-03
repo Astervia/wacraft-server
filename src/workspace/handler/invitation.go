@@ -6,8 +6,6 @@ import (
 
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	crypto_service "github.com/Astervia/wacraft-core/src/crypto/service"
-	user_entity "github.com/Astervia/wacraft-core/src/user/entity"
-	user_model "github.com/Astervia/wacraft-core/src/user/model"
 	workspace_entity "github.com/Astervia/wacraft-core/src/workspace/entity"
 	workspace_model "github.com/Astervia/wacraft-core/src/workspace/model"
 	"github.com/Astervia/wacraft-server/src/database"
@@ -20,7 +18,7 @@ import (
 // CreateInvitation creates a workspace invitation.
 //
 //	@Summary		Invite user to workspace
-//	@Description	Creates an invitation for a user to join the workspace.
+//	@Description	Creates an invitation for a user to join the workspace. Always returns the invitation token so the inviter can share it out-of-band when email is not configured.
 //	@Tags			Workspace
 //	@Accept			json
 //	@Produce		json
@@ -28,7 +26,7 @@ import (
 //	@Param			body			body		workspace_model.CreateInvitationRequest	true	"Invitation data"
 //	@Success		201				{object}	workspace_model.InvitationResponse	"Invitation created"
 //	@Failure		400				{object}	common_model.DescriptiveError		"Invalid request"
-//	@Failure		409				{object}	common_model.DescriptiveError		"User already member"
+//	@Failure		409				{object}	common_model.DescriptiveError		"User already member or pending invite"
 //	@Failure		500				{object}	common_model.DescriptiveError		"Internal server error"
 //	@Security		ApiKeyAuth
 //	@Security		WorkspaceAuth
@@ -63,14 +61,14 @@ func CreateInvitation(c *fiber.Ctx) error {
 	email := strings.ToLower(strings.TrimSpace(req.Email))
 
 	// Check if user is already a member
-	var existingUser user_entity.User
-	if err := database.DB.Where("email = ?", email).First(&existingUser).Error; err == nil {
-		var existingMember workspace_entity.WorkspaceMember
-		if err := database.DB.Where("workspace_id = ? AND user_id = ?", workspace.ID, existingUser.ID).First(&existingMember).Error; err == nil {
-			return c.Status(fiber.StatusConflict).JSON(
-				common_model.NewApiError("User is already a member of this workspace", nil, "workspace").Send(),
-			)
-		}
+	var existingMember workspace_entity.WorkspaceMember
+	if err := database.DB.
+		Joins("JOIN users ON users.id = workspace_members.user_id").
+		Where("workspace_members.workspace_id = ? AND LOWER(users.email) = ?", workspace.ID, email).
+		First(&existingMember).Error; err == nil {
+		return c.Status(fiber.StatusConflict).JSON(
+			common_model.NewApiError("User is already a member of this workspace", nil, "workspace").Send(),
+		)
 	}
 
 	// Check for existing pending invitation
@@ -105,13 +103,12 @@ func CreateInvitation(c *fiber.Ctx) error {
 		)
 	}
 
-	// Send invitation email (async)
+	// Attempt email send (async; logs only when SMTP is not configured)
 	origin := strings.TrimRight(c.Get("Origin"), "/")
 	go func() {
 		if err := email_service.DefaultEmailService.SendWorkspaceInvitation(
 			email, workspace.Name, user.Name, token, origin,
 		); err != nil {
-			// Log error but don't fail
 			_ = err
 		}
 	}()
@@ -120,6 +117,7 @@ func CreateInvitation(c *fiber.Ctx) error {
 		ID:          invitation.ID.String(),
 		WorkspaceID: workspace.ID.String(),
 		Email:       email,
+		Token:       token,
 		Policies:    req.Policies,
 		ExpiresAt:   invitation.ExpiresAt.Format(time.RFC3339),
 		InvitedBy:   user.ID.String(),
@@ -155,6 +153,7 @@ func GetInvitations(c *fiber.Ctx) error {
 			ID:          inv.ID.String(),
 			WorkspaceID: workspace.ID.String(),
 			Email:       inv.Email,
+			Token:       inv.Token,
 			Policies:    inv.Policies,
 			ExpiresAt:   inv.ExpiresAt.Format(time.RFC3339),
 			InvitedBy:   inv.InvitedBy.String(),
@@ -200,27 +199,39 @@ func RevokeInvitation(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
-// AcceptInvitation accepts a workspace invitation.
+// ClaimInvitation claims a workspace invitation for the currently authenticated user.
+// The authenticated user's email must match the invitation email exactly (case-insensitive).
 //
-//	@Summary		Accept invitation
-//	@Description	Accepts a workspace invitation. Creates user if doesn't exist.
+//	@Summary		Claim invitation
+//	@Description	Claims a workspace invitation. The caller must be authenticated and their email must match the invited email. On success the user is added as a workspace member with the invited policies.
 //	@Tags			Auth
 //	@Accept			json
 //	@Produce		json
-//	@Param			body	body		workspace_model.AcceptInvitationRequest	true	"Invitation acceptance data"
-//	@Success		200		{object}	workspace_model.AcceptInvitationResponse	"Invitation accepted"
+//	@Param			body	body		workspace_model.ClaimInvitationRequest		true	"Claim data"
+//	@Success		200		{object}	workspace_model.ClaimInvitationResponse		"Invitation claimed"
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid or expired invitation"
+//	@Failure		403		{object}	common_model.DescriptiveError	"Email mismatch"
+//	@Failure		409		{object}	common_model.DescriptiveError	"Already a member"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
-//	@Router			/auth/accept-invitation [post]
-func AcceptInvitation(c *fiber.Ctx) error {
-	var req workspace_model.AcceptInvitationRequest
+//	@Security		ApiKeyAuth
+//	@Router			/auth/invitation/claim [post]
+func ClaimInvitation(c *fiber.Ctx) error {
+	user := workspace_middleware.GetUser(c)
+
+	var req workspace_model.ClaimInvitationRequest
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewParseJsonError(err).Send(),
 		)
 	}
 
-	// Find invitation
+	if err := validators.Validator().Struct(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
+		)
+	}
+
+	// Find invitation by token
 	var invitation workspace_entity.WorkspaceInvitation
 	if err := database.DB.Where("token = ?", req.Token).
 		Preload("Workspace").First(&invitation).Error; err != nil {
@@ -229,10 +240,17 @@ func AcceptInvitation(c *fiber.Ctx) error {
 		)
 	}
 
-	// Validate invitation
+	// Validate invitation state
 	if !invitation.IsValid() {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewApiError("Invitation is invalid or expired", nil, "auth").Send(),
+		)
+	}
+
+	// Enforce email match (case-insensitive)
+	if strings.ToLower(strings.TrimSpace(user.Email)) != strings.ToLower(strings.TrimSpace(invitation.Email)) {
+		return c.Status(fiber.StatusForbidden).JSON(
+			common_model.NewApiError("This invitation was not issued for your email address", nil, "auth").Send(),
 		)
 	}
 
@@ -241,39 +259,6 @@ func AcceptInvitation(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("Failed to start transaction", tx.Error, "database").Send(),
 		)
-	}
-
-	// Check if user exists
-	var user user_entity.User
-	userExists := true
-	if err := tx.Where("email = ?", invitation.Email).First(&user).Error; err != nil {
-		userExists = false
-	}
-
-	if !userExists {
-		// User doesn't exist, create new user
-		if req.Name == nil || req.Password == nil {
-			tx.Rollback()
-			return c.Status(fiber.StatusBadRequest).JSON(
-				common_model.NewApiError("Name and password are required for new users", nil, "validation").Send(),
-			)
-		}
-
-		defaultRole := user_model.User
-		user = user_entity.User{
-			Name:          *req.Name,
-			Email:         invitation.Email,
-			Password:      *req.Password,
-			Role:          &defaultRole,
-			EmailVerified: true, // Email verified via invitation
-		}
-
-		if err := tx.Create(&user).Error; err != nil {
-			tx.Rollback()
-			return c.Status(fiber.StatusInternalServerError).JSON(
-				common_model.NewApiError("Failed to create user", err, "database").Send(),
-			)
-		}
 	}
 
 	// Check if already a member
@@ -328,9 +313,8 @@ func AcceptInvitation(c *fiber.Ctx) error {
 		)
 	}
 
-	return c.Status(fiber.StatusOK).JSON(workspace_model.AcceptInvitationResponse{
-		Message:     "Invitation accepted",
+	return c.Status(fiber.StatusOK).JSON(workspace_model.ClaimInvitationResponse{
+		Message:     "Invitation claimed",
 		WorkspaceID: invitation.WorkspaceID.String(),
-		UserID:      user.ID.String(),
 	})
 }

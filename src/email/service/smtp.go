@@ -111,13 +111,13 @@ func (s *SMTPService) SendWorkspaceInvitation(to, workspaceName, inviterName, to
         <h2>You've been invited!</h2>
         <p><strong>{{.InviterName}}</strong> has invited you to join the workspace <strong>{{.WorkspaceName}}</strong>.</p>
         <p style="text-align: center; margin: 30px 0;">
-            <a href="{{.BaseURL}}/auth/accept-invitation?token={{.Token}}"
+            <a href="{{.BaseURL}}/invitation?token={{.Token}}"
                style="background-color: #2196F3; color: white; padding: 14px 28px; text-decoration: none; border-radius: 4px; display: inline-block;">
                 Accept Invitation
             </a>
         </p>
         <p>Or copy and paste this link into your browser:</p>
-        <p style="word-break: break-all; color: #666;">{{.BaseURL}}/auth/accept-invitation?token={{.Token}}</p>
+        <p style="word-break: break-all; color: #666;">{{.BaseURL}}/invitation?token={{.Token}}</p>
         <p>This invitation will expire in 7 days.</p>
         <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
         <p style="color: #999; font-size: 12px;">If you don't want to join this workspace, you can safely ignore this email.</p>
