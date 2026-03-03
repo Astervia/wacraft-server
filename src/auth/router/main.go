@@ -3,6 +3,7 @@ package auth_router
 import (
 	auth_handler "github.com/Astervia/wacraft-server/src/auth/handler"
 	auth_middleware "github.com/Astervia/wacraft-server/src/auth/middleware"
+	billing_middleware "github.com/Astervia/wacraft-server/src/billing/middleware"
 	workspace_handler "github.com/Astervia/wacraft-server/src/workspace/handler"
 	"github.com/gofiber/fiber/v2"
 )
@@ -42,5 +43,10 @@ func passwordResetRoutes(group fiber.Router) {
 }
 
 func invitationRoutes(group fiber.Router) {
-	group.Post("/accept-invitation", workspace_handler.AcceptInvitation)
+	group.Post("/invitation/claim",
+		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
+		billing_middleware.ThroughputMiddleware,
+		workspace_handler.ClaimInvitation,
+	)
 }

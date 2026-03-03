@@ -1721,28 +1721,16 @@ definitions:
       updated_at:
         type: string
     type: object
-  github_com_Astervia_wacraft-core_src_workspace_model.AcceptInvitationRequest:
+  github_com_Astervia_wacraft-core_src_workspace_model.ClaimInvitationRequest:
     properties:
-      name:
-        description: Required if user doesn't exist
-        maxLength: 100
-        minLength: 2
-        type: string
-      password:
-        description: Required if user doesn't exist
-        maxLength: 72
-        minLength: 8
-        type: string
       token:
         type: string
     required:
     - token
     type: object
-  github_com_Astervia_wacraft-core_src_workspace_model.AcceptInvitationResponse:
+  github_com_Astervia_wacraft-core_src_workspace_model.ClaimInvitationResponse:
     properties:
       message:
-        type: string
-      user_id:
         type: string
       workspace_id:
         type: string
@@ -1801,6 +1789,8 @@ definitions:
         items:
           $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.Policy'
         type: array
+      token:
+        type: string
       workspace_id:
         type: string
     type: object
@@ -2966,36 +2956,6 @@ info:
   title: wacraft Server API
   version: 0.2.0
 paths:
-  /auth/accept-invitation:
-    post:
-      consumes:
-      - application/json
-      description: Accepts a workspace invitation. Creates user if doesn't exist.
-      parameters:
-      - description: Invitation acceptance data
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.AcceptInvitationRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Invitation accepted
-          schema:
-            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.AcceptInvitationResponse'
-        "400":
-          description: Invalid or expired invitation
-          schema:
-            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
-      summary: Accept invitation
-      tags:
-      - Auth
   /auth/forgot-password:
     post:
       consumes:
@@ -3024,6 +2984,48 @@ paths:
           schema:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
       summary: Request password reset
+      tags:
+      - Auth
+  /auth/invitation/claim:
+    post:
+      consumes:
+      - application/json
+      description: Claims a workspace invitation. The caller must be authenticated
+        and their email must match the invited email. On success the user is added
+        as a workspace member with the invited policies.
+      parameters:
+      - description: Claim data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.ClaimInvitationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Invitation claimed
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_workspace_model.ClaimInvitationResponse'
+        "400":
+          description: Invalid or expired invitation
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "403":
+          description: Email mismatch
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "409":
+          description: Already a member
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: Claim invitation
       tags:
       - Auth
   /auth/register:
@@ -8943,7 +8945,9 @@ paths:
     post:
       consumes:
       - application/json
-      description: Creates an invitation for a user to join the workspace.
+      description: Creates an invitation for a user to join the workspace. Always
+        returns the invitation token so the inviter can share it out-of-band when
+        email is not configured.
       parameters:
       - description: Workspace ID
         in: path
@@ -8968,7 +8972,7 @@ paths:
           schema:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "409":
-          description: User already member
+          description: User already member or pending invite
           schema:
             $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
         "500":
