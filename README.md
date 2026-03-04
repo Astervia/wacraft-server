@@ -6,12 +6,21 @@ With **wacraft**, you can send and receive WhatsApp messages, handle webhooks, a
 
 For details on client usage, see:
 
-- 🔗 [wacraft repository](https://github.com/Astervia/wacraft): full-featured platform for supporters.
-- 🔗 [wacraft-lite repository](https://github.com/Astervia/wacraft): optimized for typical use cases and non-supporters.
+- 🔗 [wacraft repository](https://github.com/Astervia/wacraft): full-featured open-source platform.
 
-Both repositories include full API documentation.
+> ℹ️ Note: The `wacraft-lite` repository is now legacy, as all features are fully open-source in the main repository.
 
 This `README.md` focuses on the server (this repo).
+
+## ✨ What's New in v0.2.x
+
+wacraft v0.2.x introduces major architectural upgrades:
+
+- **Multitenancy & Workspaces**: The server now securely isolates data across multiple tenants. Within each tenant, you can create workspaces to organize your teams or projects seamlessly.
+- **Multiple Phone Number Configurations**: A single deployment can now manage and route messages for multiple WhatsApp Cloud API phone numbers simultaneously, rather than being limited to just one.
+- **n8n Integrations**: Built-in support for sending WhatsApp Cloud API events directly to n8n, enabling powerful visual workflow automation. For integration nodes, check out [n8n-nodes-wacraft](https://github.com/Astervia/n8n-nodes-wacraft).
+
+*Note: Due to these changes, WhatsApp API credentials and associated webhooks are no longer set via global environment variables. They are now configured per-workspace via our API or client interface, providing maximum flexibility.*
 
 ## 🧪 Getting Started
 
@@ -23,8 +32,10 @@ Create your `.env` file:
 cp .env.local .env
 ```
 
-Fill in your WhatsApp Cloud API credentials and other required values. Descriptions for each variable are included in `.env.local`.
+Fill in your database connection, server secrets, and other required values. Descriptions for each variable are included in `.env.local`.
 
+> ⚠️ **Note for v0.2.x:** WhatsApp Cloud API credentials are now configured per-workspace via the API, rather than globally in the `.env` file.
+> 
 > ⚠️ **Don't skip variables or remove them unless you're sure.**
 
 ### 🐳 Running with Docker (Recommended)
@@ -127,36 +138,6 @@ We authenticate event notification webhooks from Meta using the App Secret and t
 
 > ℹ️ Tip: Make sure that you are passing the correct headers if using a reverse proxy like Nginx or Traefik or an AWS Load Balancer. The `X-Hub-Signature-256` header must be passed to the backend server.
 
-## 🚀 Creating the Lite Version
+## 🚀 Legacy Lite Version
 
-We maintain a separate repository for the [lite version of wacraft-server](https://github.com/Astervia/wacraft-server-lite), which removes premium-only features for public or non-supporter use.
-
-To generate and sync the `wacraft-server-lite` repository from this full version, use the `sync-lite.sh` script in the root directory.
-
-### 🔧 How It Works
-
-- Removes all code blocks between `// PREMIUM STARTS` and `// PREMIUM ENDS` across all files.
-- Deletes specific premium-only files and folders.
-- Commits the result and pushes to the [`wacraft-server-lite`](https://github.com/Astervia/wacraft-server-lite) repository.
-
-### ▶️ How to Use
-
-1. Make the script executable:
-
-    ```bash
-    chmod +x ./sync-lite.sh
-    ```
-
-2. Run the script:
-
-    ```bash
-    ./sync-lite.sh
-    ```
-
-This will:
-
-- Clone the current repository into a temporary directory,
-- Strip out premium-only code and content,
-- Push the cleaned version directly to the `main` branch of `wacraft-server-lite`.
-
-> ⚠️ This script will **force-push** to the `lite` repo, replacing its contents with the current state from this repository (minus premium content). Use with care.
+We previously maintained a separate repository for a [lite version of wacraft-server](https://github.com/Astervia/wacraft-server-lite). **This is now legacy.** The full backend, including all formerly premium-only features, is now completely open-source and available in this repository.
