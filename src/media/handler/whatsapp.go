@@ -31,7 +31,7 @@ import (
 //	@Router			/media/whatsapp/{mediaID} [get]
 func GetWhatsAppMediaURL(ctx *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(ctx)
-	wabaApi, err := phone_config_service.GetWorkspaceWhatsAppAPI(workspace)
+	wabaApi, err := phone_config_service.GetFirstConfigAPIByWorkspace(workspace.ID)
 	if err != nil {
 		return ctx.Status(fiber.StatusNotFound).JSON(
 			cmn_model.NewApiError("workspace WhatsApp API not found", err, "service").Send(),
@@ -71,7 +71,7 @@ func GetWhatsAppMediaURL(ctx *fiber.Ctx) error {
 //	@Router			/media/whatsapp/download/{mediaID} [get]
 func DownloadWhatsAppMedia(ctx *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(ctx)
-	wabaApi, err := phone_config_service.GetWorkspaceWhatsAppAPI(workspace)
+	wabaApi, err := phone_config_service.GetFirstConfigAPIByWorkspace(workspace.ID)
 	if err != nil {
 		return ctx.Status(fiber.StatusNotFound).JSON(
 			cmn_model.NewApiError("workspace WhatsApp API not found", err, "service").Send(),
@@ -122,7 +122,7 @@ func DownloadWhatsAppMedia(ctx *fiber.Ctx) error {
 //	@Router			/media/whatsapp/media-info/download [post]
 func DownloadFromMediaInfo(ctx *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(ctx)
-	wabaApi, err := phone_config_service.GetWorkspaceWhatsAppAPI(workspace)
+	wabaApi, err := phone_config_service.GetFirstConfigAPIByWorkspace(workspace.ID)
 	if err != nil {
 		return ctx.Status(fiber.StatusNotFound).JSON(
 			cmn_model.NewApiError("workspace WhatsApp API not found", err, "service").Send(),
@@ -174,7 +174,7 @@ func DownloadFromMediaInfo(ctx *fiber.Ctx) error {
 //	@Router			/media/whatsapp/upload [post]
 func UploadWhatsAppMedia(ctx *fiber.Ctx) error {
 	workspace := workspace_middleware.GetWorkspace(ctx)
-	wabaApi, err := phone_config_service.GetWorkspaceWhatsAppAPI(workspace)
+	wabaApi, err := phone_config_service.GetFirstConfigAPIByWorkspace(workspace.ID)
 	if err != nil {
 		return ctx.Status(fiber.StatusNotFound).JSON(
 			cmn_model.NewApiError("workspace WhatsApp API not found", err, "service").Send(),
