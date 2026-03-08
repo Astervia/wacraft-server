@@ -13,6 +13,7 @@ func Route(app *fiber.App) {
 	group := app.Group("/billing")
 
 	planRoutes(group)
+	planPriceRoutes(group)
 	subscriptionRoutes(group)
 	usageRoutes(group)
 	endpointWeightRoutes(group)
@@ -55,6 +56,44 @@ func planRoutes(group fiber.Router) {
 		workspace_middleware.RequirePolicy(workspace_model.PolicyBillingAdmin),
 		billing_middleware.ThroughputMiddleware,
 		billing_handler.DeletePlan)
+}
+
+func planPriceRoutes(group fiber.Router) {
+	price := group.Group("/plan/:plan_id/price")
+
+	// List prices - any authenticated user can see a plan's prices
+	price.Get("/",
+		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
+		billing_middleware.ThroughputMiddleware,
+		billing_handler.GetPlanPrices)
+
+	// Create price - admin only
+	price.Post("/",
+		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyBillingAdmin),
+		billing_middleware.ThroughputMiddleware,
+		billing_handler.CreatePlanPrice)
+
+	// Update price - admin only
+	price.Put("/",
+		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyBillingAdmin),
+		billing_middleware.ThroughputMiddleware,
+		billing_handler.UpdatePlanPrice)
+
+	// Delete price - admin only
+	price.Delete("/",
+		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyBillingAdmin),
+		billing_middleware.ThroughputMiddleware,
+		billing_handler.DeletePlanPrice)
 }
 
 func subscriptionRoutes(group fiber.Router) {

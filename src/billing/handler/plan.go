@@ -42,7 +42,7 @@ func GetPlans(c *fiber.Ctx) error {
 		&query.Paginate,
 		&query.DateOrder,
 		&query.DateWhere,
-		"", database.DB,
+		"", database.DB.Preload("Prices"),
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
@@ -88,8 +88,6 @@ func CreatePlan(c *fiber.Ctx) error {
 		ThroughputLimit: body.ThroughputLimit,
 		WindowSeconds:   body.WindowSeconds,
 		DurationDays:    body.DurationDays,
-		PriceCents:      body.PriceCents,
-		Currency:        body.Currency,
 		IsDefault:       body.IsDefault,
 		IsCustom:        body.IsCustom,
 		Active:          body.Active,
@@ -166,12 +164,6 @@ func UpdatePlan(c *fiber.Ctx) error {
 	}
 	if body.DurationDays != nil {
 		updates["duration_days"] = *body.DurationDays
-	}
-	if body.PriceCents != nil {
-		updates["price_cents"] = *body.PriceCents
-	}
-	if body.Currency != nil {
-		updates["currency"] = *body.Currency
 	}
 	if body.IsDefault != nil {
 		updates["is_default"] = *body.IsDefault
