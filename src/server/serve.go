@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	auth_middleware "github.com/Astervia/wacraft-server/src/auth/middleware"
 	auth_router "github.com/Astervia/wacraft-server/src/auth/router"
 	billing_router "github.com/Astervia/wacraft-server/src/billing/router"
 	"github.com/Astervia/wacraft-server/src/billing/service/payment"
@@ -40,6 +41,9 @@ func serve() {
 		AllowOrigins:  "*",
 		ExposeHeaders: "Retry-After, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-RateLimit-Scope, X-RateLimit-Scope-ID, X-RateLimit-Fallback",
 	}))
+
+	app.Use(auth_middleware.NewDenylistMiddleware())
+	app.Use(auth_middleware.NewAllowlistMiddleware())
 
 	validators.InitValidators()
 
