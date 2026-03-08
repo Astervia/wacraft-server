@@ -126,6 +126,24 @@ func Checkout(c *fiber.Ctx) error {
 		)
 	}
 
+	// Resolve the plan price: by requested currency or by the default price.
+	var planPrice billing_entity.PlanPrice
+	priceQuery := database.DB.Where("plan_id = ?", body.PlanID)
+	if body.Currency != "" {
+		priceQuery = priceQuery.Where("currency = ?", body.Currency)
+	} else {
+		priceQuery = priceQuery.Where("is_default = true")
+	}
+	if err := priceQuery.First(&planPrice).Error; err != nil {
+		msg := "no default price configured for this plan"
+		if body.Currency != "" {
+			msg = "no price configured for currency: " + body.Currency
+		}
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewApiError(msg, err, "handler").Send(),
+		)
+	}
+
 	// Default to payment (one-time) mode if not specified
 	paymentMode := body.PaymentMode
 	if paymentMode == "" {
@@ -133,7 +151,7 @@ func Checkout(c *fiber.Ctx) error {
 	}
 
 	checkoutURL, externalID, err := payment.ActiveProvider.CreateCheckoutSession(
-		plan, paymentMode, user.ID, user.Email, user.StripeCustomerID,
+		plan, planPrice, paymentMode, user.ID, user.Email, user.StripeCustomerID,
 		body.Scope, body.WorkspaceID, body.SuccessURL, body.CancelURL,
 	)
 	if err != nil {

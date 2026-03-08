@@ -803,6 +803,302 @@ const docTemplate = `{
                 }
             }
         },
+        "/billing/plan/{plan_id}/price/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Returns all currency-specific prices for a billing plan.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Billing Plan Price"
+                ],
+                "summary": "List plan prices",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Plan ID",
+                        "name": "plan_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "desc",
+                        "x-enum-varnames": [
+                            "Asc",
+                            "Desc"
+                        ],
+                        "name": "created_at",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "created_at_geq",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "created_at_leq",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Number of items to return",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "The offset from where to start the items",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "desc",
+                        "x-enum-varnames": [
+                            "Asc",
+                            "Desc"
+                        ],
+                        "name": "updated_at",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "updated_at_geq",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "updated_at_leq",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of plan prices",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_billing_entity.PlanPrice"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid parameters",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
+                    }
+                ],
+                "description": "Updates an existing plan price. If IsDefault is set to true, the previous default for that plan is unset. Requires billing.admin policy.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Billing Plan Price"
+                ],
+                "summary": "Update a plan price",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Plan ID",
+                        "name": "plan_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Plan Price ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated price data",
+                        "name": "price",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_billing_model.UpdatePlanPrice"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated plan price",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_billing_entity.PlanPrice"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
+                    }
+                ],
+                "description": "Adds a new currency-specific price to a billing plan. If IsDefault is true, the previous default for that plan is unset. Requires billing.admin policy.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Billing Plan Price"
+                ],
+                "summary": "Create a plan price",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Plan ID",
+                        "name": "plan_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Price data",
+                        "name": "price",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_billing_model.CreatePlanPrice"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created plan price",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_billing_entity.PlanPrice"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
+                    }
+                ],
+                "description": "Removes a currency-specific price from a billing plan. Requires billing.admin policy.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Billing Plan Price"
+                ],
+                "summary": "Delete a plan price",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Plan ID",
+                        "name": "plan_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Plan Price ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid parameters",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                        }
+                    }
+                }
+            }
+        },
         "/billing/subscription/": {
             "get": {
                 "security": [
@@ -10968,9 +11264,6 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "currency": {
-                    "type": "string"
-                },
                 "description": {
                     "type": "string"
                 },
@@ -10992,19 +11285,13 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "price_cents": {
-                    "description": "Price in smallest currency unit",
-                    "type": "integer"
+                "prices": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_billing_entity.PlanPrice"
+                    }
                 },
                 "slug": {
-                    "type": "string"
-                },
-                "stripe_price_id": {
-                    "description": "Cached Stripe Price ID for subscription checkouts",
-                    "type": "string"
-                },
-                "stripe_product_id": {
-                    "description": "Cached Stripe Product ID for subscription checkouts",
                     "type": "string"
                 },
                 "throughput_limit": {
@@ -11017,6 +11304,43 @@ const docTemplate = `{
                 "window_seconds": {
                     "description": "Time window in seconds",
                     "type": "integer"
+                }
+            }
+        },
+        "github_com_Astervia_wacraft-core_src_billing_entity.PlanPrice": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_default": {
+                    "type": "boolean"
+                },
+                "plan": {
+                    "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_billing_entity.Plan"
+                },
+                "plan_id": {
+                    "type": "string"
+                },
+                "price_cents": {
+                    "type": "integer"
+                },
+                "stripe_price_id": {
+                    "description": "Cached Stripe Price ID for subscription checkouts",
+                    "type": "string"
+                },
+                "stripe_product_id": {
+                    "description": "Cached Stripe Product ID for subscription checkouts",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -11115,6 +11439,10 @@ const docTemplate = `{
             ],
             "properties": {
                 "cancel_url": {
+                    "type": "string"
+                },
+                "currency": {
+                    "description": "If empty, uses the plan's default price",
                     "type": "string"
                 },
                 "payment_mode": {
@@ -11221,7 +11549,6 @@ const docTemplate = `{
         "github_com_Astervia_wacraft-core_src_billing_model.CreatePlan": {
             "type": "object",
             "required": [
-                "currency",
                 "duration_days",
                 "name",
                 "slug",
@@ -11230,9 +11557,6 @@ const docTemplate = `{
             "properties": {
                 "active": {
                     "type": "boolean"
-                },
-                "currency": {
-                    "type": "string"
                 },
                 "description": {
                     "type": "string"
@@ -11249,10 +11573,6 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "price_cents": {
-                    "type": "integer",
-                    "minimum": 0
-                },
                 "slug": {
                     "type": "string"
                 },
@@ -11262,6 +11582,24 @@ const docTemplate = `{
                 },
                 "window_seconds": {
                     "type": "integer"
+                }
+            }
+        },
+        "github_com_Astervia_wacraft-core_src_billing_model.CreatePlanPrice": {
+            "type": "object",
+            "required": [
+                "currency"
+            ],
+            "properties": {
+                "currency": {
+                    "type": "string"
+                },
+                "is_default": {
+                    "type": "boolean"
+                },
+                "price_cents": {
+                    "type": "integer",
+                    "minimum": 0
                 }
             }
         },
@@ -11314,9 +11652,6 @@ const docTemplate = `{
                 "active": {
                     "type": "boolean"
                 },
-                "currency": {
-                    "type": "string"
-                },
                 "description": {
                     "type": "string"
                 },
@@ -11332,10 +11667,6 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "price_cents": {
-                    "type": "integer",
-                    "minimum": 0
-                },
                 "slug": {
                     "type": "string"
                 },
@@ -11345,6 +11676,18 @@ const docTemplate = `{
                 },
                 "window_seconds": {
                     "type": "integer"
+                }
+            }
+        },
+        "github_com_Astervia_wacraft-core_src_billing_model.UpdatePlanPrice": {
+            "type": "object",
+            "properties": {
+                "is_default": {
+                    "type": "boolean"
+                },
+                "price_cents": {
+                    "type": "integer",
+                    "minimum": 0
                 }
             }
         },

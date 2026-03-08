@@ -48,9 +48,11 @@ type Provider interface {
 
 	// CreateCheckoutSession initiates a payment flow and returns a checkout URL.
 	// paymentMode determines whether a one-time payment or recurring subscription is created.
+	// planPrice carries the resolved currency and price for this checkout session.
 	// For subscription mode, customerID may be provided to reuse an existing customer.
 	CreateCheckoutSession(
 		plan billing_entity.Plan,
+		planPrice billing_entity.PlanPrice,
 		paymentMode billing_model.PaymentMode,
 		userID uuid.UUID,
 		userEmail string,
