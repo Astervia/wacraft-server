@@ -10082,6 +10082,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
                         }
                     },
+                    "409": {
+                        "description": "Workspace already has a phone config",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                        }
+                    },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
