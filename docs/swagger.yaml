@@ -666,6 +666,11 @@ definitions:
         type: boolean
       name:
         type: string
+      prices:
+        description: 'Optional: create prices atomically with the plan'
+        items:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_billing_model.CreatePlanPrice'
+        type: array
       slug:
         type: string
       throughput_limit:
