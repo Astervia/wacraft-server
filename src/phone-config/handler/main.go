@@ -57,6 +57,7 @@ func deactivateConflictingPhoneConfigs(wabaID string) error {
 //	@Param			config			body		phone_config_model.CreatePhoneConfig	true	"Phone config data"
 //	@Success		201				{object}	phone_config_entity.PhoneConfig	"Created phone config"
 //	@Failure		400				{object}	common_model.DescriptiveError	"Invalid request"
+//	@Failure		409				{object}	common_model.DescriptiveError	"Workspace already has a phone config"
 //	@Failure		500				{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
 //	@Security		WorkspaceAuth
@@ -74,6 +75,21 @@ func Create(c *fiber.Ctx) error {
 	if err := validators.Validator().Struct(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewValidationError(err).Send(),
+		)
+	}
+
+	// Enforce single phone config per workspace
+	var existingCount int64
+	if err := database.DB.Model(&phone_config_entity.PhoneConfig{}).
+		Where("workspace_id = ?", workspace.ID).
+		Count(&existingCount).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			common_model.NewApiError("failed to check existing phone configs", err, "database").Send(),
+		)
+	}
+	if existingCount > 0 {
+		return c.Status(fiber.StatusConflict).JSON(
+			common_model.NewApiError("workspace already has a phone config", nil, "handler").Send(),
 		)
 	}
 
