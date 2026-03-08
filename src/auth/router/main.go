@@ -39,7 +39,10 @@ func passwordResetRoutes(group fiber.Router) {
 		auth_handler.ForgotPassword,
 	)
 
-	group.Post("/reset-password", auth_handler.ResetPassword)
+	group.Post("/reset-password",
+		auth_middleware.ResetPasswordRateLimiter,
+		auth_handler.ResetPassword,
+	)
 }
 
 func invitationRoutes(group fiber.Router) {
