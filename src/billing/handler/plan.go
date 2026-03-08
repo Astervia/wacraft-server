@@ -8,6 +8,7 @@ import (
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 // GetPlans returns a paginated list of billing plans.
@@ -93,12 +94,33 @@ func CreatePlan(c *fiber.Ctx) error {
 		Active:          body.Active,
 	}
 
-	result, err := repository.Create(plan, database.DB)
-	if err != nil {
+	var result billing_entity.Plan
+	if err := database.DB.Transaction(func(tx *gorm.DB) error {
+		var err error
+		result, err = repository.Create(plan, tx)
+		if err != nil {
+			return err
+		}
+
+		for _, p := range body.Prices {
+			if err := tx.Create(&billing_entity.PlanPrice{
+				PlanID:     result.ID,
+				Currency:   p.Currency,
+				PriceCents: p.PriceCents,
+				IsDefault:  p.IsDefault,
+			}).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	}); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("unable to create plan", err, "repository").Send(),
 		)
 	}
+
+	// Reload with prices so the response is complete.
+	database.DB.Preload("Prices").First(&result, result.ID)
 
 	return c.Status(fiber.StatusCreated).JSON(result)
 }

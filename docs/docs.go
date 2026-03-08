@@ -11573,6 +11573,13 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "prices": {
+                    "description": "Optional: create prices atomically with the plan",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_billing_model.CreatePlanPrice"
+                    }
+                },
                 "slug": {
                     "type": "string"
                 },
