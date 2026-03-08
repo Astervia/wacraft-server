@@ -60,6 +60,7 @@ func automaticMigrations() {
 		&status_entity.Status{},
 		// Billing
 		&billing_entity.Plan{},
+		&billing_entity.PlanPrice{},
 		&billing_entity.EndpointWeight{},
 		&billing_entity.Subscription{},
 		&billing_entity.UsageLog{},

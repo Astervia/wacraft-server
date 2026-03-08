@@ -467,8 +467,6 @@ definitions:
         type: boolean
       created_at:
         type: string
-      currency:
-        type: string
       description:
         type: string
       duration_days:
@@ -484,16 +482,11 @@ definitions:
         type: boolean
       name:
         type: string
-      price_cents:
-        description: Price in smallest currency unit
-        type: integer
+      prices:
+        items:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_billing_entity.PlanPrice'
+        type: array
       slug:
-        type: string
-      stripe_price_id:
-        description: Cached Stripe Price ID for subscription checkouts
-        type: string
-      stripe_product_id:
-        description: Cached Stripe Product ID for subscription checkouts
         type: string
       throughput_limit:
         description: Weighted requests allowed per window. <= 0 means unlimited.
@@ -503,6 +496,31 @@ definitions:
       window_seconds:
         description: Time window in seconds
         type: integer
+    type: object
+  github_com_Astervia_wacraft-core_src_billing_entity.PlanPrice:
+    properties:
+      created_at:
+        type: string
+      currency:
+        type: string
+      id:
+        type: string
+      is_default:
+        type: boolean
+      plan:
+        $ref: '#/definitions/github_com_Astervia_wacraft-core_src_billing_entity.Plan'
+      plan_id:
+        type: string
+      price_cents:
+        type: integer
+      stripe_price_id:
+        description: Cached Stripe Price ID for subscription checkouts
+        type: string
+      stripe_product_id:
+        description: Cached Stripe Product ID for subscription checkouts
+        type: string
+      updated_at:
+        type: string
     type: object
   github_com_Astervia_wacraft-core_src_billing_entity.Subscription:
     properties:
@@ -561,6 +579,9 @@ definitions:
   github_com_Astervia_wacraft-core_src_billing_model.CheckoutRequest:
     properties:
       cancel_url:
+        type: string
+      currency:
+        description: If empty, uses the plan's default price
         type: string
       payment_mode:
         allOf:
@@ -635,8 +656,6 @@ definitions:
     properties:
       active:
         type: boolean
-      currency:
-        type: string
       description:
         type: string
       duration_days:
@@ -647,9 +666,6 @@ definitions:
         type: boolean
       name:
         type: string
-      price_cents:
-        minimum: 0
-        type: integer
       slug:
         type: string
       throughput_limit:
@@ -658,11 +674,22 @@ definitions:
       window_seconds:
         type: integer
     required:
-    - currency
     - duration_days
     - name
     - slug
     - window_seconds
+    type: object
+  github_com_Astervia_wacraft-core_src_billing_model.CreatePlanPrice:
+    properties:
+      currency:
+        type: string
+      is_default:
+        type: boolean
+      price_cents:
+        minimum: 0
+        type: integer
+    required:
+    - currency
     type: object
   github_com_Astervia_wacraft-core_src_billing_model.PaymentMode:
     enum:
@@ -700,8 +727,6 @@ definitions:
     properties:
       active:
         type: boolean
-      currency:
-        type: string
       description:
         type: string
       duration_days:
@@ -712,15 +737,20 @@ definitions:
         type: boolean
       name:
         type: string
-      price_cents:
-        minimum: 0
-        type: integer
       slug:
         type: string
       throughput_limit:
         description: <= 0 means unlimited throughput
         type: integer
       window_seconds:
+        type: integer
+    type: object
+  github_com_Astervia_wacraft-core_src_billing_model.UpdatePlanPrice:
+    properties:
+      is_default:
+        type: boolean
+      price_cents:
+        minimum: 0
         type: integer
     type: object
   github_com_Astervia_wacraft-core_src_billing_model.UsageSummary:
@@ -3463,6 +3493,200 @@ paths:
       summary: Update a billing plan
       tags:
       - Billing Plan
+  /billing/plan/{plan_id}/price/:
+    delete:
+      consumes:
+      - application/json
+      description: Removes a currency-specific price from a billing plan. Requires
+        billing.admin policy.
+      parameters:
+      - description: Plan ID
+        in: path
+        name: plan_id
+        required: true
+        type: string
+      - description: Plan Price ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+          schema:
+            type: string
+        "400":
+          description: Invalid parameters
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      - WorkspaceAuth: []
+      summary: Delete a plan price
+      tags:
+      - Billing Plan Price
+    get:
+      consumes:
+      - application/json
+      description: Returns all currency-specific prices for a billing plan.
+      parameters:
+      - description: Plan ID
+        in: path
+        name: plan_id
+        required: true
+        type: string
+      - default: desc
+        enum:
+        - asc
+        - desc
+        in: query
+        name: created_at
+        type: string
+        x-enum-varnames:
+        - Asc
+        - Desc
+      - in: query
+        name: created_at_geq
+        type: string
+      - in: query
+        name: created_at_leq
+        type: string
+      - default: 10
+        description: Number of items to return
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: The offset from where to start the items
+        in: query
+        name: offset
+        type: integer
+      - default: desc
+        enum:
+        - asc
+        - desc
+        in: query
+        name: updated_at
+        type: string
+        x-enum-varnames:
+        - Asc
+        - Desc
+      - in: query
+        name: updated_at_geq
+        type: string
+      - in: query
+        name: updated_at_leq
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of plan prices
+          schema:
+            items:
+              $ref: '#/definitions/github_com_Astervia_wacraft-core_src_billing_entity.PlanPrice'
+            type: array
+        "400":
+          description: Invalid parameters
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: List plan prices
+      tags:
+      - Billing Plan Price
+    post:
+      consumes:
+      - application/json
+      description: Adds a new currency-specific price to a billing plan. If IsDefault
+        is true, the previous default for that plan is unset. Requires billing.admin
+        policy.
+      parameters:
+      - description: Plan ID
+        in: path
+        name: plan_id
+        required: true
+        type: string
+      - description: Price data
+        in: body
+        name: price
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_billing_model.CreatePlanPrice'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created plan price
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_billing_entity.PlanPrice'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      - WorkspaceAuth: []
+      summary: Create a plan price
+      tags:
+      - Billing Plan Price
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing plan price. If IsDefault is set to true, the
+        previous default for that plan is unset. Requires billing.admin policy.
+      parameters:
+      - description: Plan ID
+        in: path
+        name: plan_id
+        required: true
+        type: string
+      - description: Plan Price ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Updated price data
+        in: body
+        name: price
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Astervia_wacraft-core_src_billing_model.UpdatePlanPrice'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated plan price
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_billing_entity.PlanPrice'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      - WorkspaceAuth: []
+      summary: Update a plan price
+      tags:
+      - Billing Plan Price
   /billing/subscription/:
     delete:
       consumes:

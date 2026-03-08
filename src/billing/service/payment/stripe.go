@@ -34,6 +34,7 @@ func (s *StripeProvider) Name() string {
 
 func (s *StripeProvider) CreateCheckoutSession(
 	plan billing_entity.Plan,
+	planPrice billing_entity.PlanPrice,
 	paymentMode billing_model.PaymentMode,
 	userID uuid.UUID,
 	userEmail string,
@@ -58,15 +59,16 @@ func (s *StripeProvider) CreateCheckoutSession(
 	}
 
 	if paymentMode == billing_model.PaymentModeSubscription {
-		return s.createSubscriptionCheckout(plan, userEmail, customerID, metadata, successURL, cancelURL)
+		return s.createSubscriptionCheckout(plan, planPrice, userEmail, customerID, metadata, successURL, cancelURL)
 	}
 
-	return s.createPaymentCheckout(plan, metadata, successURL, cancelURL)
+	return s.createPaymentCheckout(plan, planPrice, metadata, successURL, cancelURL)
 }
 
-// createPaymentCheckout creates a one-time payment checkout session (existing behavior).
+// createPaymentCheckout creates a one-time payment checkout session.
 func (s *StripeProvider) createPaymentCheckout(
 	plan billing_entity.Plan,
+	planPrice billing_entity.PlanPrice,
 	metadata map[string]string,
 	successURL string,
 	cancelURL string,
@@ -76,12 +78,12 @@ func (s *StripeProvider) createPaymentCheckout(
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
 			{
 				PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
-					Currency: stripe.String(plan.Currency),
+					Currency: stripe.String(planPrice.Currency),
 					ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
 						Name:        stripe.String(plan.Name),
 						Description: plan.Description,
 					},
-					UnitAmount: stripe.Int64(plan.PriceCents),
+					UnitAmount: stripe.Int64(planPrice.PriceCents),
 				},
 				Quantity: stripe.Int64(1),
 			},
@@ -102,14 +104,15 @@ func (s *StripeProvider) createPaymentCheckout(
 // createSubscriptionCheckout creates a recurring subscription checkout session.
 func (s *StripeProvider) createSubscriptionCheckout(
 	plan billing_entity.Plan,
+	planPrice billing_entity.PlanPrice,
 	userEmail string,
 	existingCustomerID *string,
 	metadata map[string]string,
 	successURL string,
 	cancelURL string,
 ) (string, string, error) {
-	// Ensure a Stripe Price exists for this plan.
-	priceID, err := s.ensureStripePrice(plan)
+	// Ensure a Stripe Price exists for this plan price.
+	priceID, err := s.ensureStripePrice(plan, planPrice)
 	if err != nil {
 		return "", "", fmt.Errorf("failed to ensure stripe price: %w", err)
 	}
@@ -147,34 +150,46 @@ func (s *StripeProvider) createSubscriptionCheckout(
 	return sess.URL, sess.ID, nil
 }
 
-// ensureStripePrice lazily creates a Stripe Product + Price for subscription plans
-// and caches the IDs on the plan entity.
-func (s *StripeProvider) ensureStripePrice(plan billing_entity.Plan) (string, error) {
-	if plan.StripePriceID != nil && *plan.StripePriceID != "" {
-		return *plan.StripePriceID, nil
+// ensureStripePrice lazily creates a Stripe Product + Price for a plan price entry
+// and caches the IDs on the plan_price record. Reuses an existing Stripe Product
+// if another price entry for the same plan already has one.
+func (s *StripeProvider) ensureStripePrice(plan billing_entity.Plan, planPrice billing_entity.PlanPrice) (string, error) {
+	if planPrice.StripePriceID != nil && *planPrice.StripePriceID != "" {
+		return *planPrice.StripePriceID, nil
 	}
 
-	// Create a Stripe Product.
-	prodParams := &stripe.ProductParams{
-		Name: stripe.String(plan.Name),
-		Metadata: map[string]string{
-			"plan_id": plan.ID.String(),
-		},
-	}
-	if plan.Description != nil {
-		prodParams.Description = plan.Description
-	}
+	// Try to reuse an existing Stripe Product from another price entry of this plan.
+	var productID string
+	var existing billing_entity.PlanPrice
+	err := database.DB.
+		Where("plan_id = ? AND stripe_product_id IS NOT NULL AND id != ?", plan.ID, planPrice.ID).
+		First(&existing).Error
+	if err == nil && existing.StripeProductID != nil {
+		productID = *existing.StripeProductID
+	} else {
+		// Create a new Stripe Product for this plan.
+		prodParams := &stripe.ProductParams{
+			Name: stripe.String(plan.Name),
+			Metadata: map[string]string{
+				"plan_id": plan.ID.String(),
+			},
+		}
+		if plan.Description != nil {
+			prodParams.Description = plan.Description
+		}
 
-	prod, err := product.New(prodParams)
-	if err != nil {
-		return "", fmt.Errorf("failed to create stripe product: %w", err)
+		prod, err := product.New(prodParams)
+		if err != nil {
+			return "", fmt.Errorf("failed to create stripe product: %w", err)
+		}
+		productID = prod.ID
 	}
 
 	// Create a Stripe Price with recurring interval based on duration_days.
 	priceParams := &stripe.PriceParams{
-		Product:    stripe.String(prod.ID),
-		UnitAmount: stripe.Int64(plan.PriceCents),
-		Currency:   stripe.String(plan.Currency),
+		Product:    stripe.String(productID),
+		UnitAmount: stripe.Int64(planPrice.PriceCents),
+		Currency:   stripe.String(planPrice.Currency),
 		Recurring: &stripe.PriceRecurringParams{
 			Interval:      stripe.String(string(stripe.PriceRecurringIntervalDay)),
 			IntervalCount: stripe.Int64(int64(plan.DurationDays)),
@@ -186,12 +201,12 @@ func (s *StripeProvider) ensureStripePrice(plan billing_entity.Plan) (string, er
 		return "", fmt.Errorf("failed to create stripe price: %w", err)
 	}
 
-	// Persist the IDs back to the plan in the database.
-	database.DB.Model(&billing_entity.Plan{}).
-		Where("id = ?", plan.ID).
+	// Persist the IDs back to the plan price record in the database.
+	database.DB.Model(&billing_entity.PlanPrice{}).
+		Where("id = ?", planPrice.ID).
 		Updates(map[string]any{
 			"stripe_price_id":   p.ID,
-			"stripe_product_id": prod.ID,
+			"stripe_product_id": productID,
 		})
 
 	return p.ID, nil

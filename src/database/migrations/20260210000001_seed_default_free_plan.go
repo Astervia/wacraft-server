@@ -28,8 +28,6 @@ func upSeedDefaultFreePlan(ctx context.Context, tx *sql.Tx) error {
 			ThroughputLimit: env.DefaultFreeThroughput,
 			WindowSeconds:   env.DefaultFreeWindow,
 			DurationDays:    36500, // ~100 years (perpetual)
-			PriceCents:      0,
-			Currency:        "usd",
 			IsDefault:       true,
 			IsCustom:        false,
 			Active:          true,
