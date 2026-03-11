@@ -17,6 +17,7 @@ func init() {
 	loadRegistrationEnv()
 	loadFirewallEnv()
 	loadBillingEnv()
+	loadRedisEnv()
 }
 
 func loadEnv() {
