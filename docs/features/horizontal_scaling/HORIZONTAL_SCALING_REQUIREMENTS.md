@@ -24,10 +24,12 @@ SYNC_BACKEND=redis    # use Redis for distributed state
 ### FR-2: Interface-Based Abstraction
 
 All synchronization components MUST be defined as Go interfaces. Each interface MUST have at least two implementations:
+
 - An in-memory implementation (wrapping current behavior)
 - A distributed implementation (using Redis/RabbitMQ)
 
 This applies to:
+
 - Distributed locks (replacing `MutexSwapper`)
 - Pub/Sub messaging (replacing channel-based handshakes and WebSocket broadcast)
 - Distributed counters (replacing `sync.Map`-based counters)
@@ -37,6 +39,7 @@ This applies to:
 ### FR-3: Message-Status Synchronization
 
 The distributed implementation MUST preserve the current semantics:
+
 - When a message is sent, the system waits for a status webhook before saving.
 - When a status arrives before the message is saved, the system waits for the message to be saved.
 - Timeout behavior is preserved.
@@ -56,6 +59,7 @@ When a webhook event (message or status) is processed by any instance, ALL conne
 ### FR-6: Distributed Locking
 
 All `MutexSwapper` usages MUST be replaceable with distributed locks that provide:
+
 - Per-key mutual exclusion across instances.
 - Automatic lock expiry (to handle instance crashes).
 - The same semantics as the current `Lock`/`Unlock` API.
@@ -83,6 +87,7 @@ Switching between memory and external mode MUST only require a restart with diff
 ### NFR-2: Graceful Degradation
 
 If the external backend (Redis/RabbitMQ) becomes temporarily unavailable:
+
 - The system SHOULD log errors clearly.
 - The system SHOULD NOT crash.
 - It is acceptable for synchronization to degrade (e.g., missed WebSocket broadcasts, temporary lock failures) as long as data integrity is preserved at the database level.
@@ -94,6 +99,7 @@ The distributed implementations SHOULD add no more than ~5ms of latency per sync
 ### NFR-4: Development Environment Parity
 
 The `docker-compose.dev.yml` MUST support both modes:
+
 - A minimal profile without Redis/RabbitMQ for in-memory development.
 - A full profile with Redis/RabbitMQ for distributed testing.
 
@@ -118,16 +124,17 @@ Switching between profiles SHOULD be a single command (e.g., `make dev` vs `make
 
 Redis is the recommended backend for the distributed implementations because it provides all the required primitives in a single dependency:
 
-| Requirement | Redis Primitive |
-|---|---|
-| Distributed Lock | `SET NX EX` (Redlock for multi-node) or Redisson-style |
-| Pub/Sub | `PUBLISH` / `SUBSCRIBE` |
-| Request-Reply | Pub/Sub with correlation IDs or `BLPOP`-based queues |
-| Distributed Counter | `INCR` / `INCRBY` with TTL |
-| Distributed Cache | `GET` / `SET` / `DEL` with TTL |
-| Work Queue | `BRPOPLPUSH` or Redis Streams (`XADD` / `XREADGROUP`) |
+| Requirement         | Redis Primitive                                        |
+| ------------------- | ------------------------------------------------------ |
+| Distributed Lock    | `SET NX EX` (Redlock for multi-node) or Redisson-style |
+| Pub/Sub             | `PUBLISH` / `SUBSCRIBE`                                |
+| Request-Reply       | Pub/Sub with correlation IDs or `BLPOP`-based queues   |
+| Distributed Counter | `INCR` / `INCRBY` with TTL                             |
+| Distributed Cache   | `GET` / `SET` / `DEL` with TTL                         |
+| Work Queue          | `BRPOPLPUSH` or Redis Streams (`XADD` / `XREADGROUP`)  |
 
 **Advantages:**
+
 - Single additional dependency covers all use cases.
 - Sub-millisecond latency.
 - Well-supported Go client libraries (`go-redis/redis`).
@@ -144,12 +151,12 @@ RabbitMQ MAY be used for the webhook delivery worker if more robust message deli
 
 ## Environment Variables
 
-| Variable | Type | Default | Description |
-|---|---|---|---|
-| `SYNC_BACKEND` | `string` | `memory` | Synchronization backend: `memory` or `redis` |
-| `REDIS_URL` | `string` | `redis://localhost:6379` | Redis connection URL (only used when `SYNC_BACKEND=redis`) |
-| `REDIS_PASSWORD` | `string` | _(empty)_ | Redis password (optional) |
-| `REDIS_DB` | `int` | `0` | Redis database number |
-| `REDIS_KEY_PREFIX` | `string` | `wacraft:` | Prefix for all Redis keys (namespace isolation) |
-| `REDIS_LOCK_TTL` | `duration` | `30s` | Default TTL for distributed locks |
-| `REDIS_CACHE_TTL` | `duration` | `5m` | Default TTL for cache entries |
+| Variable           | Type       | Default                  | Description                                                |
+| ------------------ | ---------- | ------------------------ | ---------------------------------------------------------- |
+| `SYNC_BACKEND`     | `string`   | `memory`                 | Synchronization backend: `memory` or `redis`               |
+| `REDIS_URL`        | `string`   | `redis://localhost:6379` | Redis connection URL (only used when `SYNC_BACKEND=redis`) |
+| `REDIS_PASSWORD`   | `string`   | _(empty)_                | Redis password (optional)                                  |
+| `REDIS_DB`         | `int`      | `0`                      | Redis database number                                      |
+| `REDIS_KEY_PREFIX` | `string`   | `wacraft:`               | Prefix for all Redis keys (namespace isolation)            |
+| `REDIS_LOCK_TTL`   | `duration` | `30s`                    | Default TTL for distributed locks                          |
+| `REDIS_CACHE_TTL`  | `duration` | `5m`                     | Default TTL for cache entries                              |
