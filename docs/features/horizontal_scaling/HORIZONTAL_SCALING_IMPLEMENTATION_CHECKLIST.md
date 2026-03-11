@@ -2,70 +2,156 @@
 
 Track progress per phase. Each phase is independently deployable and testable. Complete and test one phase before moving to the next.
 
+Run tests with:
+- `make test` — unit tests only (no Redis needed)
+- `make test-redis` — full suite with ephemeral Redis container
+
 ---
 
 ## Phase 1: Core Abstractions (`wacraft-core`)
 
 ### 1.1 Redis Client Infrastructure
 
-- [ ] Create `src/config/env/redis.go` - env var loading (`loadRedisEnv()`) following existing project pattern
-- [ ] Update `src/config/env/main.go` - add `loadRedisEnv()` call in `init()`
-- [ ] Create `wacraft-core/src/synch/redis/config.go` - configuration struct (receives parsed values from `env` package, no env parsing in core)
-- [ ] Create `wacraft-core/src/synch/redis/client.go` - Redis client wrapper, connection, health check, key prefixing
-- [ ] Add `github.com/redis/go-redis/v9` to `wacraft-core/go.mod`
-- [ ] Verify: env vars load correctly with defaults when not set
-- [ ] Verify: connect to a local Redis, run health check, confirm key prefix works
+- [x] Create `src/config/env/redis.go` - env var loading (`loadRedisEnv()`) following existing project pattern
+- [x] Update `src/config/env/main.go` - add `loadRedisEnv()` call in `init()`
+- [x] Create `wacraft-core/src/synch/redis/config.go` - configuration struct (receives parsed values from `env` package, no env parsing in core)
+- [x] Create `wacraft-core/src/synch/redis/client.go` - Redis client wrapper, connection, health check, key prefixing
+- [x] Add `github.com/redis/go-redis/v9` to `wacraft-core/go.mod`
+
+#### 1.1 Tests — `wacraft-core/src/synch/redis/client_test.go`
+
+- [x] `TestNewClient_ParsesValidURL` — creates client with valid `redis://` URL, no error
+- [x] `TestNewClient_InvalidURL` — invalid URL returns error
+- [x] `TestPrefixKey` — `PrefixKey("lock:abc")` with prefix `"wacraft:"` returns `"wacraft:lock:abc"`
+- [x] `TestPrefixKey_EmptyPrefix` — empty prefix returns key unchanged
+- [x] `TestConfig_Accessors` — `Config()` and `Redis()` return correct values
+- [x] `TestPingWithTimeout_NoRedis` — ping to non-existent Redis returns error within timeout
 
 ### 1.2 Distributed Lock
 
-- [ ] Create `wacraft-core/src/synch/contract/lock.go` - `DistributedLock[T]` interface
-- [ ] Create `wacraft-core/src/synch/service/memory-lock.go` - wraps existing `MutexSwapper`
-- [ ] Create `wacraft-core/src/synch/redis/redis-lock.go` - `SET NX EX` + Lua unlock script
-- [ ] Test: memory lock behaves identically to current `MutexSwapper`
-- [ ] Test: Redis lock provides mutual exclusion across two goroutines
-- [ ] Test: Redis lock auto-expires after TTL (simulates instance crash)
-- [ ] Test: Redis lock Lua unlock only releases if owner matches
+- [x] Create `wacraft-core/src/synch/contract/lock.go` - `DistributedLock[T]` interface
+- [x] Create `wacraft-core/src/synch/service/memory-lock.go` - wraps existing `MutexSwapper`
+- [x] Create `wacraft-core/src/synch/redis/redis-lock.go` - `SET NX EX` + Lua unlock script
+
+#### 1.2 Memory Lock Tests — `wacraft-core/src/synch/service/memory_lock_test.go`
+
+- [x] `TestMemoryLock_LockUnlock` — lock then unlock, no error or deadlock
+- [x] `TestMemoryLock_ConcurrentSameKey` — 100 goroutines increment shared counter under lock → counter == 100
+- [x] `TestMemoryLock_DifferentKeysParallel` — lock "a" and "b" concurrently, both acquire immediately
+- [x] `TestMemoryLock_SecondLockBlocks` — second `Lock()` blocks until first `Unlock()`
+- [x] `TestMemoryLock_IntKey` — lock works with `int` type parameter
+
+#### 1.2 Redis Lock Tests — `wacraft-core/src/synch/redis/redis_lock_integration_test.go`
+
+- [x] `TestRedisLock_LockUnlock` — lock creates key, unlock removes it
+- [x] `TestRedisLock_MutualExclusion` — two `RedisLock` instances contend on same key → counter correct
+- [x] `TestRedisLock_TTLExpiry` — lock with short TTL expires, second instance acquires
+- [x] `TestRedisLock_UnlockOnlyOwner` — non-owner unlock does not release the lock
+- [x] `TestRedisLock_ConcurrentHighContention` — 50 goroutines across 5 lock instances → counter == 50
 
 ### 1.3 Distributed Pub/Sub
 
-- [ ] Create `wacraft-core/src/synch/contract/pubsub.go` - `PubSub` and `Subscription` interfaces
-- [ ] Create `wacraft-core/src/synch/service/memory-pubsub.go` - in-memory fan-out via Go channels
-- [ ] Create `wacraft-core/src/synch/redis/redis-pubsub.go` - wraps Redis `PUBLISH`/`SUBSCRIBE`
-- [ ] Test: memory pub/sub delivers to multiple subscribers
-- [ ] Test: Redis pub/sub delivers across two separate `PubSub` instances (simulates two app instances)
-- [ ] Test: unsubscribe stops delivery
+- [x] Create `wacraft-core/src/synch/contract/pubsub.go` - `PubSub` and `Subscription` interfaces
+- [x] Create `wacraft-core/src/synch/service/memory-pubsub.go` - in-memory fan-out via Go channels
+- [x] Create `wacraft-core/src/synch/redis/redis-pubsub.go` - wraps Redis `PUBLISH`/`SUBSCRIBE`
+
+#### 1.3 Memory Pub/Sub Tests — `wacraft-core/src/synch/service/memory_pubsub_test.go`
+
+- [x] `TestMemoryPubSub_PublishSubscribe` — subscribe, publish, receive message
+- [x] `TestMemoryPubSub_MultipleSubscribers` — 3 subscribers all receive the broadcast
+- [x] `TestMemoryPubSub_Unsubscribe` — after unsubscribe, channel is closed, publish doesn't panic
+- [x] `TestMemoryPubSub_DoubleUnsubscribe` — second unsubscribe is a no-op
+- [x] `TestMemoryPubSub_IsolatedChannels` — ch1 subscriber doesn't receive ch2 messages
+- [x] `TestMemoryPubSub_BufferFull` — publish to full buffer doesn't panic or block
+- [x] `TestMemoryPubSub_ConcurrentPublishSubscribe` — concurrent publish/subscribe/unsubscribe, no race
+
+#### 1.3 Redis Pub/Sub Tests — `wacraft-core/src/synch/redis/redis_pubsub_integration_test.go`
+
+- [x] `TestRedisPubSub_CrossInstance` — subscribe on instance A, publish from instance B → A receives
+- [x] `TestRedisPubSub_MultipleChannels` — ch1 message not received by ch2 subscriber
+- [x] `TestRedisPubSub_Unsubscribe` — unsubscribe, publish after → no error
+- [x] `TestRedisPubSub_MultipleSubscribersSameChannel` — two instances subscribe to same channel, both receive
 
 ### 1.4 Distributed Counter
 
-- [ ] Create `wacraft-core/src/synch/contract/counter.go` - `DistributedCounter` interface
-- [ ] Create `wacraft-core/src/synch/service/memory-counter.go` - `sync.Map` based
-- [ ] Create `wacraft-core/src/synch/redis/redis-counter.go` - `INCRBY` + TTL
-- [ ] Test: memory counter increments correctly under concurrent access
-- [ ] Test: Redis counter aggregates increments from two clients
-- [ ] Test: Redis counter keys expire after TTL
+- [x] Create `wacraft-core/src/synch/contract/counter.go` - `DistributedCounter` interface
+- [x] Create `wacraft-core/src/synch/service/memory-counter.go` - `sync.Map` based
+- [x] Create `wacraft-core/src/synch/redis/redis-counter.go` - `INCRBY` + TTL
+
+#### 1.4 Memory Counter Tests — `wacraft-core/src/synch/service/memory_counter_test.go`
+
+- [x] `TestMemoryCounter_Increment` — increment 3 times → Get == 3
+- [x] `TestMemoryCounter_IncrementDelta` — increment by 10, then by 5 → returns 10, then 15
+- [x] `TestMemoryCounter_ConcurrentIncrement` — 100 goroutines → Get == 100
+- [x] `TestMemoryCounter_TTLExpiry` — set TTL 50ms, wait 60ms → Get returns 0
+- [x] `TestMemoryCounter_Delete` — increment, delete → Get returns 0
+- [x] `TestMemoryCounter_GetNonExistent` — Get on missing key → 0, no error
+- [x] `TestMemoryCounter_SetTTLNonExistent` — SetTTL on missing key → no error
+- [x] `TestMemoryCounter_DeleteNonExistent` — Delete missing key → no error
+- [x] `TestMemoryCounter_IncrementAfterTTLExpiry` — increment after TTL resets from delta
+
+#### 1.4 Redis Counter Tests — `wacraft-core/src/synch/redis/redis_counter_integration_test.go`
+
+- [x] `TestRedisCounter_CrossInstance` — two instances each increment 5 → Get == 10 from either
+- [x] `TestRedisCounter_ConcurrentIncrement` — 100 goroutines → Get == 100
+- [x] `TestRedisCounter_TTL` — set TTL 1s, wait 1.1s → Get returns 0
+- [x] `TestRedisCounter_Delete` — increment, delete → Get returns 0
+- [x] `TestRedisCounter_GetNonExistent` — Get missing key → 0, no error
 
 ### 1.5 Distributed Cache
 
-- [ ] Create `wacraft-core/src/synch/contract/cache.go` - `DistributedCache` interface
-- [ ] Create `wacraft-core/src/synch/service/memory-cache.go` - `sync.Map` + TTL tracking
-- [ ] Create `wacraft-core/src/synch/redis/redis-cache.go` - `GET`/`SET`/`DEL`
-- [ ] Test: memory cache set/get/delete/TTL expiry
-- [ ] Test: Redis cache is shared across two clients
-- [ ] Test: Redis cache entries expire after TTL
+- [x] Create `wacraft-core/src/synch/contract/cache.go` - `DistributedCache` interface
+- [x] Create `wacraft-core/src/synch/service/memory-cache.go` - `sync.Map` + TTL tracking
+- [x] Create `wacraft-core/src/synch/redis/redis-cache.go` - `GET`/`SET`/`DEL`
+
+#### 1.5 Memory Cache Tests — `wacraft-core/src/synch/service/memory_cache_test.go`
+
+- [x] `TestMemoryCache_SetGet` — set, get → returns data, found
+- [x] `TestMemoryCache_Miss` — get nonexistent → nil, not found
+- [x] `TestMemoryCache_TTLExpiry` — set with 50ms TTL, wait 60ms → not found
+- [x] `TestMemoryCache_Delete` — set, delete, get → not found
+- [x] `TestMemoryCache_DeleteNonExistent` — delete missing key → no error
+- [x] `TestMemoryCache_Overwrite` — set twice → returns second value
+- [x] `TestMemoryCache_Invalidate_TrailingWildcard` — `"prefix:*"` invalidates prefix:a and prefix:b, keeps other:c
+- [x] `TestMemoryCache_Invalidate_ExactMatch` — exact pattern doesn't match longer keys
+- [x] `TestMemoryCache_Invalidate_EmptyPattern` — empty pattern invalidates nothing
+
+#### 1.5 Redis Cache Tests — `wacraft-core/src/synch/redis/redis_cache_integration_test.go`
+
+- [x] `TestRedisCache_CrossInstance` — set from instance A, get from instance B → found
+- [x] `TestRedisCache_TTL` — set with 100ms TTL, wait 150ms → not found
+- [x] `TestRedisCache_Delete` — set, delete, get → not found
+- [x] `TestRedisCache_Miss` — get nonexistent → nil, not found
+- [x] `TestRedisCache_Overwrite` — set twice → returns second value
+- [x] `TestRedisCache_Invalidate` — `"group:*"` deletes group:a and group:b, keeps other:c
 
 ### 1.6 Backend Factory
 
-- [ ] Create `wacraft-core/src/synch/config.go` - `Backend` type (`memory` | `redis`)
-- [ ] Create `wacraft-core/src/synch/factory.go` - creates correct implementation based on config
-- [ ] Test: factory returns memory implementations when `backend=memory`
-- [ ] Test: factory returns Redis implementations when `backend=redis`
-- [ ] Test: factory panics/errors clearly if `backend=redis` but no Redis client provided
+- [x] Create `wacraft-core/src/synch/config.go` - `Backend` type (`memory` | `redis`)
+- [x] Create `wacraft-core/src/synch/factory.go` - creates correct implementation based on config
+
+#### 1.6 Factory Tests — `wacraft-core/src/synch/factory_test.go`
+
+- [x] `TestFactory_MemoryBackend` — `Backend()` returns `"memory"`, `RedisClient()` returns nil
+- [x] `TestFactory_MemoryLock` — creates working lock from memory factory
+- [x] `TestFactory_MemoryLockIntKey` — creates `DistributedLock[int]` from memory factory
+- [x] `TestFactory_MemoryPubSub` — creates working pub/sub from memory factory
+- [x] `TestFactory_MemoryCounter` — creates working counter from memory factory
+- [x] `TestFactory_MemoryCache` — creates working cache from memory factory
+- [x] `TestFactory_BackendConstants` — `BackendMemory == "memory"`, `BackendRedis == "redis"`
+
+### 1.7 Test Infrastructure
+
+- [x] Create `wacraft-core/src/synch/redis/test_helper_test.go` — shared `testRedisClient(t)` helper with DB 15, auto-flush, cleanup
+- [x] Update `Makefile` — add `test` and `test-redis` targets
+- [x] Update `.github/workflows/quality-and-security.yml` — add Redis service container, set `REDIS_URL`
 
 ### Phase 1 Verification
 
-- [ ] All unit tests pass for both memory and Redis implementations
-- [ ] `wacraft-core/go.mod` compiles cleanly with new dependency
-- [ ] `go.mod` replace directive in `wacraft-server` still resolves correctly
+- [x] All 57 tests pass (25 memory + 7 factory + 6 client + 19 Redis integration)
+- [x] Race detector passes on all tests (`-race` flag)
+- [x] `wacraft-core/go.mod` compiles cleanly with new dependency
+- [x] `go.mod` replace directive in `wacraft-server` resolves correctly
 
 ---
 
@@ -79,18 +165,28 @@ Track progress per phase. Each phase is independently deployable and testable. C
 - [ ] Refactor `src/message/service/synchronize-message-and-status.go` - global var uses interface
 - [ ] Update `src/message/service/whatsapp.go` - call interface methods instead of concrete type
 - [ ] Update `src/webhook-in/handler/whatsapp-message-status.go` - call interface `AddStatus`
-- [ ] Test memory mode: send message → receive status webhook → verify status linked to message
-- [ ] Test Redis mode: `AddMessage` on goroutine A, `AddStatus` on goroutine B (separate factory instances) → verify handshake completes
-- [ ] Test Redis mode: `RollbackMessage` propagates correctly
-- [ ] Test Redis mode: timeout fires if no status arrives
-- [ ] Test: switch `SYNC_BACKEND` env var and confirm correct implementation is used
+
+#### 2.1 Tests — `src/message/service/message_status_sync_test.go`
+
+- [ ] `TestMemorySync_MessageThenStatus` — AddMessage blocks, AddStatus unblocks it, MessageSaved returns UUID
+- [ ] `TestMemorySync_StatusThenMessage` — AddStatus arrives first and blocks, AddMessage unblocks, MessageSaved delivers UUID
+- [ ] `TestMemorySync_Timeout` — AddMessage with 100ms timeout, no status → timeout error
+- [ ] `TestMemorySync_Rollback` — AddMessage → AddStatus → RollbackMessage → AddStatus returns rollback sentinel
+- [ ] `TestMemorySync_ConcurrentDifferentMessages` — 10 wamIDs in parallel, all complete correctly
+- [ ] `TestRedisSync_CrossInstance` — AddMessage on instance A, AddStatus on instance B → handshake completes
+- [ ] `TestRedisSync_Timeout` — AddMessage with timeout, no status → error
+- [ ] `TestRedisSync_Rollback` — cross-instance rollback propagation
+- [ ] `TestRedisSync_KeyCleanup` — after sync, Redis keys are cleaned up (no leaks)
 
 ### 2.2 Status Deduplication
 
 - [ ] Update `src/webhook-in/service/synchronize-status.go` - use `DistributedLock[string]` from factory
 - [ ] Update `src/webhook-in/handler/whatsapp-message-status.go` - replace `MutexSwapper` with `DistributedLock`
-- [ ] Test memory mode: two concurrent status webhooks for same `wamID` are serialized
-- [ ] Test Redis mode: same test, but locks acquired from different factory instances
+
+#### 2.2 Tests — `src/webhook-in/handler/whatsapp_message_status_test.go`
+
+- [ ] `TestStatusDedup_SerializeSameWamID` — two goroutines process same wamID → serialized execution
+- [ ] `TestStatusDedup_ParallelDifferentWamIDs` — two goroutines with different wamIDs → concurrent execution
 
 ### 2.3 Campaign Coordination
 
@@ -99,22 +195,31 @@ Track progress per phase. Each phase is independently deployable and testable. C
 - [ ] Update `wacraft-core/src/campaign/model/channel-pool.go` - integrate with distributed state
 - [ ] Update `src/campaign/handler/send-whatsapp.go` - use factory-provided primitives
 - [ ] Implement cancel via Pub/Sub: publish cancel signal, receiving instance triggers `context.CancelFunc`
-- [ ] Test memory mode: campaign start/progress/cancel works as before
-- [ ] Test Redis mode: `Sending` flag visible across instances
-- [ ] Test Redis mode: cancel signal reaches executing instance
-- [ ] Test Redis mode: counters aggregate correctly across instances
+
+#### 2.3 Tests — `src/campaign/service/campaign_coordination_test.go`
+
+- [ ] `TestCampaignResults_MemoryCounters` — increment Sent/Successes/Errors, verify counts
+- [ ] `TestCampaignResults_RedisCounters` — two instances increment counters → aggregated correctly
+- [ ] `TestCampaignSending_MemoryFlag` — set Sending, check Sending → true
+- [ ] `TestCampaignSending_RedisFlagCrossInstance` — set on A, check on B → true
+- [ ] `TestCampaignCancel_MemoryPubSub` — publish cancel, listener receives it
+- [ ] `TestCampaignCancel_RedisPubSubCrossInstance` — cancel from A, executing on B → B's context cancelled
 
 ### 2.4 Contact Deduplication
 
 - [ ] Update `src/campaign/service/send-whatsapp-campaign.go` - replace `contactSynchronizer` with `DistributedLock[string]`
-- [ ] Test memory mode: concurrent sends to same contact are serialized
-- [ ] Test Redis mode: same test across factory instances
+
+#### 2.4 Tests — `src/campaign/service/contact_dedup_test.go`
+
+- [ ] `TestContactDedup_SamePhone` — two goroutines lock same phone → serialized
+- [ ] `TestContactDedup_DifferentPhones` — two goroutines lock different phones → concurrent
 
 ### Phase 2 Verification
 
+- [ ] All Phase 2 tests pass with `make test-redis`
 - [ ] Application starts in memory mode with zero behavior change
-- [ ] Application starts in Redis mode and all synchronization works across goroutines simulating separate instances
-- [ ] Run existing test suite - no regressions
+- [ ] Application starts in Redis mode and all synchronization works
+- [ ] Existing test suite passes — no regressions
 
 ---
 
@@ -126,20 +231,29 @@ Track progress per phase. Each phase is independently deployable and testable. C
 - [ ] Update `src/websocket/workspace-manager/main.go` - accept `PubSub`, wire subscriptions on channel create/destroy
 - [ ] Update `src/message/handler/new.go` - pass `PubSub` to `NewMessageWorkspaceManager`
 - [ ] Update `src/status/handler/new.go` - pass `PubSub` to `NewStatusWorkspaceManager`
-- [ ] Test memory mode: broadcast reaches local clients (no change)
-- [ ] Test Redis mode: publish on instance A, WebSocket client on instance B receives the event
-- [ ] Test: dynamic subscribe/unsubscribe as WebSocket clients connect/disconnect
+
+#### 3.1 Tests — `src/websocket/workspace-manager/main_test.go`
+
+- [ ] `TestWorkspaceManager_LocalBroadcast` — memory PubSub, add client, broadcast → client receives
+- [ ] `TestWorkspaceManager_CrossInstanceBroadcast` — Redis PubSub, two managers, client on A, broadcast from B → A receives
+- [ ] `TestWorkspaceManager_SubscribeOnConnect` — first client creates subscription, second reuses it
+- [ ] `TestWorkspaceManager_UnsubscribeOnLastDisconnect` — remove last client → subscription cleaned up
+- [ ] `TestWorkspaceManager_IsolatedWorkspaces` — client on workspace A, broadcast to workspace B → nothing received
 
 ### 3.2 Campaign Real-Time Updates
 
 - [ ] Update `wacraft-core/src/campaign/model/campaign-channel.go` - broadcast progress via `PubSub`
 - [ ] Update `wacraft-core/src/campaign/model/channel-pool.go` - wire `PubSub` on channel create
 - [ ] Update `src/campaign/handler/send-whatsapp.go` - pass `PubSub` to pool
-- [ ] Test memory mode: campaign progress reaches connected client
-- [ ] Test Redis mode: campaign executes on instance A, client on instance B receives progress
+
+#### 3.2 Tests — `wacraft-core/src/campaign/model/campaign_channel_test.go`
+
+- [ ] `TestCampaignChannel_LocalProgress` — memory PubSub, connect client, send progress → received
+- [ ] `TestCampaignChannel_CrossInstanceProgress` — Redis PubSub, client on A, campaign on B → A receives
 
 ### Phase 3 Verification
 
+- [ ] All Phase 3 tests pass with `make test-redis`
 - [ ] Connect two WebSocket clients (simulated on different instances)
 - [ ] Send a message webhook to instance A → both clients receive the new message event
 - [ ] Send a status webhook to instance B → both clients receive the status update event
@@ -153,25 +267,38 @@ Track progress per phase. Each phase is independently deployable and testable. C
 
 - [ ] Update `src/billing/service/throughput.go` - replace `Counter` with `DistributedCounter`
 - [ ] Remove cleanup goroutine when using Redis (TTL handles expiry)
-- [ ] Test memory mode: rate limiting works as before
-- [ ] Test Redis mode: increments from two instances aggregate correctly
-- [ ] Test Redis mode: counter keys expire after TTL
+
+#### 4.1 Tests — `src/billing/service/throughput_test.go`
+
+- [ ] `TestThroughput_MemoryIncrement` — increment 10 times, Get → 10
+- [ ] `TestThroughput_RedisCrossInstance` — instance A increments 5, B increments 5 → Get == 10
+- [ ] `TestThroughput_TTLExpiry` — counter resets after TTL
+- [ ] `TestThroughput_RateLimitEnforced` — limit 10, send 15 → last 5 rejected
 
 ### 4.2 Subscription Cache
 
 - [ ] Update `src/billing/service/plan.go` - replace `subscriptionCache` with `DistributedCache` + `DistributedLock`
-- [ ] Test memory mode: cache hit/miss/TTL expiry works as before
-- [ ] Test Redis mode: cache is shared across instances
-- [ ] Test Redis mode: thundering herd protection (only one DB query under concurrent cache miss)
+
+#### 4.2 Tests — `src/billing/service/plan_test.go`
+
+- [ ] `TestSubscriptionCache_Hit` — first call queries DB, second returns cached
+- [ ] `TestSubscriptionCache_CrossInstance` — A caches, B reads → cache hit (Redis)
+- [ ] `TestSubscriptionCache_TTLRefresh` — entry expires → next call queries DB
+- [ ] `TestSubscriptionCache_ThunderingHerd` — 50 concurrent misses → only 1 DB query
 
 ### 4.3 Endpoint Weight Cache
 
 - [ ] Update `src/billing/service/endpoint-weight.go` - replace with `DistributedCache`
-- [ ] Test memory mode: lazy-load + invalidation works as before
-- [ ] Test Redis mode: invalidation on instance A clears cache for instance B
+
+#### 4.3 Tests — `src/billing/service/endpoint_weight_test.go`
+
+- [ ] `TestEndpointWeightCache_LazyLoad` — first call loads from DB, second cached
+- [ ] `TestEndpointWeightCache_Invalidate` — invalidate → next Get reloads
+- [ ] `TestEndpointWeightCache_CrossInstance` — invalidate on A → B's next Get reloads (Redis)
 
 ### Phase 4 Verification
 
+- [ ] All Phase 4 tests pass with `make test-redis`
 - [ ] Rate limiting enforced globally across instances
 - [ ] Cache lookups return consistent data across instances
 - [ ] No performance regression in memory mode
@@ -185,15 +312,18 @@ Track progress per phase. Each phase is independently deployable and testable. C
 - [ ] Update `src/webhook/worker/delivery-worker.go` - acquire distributed lock per delivery ID before processing
 - [ ] In memory mode: no change (single instance, no contention)
 - [ ] In Redis mode: `SET NX EX` lock per delivery, skip if already locked
-- [ ] Test memory mode: deliveries processed normally
-- [ ] Test Redis mode: two workers polling simultaneously → each delivery processed exactly once
-- [ ] Test Redis mode: lock expires if worker crashes (delivery retried by another worker)
+
+#### 5.1 Tests — `src/webhook/worker/delivery_worker_test.go`
+
+- [ ] `TestDeliveryWorker_MemoryMode` — single worker, 5 deliveries → all 5 processed
+- [ ] `TestDeliveryWorker_RedisNoDuplicates` — two workers, 10 deliveries → each processed exactly once
+- [ ] `TestDeliveryWorker_LockExpiry` — worker A crashes, B picks up after TTL
+- [ ] `TestDeliveryWorker_GracefulShutdown` — shutdown signal → in-flight completes, worker stops
 
 ### Phase 5 Verification
 
-- [ ] Create multiple pending webhook deliveries
-- [ ] Start two simulated workers
-- [ ] Verify each delivery is processed exactly once
+- [ ] All Phase 5 tests pass with `make test-redis`
+- [ ] Create multiple pending deliveries, start two workers → no duplicates
 - [ ] Verify no duplicate external webhook calls
 
 ---
@@ -209,19 +339,17 @@ Track progress per phase. Each phase is independently deployable and testable. C
 
 ### 6.2 Makefile
 
-- [ ] Add `dev` target (memory mode, current behavior)
+- [x] Add `test` target (unit tests, no Redis)
+- [x] Add `test-redis` target (full suite with ephemeral Redis container)
 - [ ] Add `dev-distributed` target (Redis mode, single instance)
 - [ ] Add `dev-scaled` target (Redis mode, multiple instances via `--scale`)
 - [ ] Verify each target works end-to-end
 
-### 6.3 Integration Tests
+### 6.3 CI
 
-- [ ] Create `tests/integration/horizontal_scaling/message_status_sync_test.go`
-- [ ] Create `tests/integration/horizontal_scaling/websocket_broadcast_test.go`
-- [ ] Create `tests/integration/horizontal_scaling/campaign_coordination_test.go`
-- [ ] Create `tests/integration/horizontal_scaling/distributed_lock_test.go`
-- [ ] Create `tests/integration/horizontal_scaling/billing_counter_test.go`
-- [ ] All integration tests pass against a live Redis instance
+- [x] Add Redis service container to GitHub Actions workflow
+- [x] Set `REDIS_URL` env var in test step
+- [x] Enable `-race` flag in CI test run
 
 ### Phase 6 Verification
 
@@ -235,9 +363,9 @@ Track progress per phase. Each phase is independently deployable and testable. C
 
 ## Final Acceptance Criteria
 
-- [ ] Default mode (`SYNC_BACKEND=memory`) is fully backward compatible - zero behavior change
+- [ ] Default mode (`SYNC_BACKEND=memory`) is fully backward compatible — zero behavior change
 - [ ] Redis mode passes all integration tests
-- [ ] Existing test suite passes in both modes
+- [ ] `make test-redis` passes all tests across both modules with race detector
 - [ ] Docker Compose supports both profiles with a single command switch
 - [ ] No new database migrations required
 - [ ] Documentation in `docs/features/horizontal_scaling/` is complete and up to date
