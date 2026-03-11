@@ -60,3 +60,24 @@ dev-migrate-to:
 dev-migrate-status:
 	echo "Checking migration status"
 	docker compose -f docker-compose.dev.yml exec app go run main.go migrate:status
+
+# Run unit tests (no external dependencies)
+test:
+	go test ./... -v
+	cd wacraft-core && go test ./... -v
+
+# Run all tests including Redis integration tests.
+# Starts an ephemeral Redis container, runs tests, then removes it.
+test-redis:
+	@echo "Starting ephemeral Redis container..."
+	@docker run -d --name wacraft-test-redis -p 16379:6379 redis:7-alpine > /dev/null
+	@echo "Waiting for Redis to be ready..."
+	@until docker exec wacraft-test-redis redis-cli ping 2>/dev/null | grep -q PONG; do sleep 0.1; done
+	@echo "Running tests..."
+	@REDIS_URL=redis://localhost:16379 go test ./... -v -race; \
+		CORE_EXIT=0; \
+		cd wacraft-core && REDIS_URL=redis://localhost:16379 go test ./... -v -race || CORE_EXIT=$$?; \
+		cd ..; \
+		echo "Stopping Redis container..."; \
+		docker rm -f wacraft-test-redis > /dev/null; \
+		exit $$CORE_EXIT
