@@ -54,6 +54,7 @@ All new abstractions go in `wacraft-core` so they are reusable and testable inde
 ### 1.1 Redis Client Infrastructure
 
 **New files:**
+
 ```
 wacraft-core/src/synch/redis/
 ├── client.go           # Redis client wrapper, connection management
@@ -61,6 +62,7 @@ wacraft-core/src/synch/redis/
 ```
 
 **What to implement:**
+
 - A `RedisClient` struct wrapping `github.com/redis/go-redis/v9`.
 - Configuration parsing from environment variables (`REDIS_URL`, `REDIS_PASSWORD`, etc.).
 - Health check method.
@@ -68,6 +70,7 @@ wacraft-core/src/synch/redis/
 - Graceful shutdown (close connection pool).
 
 **Dependencies to add:**
+
 - `github.com/redis/go-redis/v9` in `wacraft-core/go.mod`.
 
 ---
@@ -75,6 +78,7 @@ wacraft-core/src/synch/redis/
 ### 1.2 Distributed Lock Interface
 
 **New files:**
+
 ```
 wacraft-core/src/synch/contract/
 ├── lock.go             # DistributedLock interface
@@ -88,6 +92,7 @@ wacraft-core/src/synch/redis/
 ```
 
 **Interface definition:**
+
 ```go
 // contract/lock.go
 package contract
@@ -99,17 +104,20 @@ type DistributedLock[T comparable] interface {
 ```
 
 **In-Memory implementation** (`memory-lock.go`):
+
 - Wraps the existing `MutexSwapper[T]`.
 - `Lock(key)` calls `MutexSwapper.Lock(key)`, returns `nil`.
 - `Unlock(key)` calls `MutexSwapper.Unlock(key)`, returns `nil`.
 
 **Redis implementation** (`redis-lock.go`):
+
 - `Lock(key)` uses `SET key value NX EX ttl` in a retry loop.
 - `Unlock(key)` uses a Lua script to atomically check-and-delete (only delete if the value matches the lock owner).
 - Lock value includes a unique owner ID (UUID per instance + goroutine ID or random nonce).
 - Configurable TTL with automatic renewal (watchdog goroutine) for long-held locks.
 
 **Migration path:**
+
 - All current `MutexSwapper` usages will be replaced with `DistributedLock[T]` interface.
 - The 5 instantiation points (see problem statement) will use a factory to pick the implementation.
 
@@ -118,6 +126,7 @@ type DistributedLock[T comparable] interface {
 ### 1.3 Distributed Pub/Sub Interface
 
 **New files:**
+
 ```
 wacraft-core/src/synch/contract/
 ├── pubsub.go           # PubSub interface
@@ -130,6 +139,7 @@ wacraft-core/src/synch/redis/
 ```
 
 **Interface definition:**
+
 ```go
 // contract/pubsub.go
 package contract
@@ -146,15 +156,18 @@ type Subscription interface {
 ```
 
 **In-Memory implementation:**
+
 - Maintains a `map[string][]chan []byte` of subscribers per channel.
 - `Publish` fans out to all subscriber channels.
 - `Subscribe` creates a buffered channel and appends it to the map.
 
 **Redis implementation:**
+
 - `Publish` calls `PUBLISH channel message`.
 - `Subscribe` calls `SUBSCRIBE channel` and wraps the Redis subscription in a `Subscription`.
 
 **Use cases:**
+
 - WebSocket cross-instance broadcast (Phase 3).
 - Campaign progress updates (Phase 3).
 - Cache invalidation signals (Phase 4).
@@ -164,6 +177,7 @@ type Subscription interface {
 ### 1.4 Distributed Counter Interface
 
 **New files:**
+
 ```
 wacraft-core/src/synch/contract/
 ├── counter.go          # DistributedCounter interface
@@ -176,6 +190,7 @@ wacraft-core/src/synch/redis/
 ```
 
 **Interface definition:**
+
 ```go
 // contract/counter.go
 package contract
@@ -191,9 +206,11 @@ type DistributedCounter interface {
 ```
 
 **In-Memory implementation:**
+
 - Wraps current `sync.Map` + mutex pattern from `src/billing/service/throughput.go`.
 
 **Redis implementation:**
+
 - `Increment` uses `INCRBY key delta`.
 - `Get` uses `GET key`.
 - `SetTTL` uses `EXPIRE key seconds`.
@@ -204,6 +221,7 @@ type DistributedCounter interface {
 ### 1.5 Distributed Cache Interface
 
 **New files:**
+
 ```
 wacraft-core/src/synch/contract/
 ├── cache.go            # DistributedCache interface
@@ -216,6 +234,7 @@ wacraft-core/src/synch/redis/
 ```
 
 **Interface definition:**
+
 ```go
 // contract/cache.go
 package contract
@@ -231,9 +250,11 @@ type DistributedCache interface {
 ```
 
 **In-Memory implementation:**
+
 - Wraps `sync.Map` with TTL tracking (similar to current `subscriptionCache`).
 
 **Redis implementation:**
+
 - `Get` uses `GET key`.
 - `Set` uses `SET key value EX ttl`.
 - `Delete` uses `DEL key`.
@@ -244,6 +265,7 @@ type DistributedCache interface {
 ### 1.6 Backend Factory / Registry
 
 **New files:**
+
 ```
 wacraft-core/src/synch/
 ├── factory.go          # Backend factory, creates implementations based on config
@@ -251,6 +273,7 @@ wacraft-core/src/synch/
 ```
 
 **What to implement:**
+
 ```go
 // factory.go
 package synch
@@ -286,10 +309,12 @@ The factory instantiates the correct implementation based on the configured back
 ### 2.1 Message-Status Synchronization
 
 **Files to modify:**
+
 - `src/message/service/synchronize-message-and-status.go`
 - `src/message/service/whatsapp.go`
 
 **Current mechanism:**
+
 ```
 Instance A (sends message)          Instance A (receives status)
 ─────────────────────────           ────────────────────────────
@@ -301,6 +326,7 @@ MessageSaved(wamID, msgID)
 ```
 
 **Distributed mechanism (Redis):**
+
 ```
 Instance A (sends message)          Instance B (receives status)
 ─────────────────────────           ────────────────────────────
@@ -315,7 +341,9 @@ MessageSaved(wamID, msgID)
 ```
 
 **Implementation approach:**
+
 - Define a `MessageStatusSync` interface:
+
 ```go
 type MessageStatusSync interface {
     AddMessage(wamID string, timeout time.Duration) error
@@ -324,11 +352,13 @@ type MessageStatusSync interface {
     AddStatus(wamID string, status string, timeout time.Duration) (string, error)
 }
 ```
+
 - The in-memory implementation wraps the current `MessageStatusSynchronizer`.
 - The Redis implementation uses Redis Pub/Sub with correlation keys.
 - Replace the global `StatusSynchronizer` singleton with an instance provided via dependency injection or a factory call at init.
 
 **Key design decisions:**
+
 - The Redis Pub/Sub approach requires both sides to be subscribed before the other publishes. Use a "ready" signal pattern: the message side subscribes first, then publishes a "ready" signal. The status side publishes its signal only after seeing "ready" (or uses `BLPOP` on a list as a simpler rendezvous).
 - Alternative: Use Redis lists with `BLPOP` for the rendezvous. `AddMessage` does `BLPOP wacraft:msg:wamID:status timeout` (blocks until a status pushes). `AddStatus` does `RPUSH wacraft:msg:wamID:status ""` then `BLPOP wacraft:msg:wamID:saved timeout`. This is simpler and avoids race conditions with Pub/Sub subscription timing.
 
@@ -354,6 +384,7 @@ This mirrors the current channel semantics exactly, with Redis lists acting as s
 ### 2.2 Status Deduplication
 
 **Files to modify:**
+
 - `src/webhook-in/handler/whatsapp-message-status.go`
 - `src/webhook-in/service/synchronize-status.go`
 
@@ -364,6 +395,7 @@ This mirrors the current channel semantics exactly, with Redis lists acting as s
 ### 2.3 Campaign Coordination
 
 **Files to modify:**
+
 - `wacraft-core/src/campaign/model/campaign-channel.go`
 - `wacraft-core/src/campaign/model/campaign-results.go`
 - `wacraft-core/src/campaign/model/channel-pool.go`
@@ -374,10 +406,10 @@ This mirrors the current channel semantics exactly, with Redis lists acting as s
 1. **Sending flag** - Store in Redis: `SET campaign:{id}:sending true EX 3600`. Check before starting. Clear on completion.
 
 2. **Campaign results** - Use `DistributedCounter`:
-   - `INCRBY campaign:{id}:sent 1`
-   - `INCRBY campaign:{id}:successes 1`
-   - `INCRBY campaign:{id}:errors 1`
-   - Progress callback reads counters and broadcasts via Pub/Sub.
+    - `INCRBY campaign:{id}:sent 1`
+    - `INCRBY campaign:{id}:successes 1`
+    - `INCRBY campaign:{id}:errors 1`
+    - Progress callback reads counters and broadcasts via Pub/Sub.
 
 3. **Cancel** - Use Pub/Sub: `PUBLISH campaign:{id}:cancel ""`. The executing instance subscribes to this channel and triggers `context.CancelFunc` on message.
 
@@ -388,6 +420,7 @@ This mirrors the current channel semantics exactly, with Redis lists acting as s
 ### 2.4 Contact Deduplication
 
 **Files to modify:**
+
 - `src/campaign/service/send-whatsapp-campaign.go`
 
 **Change:** Replace `contactSynchronizer` (`MutexSwapper[string]`) with `DistributedLock[string]`. Same as 2.2.
@@ -399,10 +432,12 @@ This mirrors the current channel semantics exactly, with Redis lists acting as s
 ### 3.1 Workspace Message/Status Broadcast
 
 **Files to modify:**
+
 - `src/websocket/workspace-manager/main.go`
 - `wacraft-core/src/websocket/model/channel.go`
 
 **Current flow:**
+
 ```
 Webhook arrives at Instance A
   → handleMessages() saves to DB
@@ -412,6 +447,7 @@ Webhook arrives at Instance A
 ```
 
 **Distributed flow:**
+
 ```
 Webhook arrives at Instance A
   → handleMessages() saves to DB
@@ -421,6 +457,7 @@ Webhook arrives at Instance A
 ```
 
 **Implementation:**
+
 - Modify `WorkspaceChannelManager` to accept a `PubSub` interface.
 - `BroadcastToWorkspace` publishes to the Pub/Sub channel instead of (or in addition to) local broadcast.
 - On startup, each instance subscribes to the relevant workspace channels and forwards messages to local clients.
@@ -432,10 +469,12 @@ Webhook arrives at Instance A
 ### 3.2 Campaign Real-Time Updates
 
 **Files to modify:**
+
 - `src/campaign/handler/send-whatsapp.go`
 - `wacraft-core/src/campaign/model/campaign-channel.go`
 
 **Implementation:**
+
 - Campaign progress updates are published via `PubSub.Publish("campaign:{id}:progress", data)`.
 - Each instance with connected campaign WebSocket clients subscribes to the relevant campaign channel.
 - Local `CampaignChannel.BroadcastJsonMultithread` is called when a Pub/Sub message arrives.
@@ -447,6 +486,7 @@ Webhook arrives at Instance A
 ### 4.1 Throughput Counter
 
 **Files to modify:**
+
 - `src/billing/service/throughput.go`
 
 **Change:** Replace `Counter` with `DistributedCounter`. The Redis `INCRBY` is atomic and handles concurrent increments from multiple instances natively.
@@ -458,9 +498,11 @@ The cleanup goroutine (`time.Ticker`) is no longer needed with Redis since keys 
 ### 4.2 Subscription Cache
 
 **Files to modify:**
+
 - `src/billing/service/plan.go`
 
 **Change:** Replace `subscriptionCache` with `DistributedCache`. The double-checked locking pattern becomes:
+
 1. `cache.Get(key)` - fast path.
 2. `lock.Lock(key)` - thundering herd protection.
 3. `cache.Get(key)` - recheck after lock.
@@ -474,6 +516,7 @@ With Redis, step 1 is a single `GET` and step 4 is `SET EX`. The lock in steps 2
 ### 4.3 Endpoint Weight Cache
 
 **Files to modify:**
+
 - `src/billing/service/endpoint-weight.go`
 
 **Change:** Replace `endpointWeightCache` with `DistributedCache`. Simpler than subscription cache since it's a one-time lazy load. With Redis, `GET` returns the cached map (JSON-serialized), and `SET` writes it with a TTL. `InvalidateEndpointWeightCache` calls `cache.Delete(key)`.
@@ -485,11 +528,13 @@ With Redis, step 1 is a single `GET` and step 4 is `SET EX`. The lock in steps 2
 ### 5.1 Webhook Delivery Worker
 
 **Files to modify:**
+
 - `src/webhook/worker/delivery-worker.go`
 
 **Current behavior:** Each instance runs a `DeliveryWorker` that polls the DB for pending deliveries. Multiple instances cause duplicate processing.
 
 **Distributed approach (Redis Streams):**
+
 ```
 Producer:  XADD wacraft:webhooks:pending * delivery_id {id} payload {json}
 Consumer:  XREADGROUP GROUP workers consumer-{instance} COUNT 10 BLOCK 5000 STREAMS wacraft:webhooks:pending >
@@ -501,10 +546,11 @@ Ack:       XACK wacraft:webhooks:pending workers {message-id}
 - Failed deliveries are retried via `XPENDING` + `XCLAIM` after a timeout.
 
 **Alternative (simpler, no Redis Streams):**
+
 - Keep DB polling but use a distributed lock per delivery ID:
-  ```
-  SET webhook:delivery:{id}:lock {instance} NX EX 60
-  ```
+    ```
+    SET webhook:delivery:{id}:lock {instance} NX EX 60
+    ```
 - If the lock is acquired, process the delivery. Otherwise, skip it.
 - This is simpler and doesn't require changing the polling architecture.
 
@@ -522,23 +568,23 @@ Add a Redis service and use Docker Compose profiles:
 
 ```yaml
 services:
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    profiles:
-      - distributed
-    volumes:
-      - redis-data:/data
+    redis:
+        image: redis:7-alpine
+        ports:
+            - "6379:6379"
+        profiles:
+            - distributed
+        volumes:
+            - redis-data:/data
 
-  app:
-    # existing app service
-    environment:
-      SYNC_BACKEND: ${SYNC_BACKEND:-memory}
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+    app:
+        # existing app service
+        environment:
+            SYNC_BACKEND: ${SYNC_BACKEND:-memory}
+            REDIS_URL: ${REDIS_URL:-redis://redis:6379}
 
 volumes:
-  redis-data:
+    redis-data:
 ```
 
 - `docker compose --profile distributed up` starts Redis alongside the app.
