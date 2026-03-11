@@ -56,18 +56,19 @@ All new abstractions go in `wacraft-core` so they are reusable and testable inde
 **New files:**
 
 ```
+src/config/env/
+├── redis.go            # Environment variable loading (follows existing pattern)
+
 wacraft-core/src/synch/redis/
 ├── client.go           # Redis client wrapper, connection management
-└── config.go           # Configuration struct, env var parsing
+├── config.go           # Configuration struct (receives parsed values, no env parsing)
 ```
 
 **What to implement:**
 
-- A `RedisClient` struct wrapping `github.com/redis/go-redis/v9`.
-- Configuration parsing from environment variables (`REDIS_URL`, `REDIS_PASSWORD`, etc.).
-- Health check method.
-- Key prefixing utility (`REDIS_KEY_PREFIX`).
-- Graceful shutdown (close connection pool).
+- `src/config/env/redis.go` - Loads all Redis/sync env vars following the project pattern: exported package-level vars with defaults, parsed in `loadRedisEnv()`, called from `init()` in `src/config/env/main.go`. See `HORIZONTAL_SCALING_REQUIREMENTS.md` for the full example.
+- `wacraft-core/src/synch/redis/config.go` - A `Config` struct that receives the already-parsed values from `env` package. The core library does NOT read env vars directly (it stays reusable/testable).
+- `wacraft-core/src/synch/redis/client.go` - A `RedisClient` struct wrapping `github.com/redis/go-redis/v9`. Accepts a `Config`. Provides health check, key prefixing (`Config.KeyPrefix`), and graceful shutdown.
 
 **Dependencies to add:**
 
