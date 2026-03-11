@@ -8,30 +8,30 @@ Detailed map of every file that needs to be created or modified, organized by ph
 
 ### New Files
 
-| File | Description |
-|---|---|
-| `wacraft-core/src/synch/contract/lock.go` | `DistributedLock[T]` interface |
-| `wacraft-core/src/synch/contract/pubsub.go` | `PubSub` and `Subscription` interfaces |
-| `wacraft-core/src/synch/contract/counter.go` | `DistributedCounter` interface |
-| `wacraft-core/src/synch/contract/cache.go` | `DistributedCache` interface |
-| `wacraft-core/src/synch/service/memory-lock.go` | In-memory `DistributedLock` (wraps `MutexSwapper`) |
-| `wacraft-core/src/synch/service/memory-pubsub.go` | In-memory `PubSub` (Go channels) |
-| `wacraft-core/src/synch/service/memory-counter.go` | In-memory `DistributedCounter` (`sync.Map`) |
-| `wacraft-core/src/synch/service/memory-cache.go` | In-memory `DistributedCache` (`sync.Map` + TTL) |
-| `wacraft-core/src/synch/redis/client.go` | Redis client wrapper and connection management |
-| `wacraft-core/src/synch/redis/config.go` | Redis configuration and env var parsing |
-| `wacraft-core/src/synch/redis/redis-lock.go` | Redis `DistributedLock` (`SET NX EX` + Lua unlock) |
-| `wacraft-core/src/synch/redis/redis-pubsub.go` | Redis `PubSub` (`PUBLISH`/`SUBSCRIBE`) |
-| `wacraft-core/src/synch/redis/redis-counter.go` | Redis `DistributedCounter` (`INCRBY` + TTL) |
-| `wacraft-core/src/synch/redis/redis-cache.go` | Redis `DistributedCache` (`GET`/`SET`/`DEL`) |
-| `wacraft-core/src/synch/factory.go` | Backend factory: creates correct implementation based on config |
-| `wacraft-core/src/synch/config.go` | `Backend` type, global configuration |
+| File                                               | Description                                                     |
+| -------------------------------------------------- | --------------------------------------------------------------- |
+| `wacraft-core/src/synch/contract/lock.go`          | `DistributedLock[T]` interface                                  |
+| `wacraft-core/src/synch/contract/pubsub.go`        | `PubSub` and `Subscription` interfaces                          |
+| `wacraft-core/src/synch/contract/counter.go`       | `DistributedCounter` interface                                  |
+| `wacraft-core/src/synch/contract/cache.go`         | `DistributedCache` interface                                    |
+| `wacraft-core/src/synch/service/memory-lock.go`    | In-memory `DistributedLock` (wraps `MutexSwapper`)              |
+| `wacraft-core/src/synch/service/memory-pubsub.go`  | In-memory `PubSub` (Go channels)                                |
+| `wacraft-core/src/synch/service/memory-counter.go` | In-memory `DistributedCounter` (`sync.Map`)                     |
+| `wacraft-core/src/synch/service/memory-cache.go`   | In-memory `DistributedCache` (`sync.Map` + TTL)                 |
+| `wacraft-core/src/synch/redis/client.go`           | Redis client wrapper and connection management                  |
+| `wacraft-core/src/synch/redis/config.go`           | Redis configuration and env var parsing                         |
+| `wacraft-core/src/synch/redis/redis-lock.go`       | Redis `DistributedLock` (`SET NX EX` + Lua unlock)              |
+| `wacraft-core/src/synch/redis/redis-pubsub.go`     | Redis `PubSub` (`PUBLISH`/`SUBSCRIBE`)                          |
+| `wacraft-core/src/synch/redis/redis-counter.go`    | Redis `DistributedCounter` (`INCRBY` + TTL)                     |
+| `wacraft-core/src/synch/redis/redis-cache.go`      | Redis `DistributedCache` (`GET`/`SET`/`DEL`)                    |
+| `wacraft-core/src/synch/factory.go`                | Backend factory: creates correct implementation based on config |
+| `wacraft-core/src/synch/config.go`                 | `Backend` type, global configuration                            |
 
 ### Modified Files
 
-| File | Change |
-|---|---|
-| `wacraft-core/go.mod` | Add `github.com/redis/go-redis/v9` dependency |
+| File                                              | Change                                                      |
+| ------------------------------------------------- | ----------------------------------------------------------- |
+| `wacraft-core/go.mod`                             | Add `github.com/redis/go-redis/v9` dependency               |
 | `wacraft-core/src/synch/service/mutex-swapper.go` | No breaking changes; still used by `memory-lock.go` wrapper |
 
 ---
@@ -40,21 +40,21 @@ Detailed map of every file that needs to be created or modified, organized by ph
 
 ### New Files
 
-| File | Description |
-|---|---|
-| `src/message/service/message-status-sync-contract.go` | `MessageStatusSync` interface |
-| `src/message/service/message-status-sync-memory.go` | In-memory implementation (wraps current `MessageStatusSynchronizer`) |
-| `src/message/service/message-status-sync-redis.go` | Redis implementation (`BLPOP`/`RPUSH` rendezvous) |
+| File                                                  | Description                                                          |
+| ----------------------------------------------------- | -------------------------------------------------------------------- |
+| `src/message/service/message-status-sync-contract.go` | `MessageStatusSync` interface                                        |
+| `src/message/service/message-status-sync-memory.go`   | In-memory implementation (wraps current `MessageStatusSynchronizer`) |
+| `src/message/service/message-status-sync-redis.go`    | Redis implementation (`BLPOP`/`RPUSH` rendezvous)                    |
 
 ### Modified Files
 
-| File | Change |
-|---|---|
-| `src/message/service/synchronize-message-and-status.go` | Refactor: extract current logic into `MemoryMessageStatusSync`. Replace global `StatusSynchronizer` with interface variable initialized by factory. |
-| `src/message/service/whatsapp.go` | Replace `StatusSynchronizer.AddMessage(...)` with `messageStatusSync.AddMessage(...)` (interface call instead of concrete type). Same for `MessageSaved` and `RollbackMessage`. |
-| `src/webhook-in/handler/whatsapp-message-status.go` | Replace `synch_service.MutexSwapper[string]` with `contract.DistributedLock[string]`. Replace `message_service.StatusSynchronizer.AddStatus(...)` with interface call. |
-| `src/webhook-in/service/synchronize-status.go` | Replace `CreateStatusSynchronizer()` with factory-based lock creation. |
-| `src/campaign/service/send-whatsapp-campaign.go` | Replace `contactSynchronizer` (`MutexSwapper[string]`) with `DistributedLock[string]` from factory. |
+| File                                                    | Change                                                                                                                                                                          |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/message/service/synchronize-message-and-status.go` | Refactor: extract current logic into `MemoryMessageStatusSync`. Replace global `StatusSynchronizer` with interface variable initialized by factory.                             |
+| `src/message/service/whatsapp.go`                       | Replace `StatusSynchronizer.AddMessage(...)` with `messageStatusSync.AddMessage(...)` (interface call instead of concrete type). Same for `MessageSaved` and `RollbackMessage`. |
+| `src/webhook-in/handler/whatsapp-message-status.go`     | Replace `synch_service.MutexSwapper[string]` with `contract.DistributedLock[string]`. Replace `message_service.StatusSynchronizer.AddStatus(...)` with interface call.          |
+| `src/webhook-in/service/synchronize-status.go`          | Replace `CreateStatusSynchronizer()` with factory-based lock creation.                                                                                                          |
+| `src/campaign/service/send-whatsapp-campaign.go`        | Replace `contactSynchronizer` (`MutexSwapper[string]`) with `DistributedLock[string]` from factory.                                                                             |
 
 ---
 
@@ -62,15 +62,15 @@ Detailed map of every file that needs to be created or modified, organized by ph
 
 ### Modified Files
 
-| File | Change |
-|---|---|
-| `wacraft-core/src/websocket/model/channel.go` | Add optional `PubSub` field. When set, `BroadcastJsonMultithread` also publishes to the Pub/Sub channel. Add `SubscribeRemote()` method that listens for remote broadcasts and forwards to local clients. |
-| `src/websocket/workspace-manager/main.go` | Accept `PubSub` in constructor. Wire up remote subscriptions when channels are created. Unsubscribe when channels are removed. |
-| `src/message/handler/new.go` | Pass `PubSub` to `NewMessageWorkspaceManager`. |
-| `src/status/handler/new.go` | Pass `PubSub` to `NewStatusWorkspaceManager`. |
-| `wacraft-core/src/campaign/model/campaign-channel.go` | Add `PubSub` support for cross-instance campaign progress broadcasting. |
-| `wacraft-core/src/campaign/model/channel-pool.go` | Wire Pub/Sub when creating channels. |
-| `src/campaign/handler/send-whatsapp.go` | Pass `PubSub` to campaign pool creation. |
+| File                                                  | Change                                                                                                                                                                                                    |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `wacraft-core/src/websocket/model/channel.go`         | Add optional `PubSub` field. When set, `BroadcastJsonMultithread` also publishes to the Pub/Sub channel. Add `SubscribeRemote()` method that listens for remote broadcasts and forwards to local clients. |
+| `src/websocket/workspace-manager/main.go`             | Accept `PubSub` in constructor. Wire up remote subscriptions when channels are created. Unsubscribe when channels are removed.                                                                            |
+| `src/message/handler/new.go`                          | Pass `PubSub` to `NewMessageWorkspaceManager`.                                                                                                                                                            |
+| `src/status/handler/new.go`                           | Pass `PubSub` to `NewStatusWorkspaceManager`.                                                                                                                                                             |
+| `wacraft-core/src/campaign/model/campaign-channel.go` | Add `PubSub` support for cross-instance campaign progress broadcasting.                                                                                                                                   |
+| `wacraft-core/src/campaign/model/channel-pool.go`     | Wire Pub/Sub when creating channels.                                                                                                                                                                      |
+| `src/campaign/handler/send-whatsapp.go`               | Pass `PubSub` to campaign pool creation.                                                                                                                                                                  |
 
 ---
 
@@ -78,11 +78,11 @@ Detailed map of every file that needs to be created or modified, organized by ph
 
 ### Modified Files
 
-| File | Change |
-|---|---|
-| `src/billing/service/throughput.go` | Replace `Counter` internals with `DistributedCounter`. Remove cleanup goroutine when using Redis (keys have native TTL). |
-| `src/billing/service/plan.go` | Replace `subscriptionCache` with `DistributedCache` + `DistributedLock` for thundering herd protection. |
-| `src/billing/service/endpoint-weight.go` | Replace `endpointWeightCache` with `DistributedCache`. |
+| File                                     | Change                                                                                                                   |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `src/billing/service/throughput.go`      | Replace `Counter` internals with `DistributedCounter`. Remove cleanup goroutine when using Redis (keys have native TTL). |
+| `src/billing/service/plan.go`            | Replace `subscriptionCache` with `DistributedCache` + `DistributedLock` for thundering herd protection.                  |
+| `src/billing/service/endpoint-weight.go` | Replace `endpointWeightCache` with `DistributedCache`.                                                                   |
 
 ---
 
@@ -90,8 +90,8 @@ Detailed map of every file that needs to be created or modified, organized by ph
 
 ### Modified Files
 
-| File | Change |
-|---|---|
+| File                                    | Change                                                                                                                                                                           |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/webhook/worker/delivery-worker.go` | Add distributed lock per delivery ID before processing. In memory mode, continue with current behavior. In Redis mode, acquire `SET NX EX` lock before processing each delivery. |
 
 ---
@@ -100,35 +100,35 @@ Detailed map of every file that needs to be created or modified, organized by ph
 
 ### Modified Files
 
-| File | Change |
-|---|---|
+| File                     | Change                                                                                                      |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------- |
 | `docker-compose.dev.yml` | Add `redis` service with `distributed` profile. Add `SYNC_BACKEND` and `REDIS_URL` env vars to app service. |
-| `Makefile` | Add `dev-distributed` and `dev-scaled` targets. |
-| `go.mod` | Ensure `wacraft-core` replace directive covers new dependencies. Update if needed. |
+| `Makefile`               | Add `dev-distributed` and `dev-scaled` targets.                                                             |
+| `go.mod`                 | Ensure `wacraft-core` replace directive covers new dependencies. Update if needed.                          |
 
 ### New Files
 
-| File | Description |
-|---|---|
-| `tests/integration/horizontal_scaling/message_status_sync_test.go` | Cross-instance message-status synchronization test |
-| `tests/integration/horizontal_scaling/websocket_broadcast_test.go` | Cross-instance WebSocket broadcast test |
-| `tests/integration/horizontal_scaling/campaign_coordination_test.go` | Cross-instance campaign lifecycle test |
-| `tests/integration/horizontal_scaling/distributed_lock_test.go` | Distributed lock correctness test |
-| `tests/integration/horizontal_scaling/billing_counter_test.go` | Distributed counter accuracy test |
+| File                                                                 | Description                                        |
+| -------------------------------------------------------------------- | -------------------------------------------------- |
+| `tests/integration/horizontal_scaling/message_status_sync_test.go`   | Cross-instance message-status synchronization test |
+| `tests/integration/horizontal_scaling/websocket_broadcast_test.go`   | Cross-instance WebSocket broadcast test            |
+| `tests/integration/horizontal_scaling/campaign_coordination_test.go` | Cross-instance campaign lifecycle test             |
+| `tests/integration/horizontal_scaling/distributed_lock_test.go`      | Distributed lock correctness test                  |
+| `tests/integration/horizontal_scaling/billing_counter_test.go`       | Distributed counter accuracy test                  |
 
 ---
 
 ## Summary
 
-| Category | New Files | Modified Files |
-|---|---|---|
-| Phase 1: Core (`wacraft-core`) | 16 | 2 |
-| Phase 2: Sync Migration | 3 | 5 |
-| Phase 3: WebSocket Broadcast | 0 | 7 |
-| Phase 4: Billing & Caching | 0 | 3 |
-| Phase 5: Work Queue | 0 | 1 |
-| Phase 6: Dev Environment | 5 | 3 |
-| **Total** | **24** | **21** |
+| Category                       | New Files | Modified Files |
+| ------------------------------ | --------- | -------------- |
+| Phase 1: Core (`wacraft-core`) | 16        | 2              |
+| Phase 2: Sync Migration        | 3         | 5              |
+| Phase 3: WebSocket Broadcast   | 0         | 7              |
+| Phase 4: Billing & Caching     | 0         | 3              |
+| Phase 5: Work Queue            | 0         | 1              |
+| Phase 6: Dev Environment       | 5         | 3              |
+| **Total**                      | **24**    | **21**         |
 
 ---
 
