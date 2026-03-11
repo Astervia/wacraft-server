@@ -151,6 +151,8 @@ RabbitMQ MAY be used for the webhook delivery worker if more robust message deli
 
 ## Environment Variables
 
+All environment variables MUST be loaded in `src/config/env/redis.go`, following the existing pattern (exported package-level vars with defaults, parsed in a `loadRedisEnv()` function called from `init()` in `src/config/env/main.go`).
+
 | Variable           | Type       | Default                  | Description                                                |
 | ------------------ | ---------- | ------------------------ | ---------------------------------------------------------- |
 | `SYNC_BACKEND`     | `string`   | `memory`                 | Synchronization backend: `memory` or `redis`               |
@@ -160,3 +162,71 @@ RabbitMQ MAY be used for the webhook delivery worker if more robust message deli
 | `REDIS_KEY_PREFIX` | `string`   | `wacraft:`               | Prefix for all Redis keys (namespace isolation)            |
 | `REDIS_LOCK_TTL`   | `duration` | `30s`                    | Default TTL for distributed locks                          |
 | `REDIS_CACHE_TTL`  | `duration` | `5m`                     | Default TTL for cache entries                              |
+
+**Example implementation** (`src/config/env/redis.go`):
+
+```go
+package env
+
+import (
+    "fmt"
+    "os"
+    "strconv"
+    "time"
+
+    "github.com/pterm/pterm"
+)
+
+var (
+    SyncBackend   string        = "memory"
+    RedisURL      string        = "redis://localhost:6379"
+    RedisPassword string        = ""
+    RedisDB       int           = 0
+    RedisKeyPrefix string       = "wacraft:"
+    RedisLockTTL  time.Duration = 30 * time.Second
+    RedisCacheTTL time.Duration = 5 * time.Minute
+)
+
+func loadRedisEnv() {
+    syncBackend := os.Getenv("SYNC_BACKEND")
+    if syncBackend != "" {
+        SyncBackend = syncBackend
+    }
+
+    redisURL := os.Getenv("REDIS_URL")
+    if redisURL != "" {
+        RedisURL = redisURL
+    }
+
+    RedisPassword = os.Getenv("REDIS_PASSWORD")
+
+    redisDB := os.Getenv("REDIS_DB")
+    redisDBInt, err := strconv.Atoi(redisDB)
+    if err == nil {
+        RedisDB = redisDBInt
+    }
+
+    redisKeyPrefix := os.Getenv("REDIS_KEY_PREFIX")
+    if redisKeyPrefix != "" {
+        RedisKeyPrefix = redisKeyPrefix
+    }
+
+    redisLockTTL := os.Getenv("REDIS_LOCK_TTL")
+    redisLockTTLDuration, err := time.ParseDuration(redisLockTTL)
+    if err == nil {
+        RedisLockTTL = redisLockTTLDuration
+    }
+
+    redisCacheTTL := os.Getenv("REDIS_CACHE_TTL")
+    redisCacheTTLDuration, err := time.ParseDuration(redisCacheTTL)
+    if err == nil {
+        RedisCacheTTL = redisCacheTTLDuration
+    }
+
+    pterm.DefaultLogger.Info(
+        fmt.Sprintf(
+            "Redis environment done with backend %s, URL %s, DB %d, key prefix %s",
+            SyncBackend, RedisURL, RedisDB, RedisKeyPrefix),
+    )
+}
+```
