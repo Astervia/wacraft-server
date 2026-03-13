@@ -3,6 +3,7 @@
 Track progress per phase. Each phase is independently deployable and testable. Complete and test one phase before moving to the next.
 
 Run tests with:
+
 - `make test` — unit tests only (no Redis needed)
 - `make test-redis` — full suite with ephemeral Redis container
 
@@ -157,62 +158,90 @@ Run tests with:
 
 ## Phase 2: Synchronization Migration (`wacraft-server`)
 
+### 2.0 Central Wiring
+
+- [x] Create `src/synch/main.go` — central factory init, Redis client creation, wires all sync primitives via `init()`
+- [x] Update `src/config/main.go` — imports `src/synch` to trigger wiring
+
 ### 2.1 Message-Status Synchronization
 
-- [ ] Create `src/message/service/message-status-sync-contract.go` - `MessageStatusSync` interface
-- [ ] Create `src/message/service/message-status-sync-memory.go` - wraps current `MessageStatusSynchronizer`
-- [ ] Create `src/message/service/message-status-sync-redis.go` - `BLPOP`/`RPUSH` rendezvous
-- [ ] Refactor `src/message/service/synchronize-message-and-status.go` - global var uses interface
-- [ ] Update `src/message/service/whatsapp.go` - call interface methods instead of concrete type
-- [ ] Update `src/webhook-in/handler/whatsapp-message-status.go` - call interface `AddStatus`
+- [x] Create `src/message/service/message-status-sync-contract.go` - `MessageStatusSync` interface
+- [x] Create `src/message/service/message-status-sync-memory.go` - wraps current `MessageStatusSynchronizer`
+- [x] Create `src/message/service/message-status-sync-redis.go` - `BLPOP`/`RPUSH` rendezvous
+- [x] Refactor `src/message/service/synchronize-message-and-status.go` - global var uses interface, `SetStatusSynchronizer()` setter
+- [x] Update `src/message/service/whatsapp.go` - call interface methods instead of concrete type
+- [x] Update `src/webhook-in/handler/whatsapp-message-status.go` - call interface `AddStatus`
 
 #### 2.1 Tests — `src/message/service/message_status_sync_test.go`
 
-- [ ] `TestMemorySync_MessageThenStatus` — AddMessage blocks, AddStatus unblocks it, MessageSaved returns UUID
-- [ ] `TestMemorySync_StatusThenMessage` — AddStatus arrives first and blocks, AddMessage unblocks, MessageSaved delivers UUID
-- [ ] `TestMemorySync_Timeout` — AddMessage with 100ms timeout, no status → timeout error
-- [ ] `TestMemorySync_Rollback` — AddMessage → AddStatus → RollbackMessage → AddStatus returns rollback sentinel
-- [ ] `TestMemorySync_ConcurrentDifferentMessages` — 10 wamIDs in parallel, all complete correctly
-- [ ] `TestRedisSync_CrossInstance` — AddMessage on instance A, AddStatus on instance B → handshake completes
-- [ ] `TestRedisSync_Timeout` — AddMessage with timeout, no status → error
-- [ ] `TestRedisSync_Rollback` — cross-instance rollback propagation
-- [ ] `TestRedisSync_KeyCleanup` — after sync, Redis keys are cleaned up (no leaks)
+- [x] `TestMemorySync_MessageThenStatus` — AddMessage blocks, AddStatus unblocks it, MessageSaved returns UUID
+- [x] `TestMemorySync_StatusThenMessage` — AddStatus arrives first and blocks, AddMessage unblocks, MessageSaved delivers UUID
+- [x] `TestMemorySync_Timeout` — AddMessage with 100ms timeout, no status → timeout error
+- [x] `TestMemorySync_Rollback` — AddMessage → AddStatus → RollbackMessage → AddStatus returns rollback sentinel
+- [x] `TestMemorySync_ConcurrentDifferentMessages` — 10 wamIDs in parallel, all complete correctly
+- [x] `TestRedisSync_CrossInstance` — AddMessage on instance A, AddStatus on instance B → handshake completes
+- [x] `TestRedisSync_Timeout` — AddMessage with timeout, no status → error
+- [x] `TestRedisSync_Rollback` — cross-instance rollback propagation
+- [x] `TestRedisSync_KeyCleanup` — after sync, Redis keys are cleaned up (no leaks)
 
 ### 2.2 Status Deduplication
 
-- [ ] Update `src/webhook-in/service/synchronize-status.go` - use `DistributedLock[string]` from factory
-- [ ] Update `src/webhook-in/handler/whatsapp-message-status.go` - replace `MutexSwapper` with `DistributedLock`
+- [x] Update `src/webhook-in/service/synchronize-status.go` - use `DistributedLock[string]` from factory
+- [x] Update `src/webhook-in/handler/whatsapp-message-status.go` - replace `MutexSwapper` with `DistributedLock`
 
 #### 2.2 Tests — `src/webhook-in/handler/whatsapp_message_status_test.go`
 
-- [ ] `TestStatusDedup_SerializeSameWamID` — two goroutines process same wamID → serialized execution
-- [ ] `TestStatusDedup_ParallelDifferentWamIDs` — two goroutines with different wamIDs → concurrent execution
+- [x] `TestStatusDedup_SerializeSameWamID` — two goroutines process same wamID → serialized execution
+- [x] `TestStatusDedup_ParallelDifferentWamIDs` — two goroutines with different wamIDs → concurrent execution
 
 ### 2.3 Campaign Coordination
 
-- [ ] Update `wacraft-core/src/campaign/model/campaign-results.go` - use `DistributedCounter` for `Sent`/`Successes`/`Errors`
-- [ ] Update `wacraft-core/src/campaign/model/campaign-channel.go` - store `Sending` flag via distributed cache/lock
-- [ ] Update `wacraft-core/src/campaign/model/channel-pool.go` - integrate with distributed state
-- [ ] Update `src/campaign/handler/send-whatsapp.go` - use factory-provided primitives
-- [ ] Implement cancel via Pub/Sub: publish cancel signal, receiving instance triggers `context.CancelFunc`
+- [x] Update `wacraft-core/src/campaign/model/campaign-results.go` - use `DistributedCounter` for `Sent`/`Successes`/`Errors`
+- [x] Update `wacraft-core/src/campaign/model/campaign-channel.go` - store `Sending` flag via distributed cache, cancel via PubSub
+- [x] Update `wacraft-core/src/campaign/model/channel-pool.go` - integrate with distributed state
+- [x] Update `src/campaign/handler/send-whatsapp.go` - use `IsSending()`/`SetSending()`, `SetSendCampaignPool()`
+- [x] Update `src/campaign/service/send-whatsapp-campaign.go` - use `IsSending()`/`SetSending()`, `SubscribeCancel()`/`UnsubscribeCancel()`
+- [x] Wire `SendCampaignPool` with distributed primitives in `src/synch/main.go`
+- [x] Implement cancel via Pub/Sub: publish cancel signal, receiving instance triggers `context.CancelFunc`
 
 #### 2.3 Tests — `src/campaign/service/campaign_coordination_test.go`
 
-- [ ] `TestCampaignResults_MemoryCounters` — increment Sent/Successes/Errors, verify counts
-- [ ] `TestCampaignResults_RedisCounters` — two instances increment counters → aggregated correctly
-- [ ] `TestCampaignSending_MemoryFlag` — set Sending, check Sending → true
-- [ ] `TestCampaignSending_RedisFlagCrossInstance` — set on A, check on B → true
-- [ ] `TestCampaignCancel_MemoryPubSub` — publish cancel, listener receives it
-- [ ] `TestCampaignCancel_RedisPubSubCrossInstance` — cancel from A, executing on B → B's context cancelled
+- [x] `TestCampaignResults_MemoryCounters` — increment Sent/Successes/Errors, verify counts
+- [x] `TestCampaignResults_RedisCounters` — two instances increment counters → aggregated correctly
+
+#### 2.3 Tests — `wacraft-core/src/campaign/model/campaign_channel_test.go`
+
+- [x] `TestCampaignChannel_SetSending_Memory` — set Sending, check IsSending → true
+- [x] `TestCampaignChannel_SetSending_Distributed` — set on A, check on B → true (via shared cache)
+- [x] `TestCampaignChannel_IsSending_DifferentCampaigns` — campaign A sending, campaign B not
+- [x] `TestCampaignChannel_Cancel_Memory` — cancel triggers context cancellation
+- [x] `TestCampaignChannel_Cancel_NilCancel` — cancel on nil returns error
+- [x] `TestCampaignChannel_Cancel_Distributed` — cancel from A, executing on B → B's context cancelled via PubSub
+- [x] `TestCampaignChannel_Cancel_DistributedDifferentCampaigns` — cancel campaign Y, campaign X unaffected
+- [x] `TestCampaignChannel_SubscribeCancel_NoopWithoutPubSub` — no-op on memory-only channel
+- [x] `TestCampaignChannel_UnsubscribeCancel_StopsListening` — after unsubscribe, cancel signals ignored
+- [x] `TestCampaignChannel_ConcurrentSetSending` — 50 goroutines toggle sending, no race
+
+#### 2.3 Tests — `wacraft-core/src/campaign/model/channel_pool_test.go`
+
+- [x] `TestChannelPool_CreateMemory` — creates non-nil pool
+- [x] `TestChannelPool_CreateDistributed` — creates pool with cache and pubsub
+- [x] `TestChannelPool_AddUser_MemoryChannel` — memory pool creates channel without distributed primitives
+- [x] `TestChannelPool_AddUser_DistributedChannel` — distributed pool creates channel with cache and pubsub
+- [x] `TestChannelPool_AddUser_SameCampaignReturnsExisting` — same campaign returns same channel with 2 clients
+- [x] `TestChannelPool_RemoveUser` — remove one user, channel still exists
+- [x] `TestChannelPool_RemoveUser_DeletesEmptyChannel` — remove last user, channel deleted
+- [x] `TestChannelPool_RemoveUser_NonExistentCampaign` — no panic
+- [x] `TestChannelPool_DistributedSendingCrossChannel` — set sending via pool A, check via pool B → true
 
 ### 2.4 Contact Deduplication
 
-- [ ] Update `src/campaign/service/send-whatsapp-campaign.go` - replace `contactSynchronizer` with `DistributedLock[string]`
+- [x] Update `src/campaign/service/send-whatsapp-campaign.go` - replace `contactSynchronizer` with `DistributedLock[string]`
 
 #### 2.4 Tests — `src/campaign/service/contact_dedup_test.go`
 
-- [ ] `TestContactDedup_SamePhone` — two goroutines lock same phone → serialized
-- [ ] `TestContactDedup_DifferentPhones` — two goroutines lock different phones → concurrent
+- [x] `TestContactDedup_SamePhone` — two goroutines lock same phone → serialized
+- [x] `TestContactDedup_DifferentPhones` — two goroutines lock different phones → concurrent
 
 ### Phase 2 Verification
 
@@ -332,8 +361,8 @@ Run tests with:
 
 ### 6.1 Docker Compose
 
-- [ ] Add `redis` service to `docker-compose.dev.yml` with `distributed` profile
-- [ ] Add `SYNC_BACKEND` and `REDIS_URL` environment variables to app service
+- [x] Add `redis` service to `docker-compose.dev.yml` with `distributed` profile
+- [x] Add `SYNC_BACKEND` and `REDIS_URL` environment variables to app service
 - [ ] Verify `docker compose up` starts without Redis (memory mode)
 - [ ] Verify `docker compose --profile distributed up` starts with Redis
 
