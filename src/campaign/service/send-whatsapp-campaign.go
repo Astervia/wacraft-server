@@ -14,7 +14,6 @@ import (
 	messaging_product_entity "github.com/Astervia/wacraft-core/src/messaging-product/entity"
 	messaging_product_model "github.com/Astervia/wacraft-core/src/messaging-product/model"
 	"github.com/Astervia/wacraft-core/src/repository"
-	synch_service "github.com/Astervia/wacraft-core/src/synch/service"
 	webhook_entity "github.com/Astervia/wacraft-core/src/webhook/entity"
 	webhook_model "github.com/Astervia/wacraft-core/src/webhook/model"
 	"github.com/Astervia/wacraft-server/src/database"
@@ -23,6 +22,7 @@ import (
 	messaging_product_service "github.com/Astervia/wacraft-server/src/messaging-product/service"
 	phone_config_service "github.com/Astervia/wacraft-server/src/phone-config/service"
 	webhook_service "github.com/Astervia/wacraft-server/src/webhook/service"
+
 	bootstrap_module "github.com/Rfluid/whatsapp-cloud-api/src/bootstrap"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -33,21 +33,19 @@ func SendWhatsAppCampaign(
 	campaignChannel campaign_model.CampaignChannel,
 	callback func(*campaign_model.CampaignResults),
 ) (campaign_model.CampaignResults, error) {
-	campaignChannel.SendingMu.Lock()
-	if campaignChannel.Sending {
+	if campaignChannel.IsSending() {
 		return campaign_model.CampaignResults{}, errors.New("campaign is already sending")
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel() // Ensure cancel is called when the function exits
-	campaignChannel.Sending = true
+	campaignChannel.SetSending(true)
 	campaignChannel.AddCancel(&cancel)
-	campaignChannel.SendingMu.Unlock()
+	campaignChannel.SubscribeCancel()
 
 	defer func() {
-		campaignChannel.SendingMu.Lock()
-		campaignChannel.Sending = false
+		campaignChannel.UnsubscribeCancel()
+		campaignChannel.SetSending(false)
 		campaignChannel.AddCancel(nil)
-		campaignChannel.SendingMu.Unlock()
 	}()
 
 	campaign := campaign_entity.Campaign{
@@ -136,8 +134,6 @@ func SendWhatsAppCampaign(
 	return *result, nil
 }
 
-var contactSynchronizer *synch_service.MutexSwapper[string] = CreateContactSynchronizer()
-
 // Gets first message not sent at campaign, gets related WhatsApp contact or save and sends message.
 func SendWhatsAppCampaignMessage(
 	campaignID uuid.UUID,
@@ -183,7 +179,7 @@ func SendWhatsAppCampaignMessage(
 
 	// Get or create messaging product contact
 	var mpc messaging_product_entity.MessagingProductContact
-	contactSynchronizer.Lock(senderData.To)
+	contactLock.Lock(senderData.To)
 	mpc, err = messaging_product_service.GetContactOrSave(
 		messaging_product_entity.MessagingProductContact{
 			MessagingProductID: messagingProductID,
@@ -197,7 +193,7 @@ func SendWhatsAppCampaignMessage(
 		contact_entity.Contact{},
 		tx,
 	)
-	contactSynchronizer.Unlock(senderData.To)
+	contactLock.Unlock(senderData.To)
 	if err != nil {
 		return err
 	}

@@ -141,4 +141,13 @@ func CreateMessageStatusSynchronizer() *MessageStatusSynchronizer {
 	}
 }
 
-var StatusSynchronizer = CreateMessageStatusSynchronizer()
+// StatusSynchronizer is the active MessageStatusSync implementation.
+// Defaults to in-memory; replaced with Redis implementation at startup
+// when SYNC_BACKEND=redis.
+var StatusSynchronizer MessageStatusSync = CreateMemoryMessageStatusSync()
+
+// SetStatusSynchronizer replaces the active implementation. Called once
+// during application initialisation by the synch wiring package.
+func SetStatusSynchronizer(s MessageStatusSync) {
+	StatusSynchronizer = s
+}

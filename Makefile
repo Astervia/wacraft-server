@@ -29,12 +29,15 @@ prod-down:
 	docker compose down --remove-orphans
 	echo "To remove all containers, volumes, and networks, use --volumes"
 
-# Start the development environment using the dev Docker Compose file
+# Start the development environment using the dev Docker Compose file.
+# Usage:
+#   make dev                              # memory mode (no Redis)
+#   make dev PROFILE=distributed          # Redis mode
 dev:
 	echo "Generating Swagger docs"
 	swag init --parseDependency
 	echo "Starting development environment"
-	docker compose -f docker-compose.dev.yml up
+	docker compose -f docker-compose.dev.yml $(if $(PROFILE),--profile $(PROFILE)) up
 
 # Tear down the development environment, removing orphan containers
 dev-down:
