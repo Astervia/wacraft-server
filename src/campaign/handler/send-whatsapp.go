@@ -21,6 +21,12 @@ var (
 	SendCampaignPool       = campaign_model.CreateChannelPool()
 )
 
+// SetSendCampaignPool replaces the global campaign pool. Called once during
+// application initialisation when SYNC_BACKEND=redis.
+func SetSendCampaignPool(pool *campaign_model.ChannelPool) {
+	SendCampaignPool = pool
+}
+
 // SendWhatsAppCampaignSubscription upgrades the connection to WebSocket and streams WhatsApp campaign results.
 //
 //	@Summary		Send WhatsApp campaign via WebSocket
@@ -111,7 +117,7 @@ func handleSendWhatsAppCampaignMessage(
 		return client.Connection.WriteMessage(websocket.TextMessage, []byte(websocket_model.Pong))
 
 	case string(campaign_model.Send):
-		if campaignChannel.Sending {
+		if campaignChannel.IsSending() {
 			return errors.New("currently sending campaign")
 		}
 		_, err := campaign_service.SendWhatsAppCampaign(
@@ -133,7 +139,7 @@ func handleSendWhatsAppCampaignMessage(
 
 	case string(campaign_model.Status):
 		status := campaign_model.NotSending
-		if campaignChannel.Sending {
+		if campaignChannel.IsSending() {
 			status = campaign_model.Sending
 		}
 		return client.Connection.WriteMessage(websocket.TextMessage, []byte(status))

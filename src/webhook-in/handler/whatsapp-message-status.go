@@ -9,7 +9,6 @@ import (
 	"github.com/Astervia/wacraft-core/src/repository"
 	status_entity "github.com/Astervia/wacraft-core/src/status/entity"
 	status_model "github.com/Astervia/wacraft-core/src/status/model"
-	synch_service "github.com/Astervia/wacraft-core/src/synch/service"
 	"github.com/Astervia/wacraft-server/src/config/env"
 	message_service "github.com/Astervia/wacraft-server/src/message/service"
 	whk_service "github.com/Astervia/wacraft-server/src/webhook-in/service"
@@ -19,8 +18,10 @@ import (
 	"gorm.io/gorm"
 )
 
-// Synchronize when two status for the same message come together
-var statusSynchronizer *synch_service.MutexSwapper[string] = whk_service.CreateStatusSynchronizer()
+// statusSynchronizer serialises concurrent status updates for the same wamID.
+// Uses the DistributedLock from the webhook service package, which defaults
+// to in-memory and is replaced with a Redis lock when SYNC_BACKEND=redis.
+var statusSynchronizer = whk_service.GetStatusLock()
 
 // Returns status updates from unblocked contacts
 func handleStatuses(

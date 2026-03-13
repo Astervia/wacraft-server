@@ -8,12 +8,19 @@ services:
             - go-mod-cache:/root/go/pkg/mod # cache downloaded modules (needed when wacraft-core is absent)
             - $SSH_AUTH_SOCK:/ssh-agent # use your ssh socket to download custom modules
             - ~/.gitconfig:/root/.gitconfig:ro # use your git config (contains insteadOf rule)
-        depends_on: [db]
+        depends_on:
+            db:
+                condition: service_started
+            redis:
+                condition: service_healthy
+                required: false
         env_file: [.env]
         environment:
             SSH_AUTH_SOCK: /ssh-agent
             GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
             DATABASE_URL: postgres://postgres:postgres@db:5432/postgres
+            SYNC_BACKEND: ${SYNC_BACKEND:-memory}
+            REDIS_URL: ${REDIS_URL:-redis://redis:6379}
         command: ["air"] # default Air config is fine
         ports:
             - "6900:6900"
@@ -32,10 +39,26 @@ services:
             - "${DATABASE_PORT:-5432}:5432"
         networks: [dev]
 
+    redis:
+        image: redis:7-alpine
+        restart: unless-stopped
+        profiles: [distributed]
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 5s
+            timeout: 3s
+            retries: 3
+        ports:
+            - "6379:6379"
+        volumes:
+            - redis_dev_data:/data
+        networks: [dev]
+
 volumes:
     db_dev_data:
     air-cache:
     go-mod-cache:
+    redis_dev_data:
 
 networks:
     dev:
