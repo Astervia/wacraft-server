@@ -50,17 +50,9 @@ func UpdateWebhook(c *fiber.Ctx) error {
 		Timeout:       editWebhook.Timeout,
 		CustomHeaders: editWebhook.CustomHeaders,
 		EventFilter:   editWebhook.EventFilter,
-	}
-
-	// Handle pointer fields
-	if editWebhook.MaxRetries != nil {
-		updateData.MaxRetries = *editWebhook.MaxRetries
-	}
-	if editWebhook.RetryDelayMs != nil {
-		updateData.RetryDelayMs = *editWebhook.RetryDelayMs
-	}
-	if editWebhook.IsActive != nil {
-		updateData.IsActive = *editWebhook.IsActive
+		IsActive:      editWebhook.IsActive,     // *bool: nil skipped by GORM, false correctly updated
+		MaxRetries:    editWebhook.MaxRetries,   // *int: nil skipped, 0 correctly updated
+		RetryDelayMs:  editWebhook.RetryDelayMs, // *int: nil skipped, 0 correctly updated
 	}
 
 	webhook, err := repository.Updates(
