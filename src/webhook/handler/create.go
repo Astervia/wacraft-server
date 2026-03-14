@@ -45,6 +45,7 @@ func CreateWebhook(c *fiber.Ctx) error {
 	}
 
 	// Build webhook entity
+	isActive := true
 	webhookEntity := webhook_entity.Webhook{
 		Url:            newWebhook.Url,
 		Authorization:  newWebhook.Authorization,
@@ -55,22 +56,11 @@ func CreateWebhook(c *fiber.Ctx) error {
 		SigningEnabled: newWebhook.SigningEnabled,
 		CustomHeaders:  newWebhook.CustomHeaders,
 		EventFilter:    newWebhook.EventFilter,
-		IsActive:       true, // Default to active
+		IsActive:       &isActive,
 	}
 
-	// Set max retries if provided
-	if newWebhook.MaxRetries != nil {
-		webhookEntity.MaxRetries = *newWebhook.MaxRetries
-	} else {
-		webhookEntity.MaxRetries = 3 // Default
-	}
-
-	// Set retry delay if provided
-	if newWebhook.RetryDelayMs != nil {
-		webhookEntity.RetryDelayMs = *newWebhook.RetryDelayMs
-	} else {
-		webhookEntity.RetryDelayMs = 1000 // Default 1 second
-	}
+	webhookEntity.MaxRetries = newWebhook.MaxRetries
+	webhookEntity.RetryDelayMs = newWebhook.RetryDelayMs
 
 	// Generate signing secret if signing is enabled
 	var signingSecret string
