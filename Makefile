@@ -31,13 +31,21 @@ prod-down:
 
 # Start the development environment using the dev Docker Compose file.
 # Usage:
-#   make dev                              # memory mode (no Redis)
-#   make dev PROFILE=distributed          # Redis mode
+#   make dev                                        # memory mode, 1 instance
+#   make dev PROFILE=distributed                    # Redis mode, 1 instance
+#   make dev PROFILE=distributed REPLICAS=3         # Redis mode, 3 instances behind nginx
 dev:
 	echo "Generating Swagger docs"
 	swag init --parseDependency
-	echo "Starting development environment"
-	docker compose -f docker-compose.dev.yml $(if $(PROFILE),--profile $(PROFILE)) up
+	echo "Starting development environment (replicas=$(or $(REPLICAS),1))"
+	APP_REPLICAS=$(or $(REPLICAS),1) docker compose -f docker-compose.dev.yml $(if $(PROFILE),--profile $(PROFILE)) up
+
+# Shorthand for distributed mode with optional replica count.
+# Usage:
+#   make dev-distributed                # 1 instance
+#   make dev-distributed REPLICAS=3    # 3 instances behind nginx
+dev-distributed:
+	$(MAKE) dev PROFILE=distributed REPLICAS=$(or $(REPLICAS),1)
 
 # Tear down the development environment, removing orphan containers
 dev-down:
