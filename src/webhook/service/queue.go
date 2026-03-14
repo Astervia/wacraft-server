@@ -15,7 +15,7 @@ import (
 // It checks the circuit breaker and event filter before enqueuing
 func EnqueueDelivery(webhook *webhook_entity.Webhook, payload any, eventType string) error {
 	// Check if webhook is active
-	if !webhook.IsActive {
+	if webhook.IsActive != nil && !*webhook.IsActive {
 		return nil // Silently skip inactive webhooks
 	}
 
@@ -56,7 +56,7 @@ func EnqueueDelivery(webhook *webhook_entity.Webhook, payload any, eventType str
 		Payload:        payload,
 		Status:         webhook_entity.DeliveryStatusPending,
 		AttemptCount:   0,
-		MaxAttempts:    webhook.MaxRetries + 1, // Initial attempt + retries
+		MaxAttempts:    *webhook.MaxRetries + 1, // Initial attempt + retries
 		NextAttemptAt:  &now,
 		EventType:      eventType,
 		EventTimestamp: now,
@@ -80,7 +80,7 @@ func generateIdempotencyKey(webhookID uuid.UUID, eventType string, payload any) 
 // This is useful when the caller wants to control deduplication
 func EnqueueDeliveryWithCustomKey(webhook *webhook_entity.Webhook, payload any, eventType string, idempotencyKey string) error {
 	// Check if webhook is active
-	if !webhook.IsActive {
+	if webhook.IsActive != nil && !*webhook.IsActive {
 		return nil
 	}
 
@@ -117,7 +117,7 @@ func EnqueueDeliveryWithCustomKey(webhook *webhook_entity.Webhook, payload any, 
 		Payload:        payload,
 		Status:         webhook_entity.DeliveryStatusPending,
 		AttemptCount:   0,
-		MaxAttempts:    webhook.MaxRetries + 1,
+		MaxAttempts:    *webhook.MaxRetries + 1,
 		NextAttemptAt:  &now,
 		EventType:      eventType,
 		EventTimestamp: now,
@@ -177,7 +177,7 @@ func UpdateDeliveryStatus(delivery *webhook_entity.WebhookDelivery, success bool
 	} else {
 		delivery.Status = webhook_entity.DeliveryStatusAttempted
 		// Exponential backoff: baseDelay * 2^attemptCount (capped at 1 hour)
-		baseDelay := time.Duration(delivery.Webhook.RetryDelayMs) * time.Millisecond
+		baseDelay := time.Duration(*delivery.Webhook.RetryDelayMs) * time.Millisecond
 		if baseDelay == 0 {
 			baseDelay = 1000 * time.Millisecond
 		}
