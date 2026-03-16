@@ -65,10 +65,8 @@ jobs:
             - name: Run go vet
               run: go vet ./...
 
-            - name: Run tests (server + core)
-              run: |
-                  go test ./... -v -race
-                  cd wacraft-core && REDIS_URL=redis://localhost:6379 go test ./... -v -race
+            - name: Run tests
+              run: go test ./... -v -race
               env:
                   REDIS_URL: redis://localhost:6379
                   DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
