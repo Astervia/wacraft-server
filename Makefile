@@ -38,14 +38,21 @@ dev:
 	echo "Generating Swagger docs"
 	swag init --parseDependency
 	echo "Starting development environment (replicas=$(or $(REPLICAS),1))"
-	APP_REPLICAS=$(or $(REPLICAS),1) docker compose -f docker-compose.dev.yml $(if $(PROFILE),--profile $(PROFILE)) up
+	APP_REPLICAS=$(or $(REPLICAS),1) SYNC_BACKEND=$${SYNC_BACKEND:-memory} docker compose -f docker-compose.dev.yml $(if $(PROFILE),--profile $(PROFILE)) up
 
 # Shorthand for distributed mode with optional replica count.
 # Usage:
 #   make dev-distributed                # 1 instance
 #   make dev-distributed REPLICAS=3    # 3 instances behind nginx
 dev-distributed:
-	$(MAKE) dev PROFILE=distributed REPLICAS=$(or $(REPLICAS),1)
+	SYNC_BACKEND=redis $(MAKE) dev PROFILE=distributed REPLICAS=$(or $(REPLICAS),1)
+
+# Shorthand for running multiple scaled replicas in distributed mode.
+# Usage:
+#   make dev-scaled            # 3 instances (default)
+#   make dev-scaled REPLICAS=5 # 5 instances
+dev-scaled:
+	$(MAKE) dev-distributed REPLICAS=$(or $(REPLICAS),3)
 
 # Tear down the development environment, removing orphan containers
 dev-down:
@@ -77,7 +84,7 @@ test:
 	go test ./... -v
 	cd wacraft-core && go test ./... -v
 
-# Run all tests including Redis integration tests.
+# Run all tests including Redis integration tests (wacraft-core only, no Postgres).
 # Starts an ephemeral Redis container, runs tests, then removes it.
 test-redis:
 	@echo "Starting ephemeral Redis container..."
@@ -92,3 +99,30 @@ test-redis:
 		echo "Stopping Redis container..."; \
 		docker rm -f wacraft-test-redis > /dev/null; \
 		exit $$CORE_EXIT
+
+# Run the full test suite with both Redis and PostgreSQL.
+# Starts ephemeral containers for both services, runs all tests (server + core), then removes them.
+# Exit code is non-zero if any test fails in either module.
+test-distributed:
+	@echo "Starting ephemeral Redis container..."
+	@docker run -d --name wacraft-test-redis -p 16379:6379 redis:7-alpine > /dev/null
+	@echo "Starting ephemeral PostgreSQL container..."
+	@docker run -d --name wacraft-test-postgres -p 15432:5432 \
+		-e POSTGRES_DB=postgres \
+		-e POSTGRES_USER=postgres \
+		-e POSTGRES_PASSWORD=postgres \
+		postgres:17-alpine > /dev/null
+	@echo "Waiting for Redis to be ready..."
+	@until docker exec wacraft-test-redis redis-cli ping 2>/dev/null | grep -q PONG; do sleep 0.1; done
+	@echo "Waiting for PostgreSQL to be ready..."
+	@until docker exec wacraft-test-postgres pg_isready -U postgres -q 2>/dev/null; do sleep 0.1; done
+	@echo "Running tests..."
+	@SERVER_EXIT=0; CORE_EXIT=0; \
+		REDIS_URL=redis://localhost:16379 \
+		DATABASE_URL="postgres://postgres:postgres@localhost:15432/postgres?sslmode=disable" \
+		go test ./... -v -race || SERVER_EXIT=$$?; \
+		cd wacraft-core && REDIS_URL=redis://localhost:16379 go test ./... -v -race || CORE_EXIT=$$?; \
+		cd ..; \
+		echo "Stopping containers..."; \
+		docker rm -f wacraft-test-redis wacraft-test-postgres > /dev/null; \
+		exit $$(( SERVER_EXIT || CORE_EXIT ))
