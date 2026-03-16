@@ -1,6 +1,6 @@
 module github.com/Astervia/wacraft-server
 
-go 1.25.8
+go 1.26.1
 
 //replace github.com/Astervia/wacraft-core => ./wacraft-core
 
