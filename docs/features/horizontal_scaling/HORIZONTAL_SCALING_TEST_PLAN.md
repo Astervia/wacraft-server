@@ -284,6 +284,16 @@ func TestContactDedup_DifferentPhones(t *testing.T)
 
 ### Manual Tests
 
+#### UI (primary)
+
+1. Start the server in memory mode (`SYNC_BACKEND=memory go run .`).
+2. Open the app in a browser and log in.
+3. Navigate to **Contacts**, search for a contact (or create one), and send a WhatsApp text message.
+4. Check the conversation view — the message should appear with a delivery status (sent/delivered).
+5. Repeat steps 1–4 with `SYNC_BACKEND=redis REDIS_URL=redis://localhost:6379` and verify the same behavior.
+
+#### CLI alternative
+
 ```bash
 # Verify memory mode still works (no behavior change)
 SYNC_BACKEND=memory go run . &
@@ -348,6 +358,24 @@ func TestCampaignChannel_CrossInstanceProgress(t *testing.T)
 ```
 
 ### Manual Tests
+
+#### UI (primary)
+
+**Test 1: Cross-instance real-time message delivery**
+
+1. Start two instances with Redis backend (ports 3000 and 3001).
+2. Open two browser tabs — Tab A pointed at `http://localhost:3000`, Tab B at `http://localhost:3001`.
+3. In Tab A, open a conversation for a contact; this establishes the WebSocket connection to instance A.
+4. In Tab B, navigate to **Contacts**, search for the same contact, and send a WhatsApp text message (this request hits instance B).
+5. Expected: Tab A's conversation view updates in real time with the new message, proving cross-instance WebSocket broadcast works.
+
+**Test 2: Cross-instance campaign progress**
+
+1. In Tab A, open the campaign detail page for an existing campaign; this opens the campaign WebSocket on instance A.
+2. In Tab B, navigate to the same campaign and click **Send** (request handled by instance B).
+3. Expected: Tab A's campaign page shows live progress updates (messages sent counter increments) even though the campaign runs on instance B.
+
+#### CLI alternative
 
 ```bash
 # Test 1: Cross-instance WebSocket message delivery
@@ -443,6 +471,17 @@ func TestEndpointWeightCache_CrossInstance(t *testing.T)
 
 ### Manual Tests
 
+#### UI (primary)
+
+1. Start two instances with Redis backend (ports 3000 and 3001).
+2. Open two browser tabs — Tab A at `http://localhost:3000`, Tab B at `http://localhost:3001`.
+3. Log in on both tabs using the same account (same workspace/subscription).
+4. Rapidly navigate across multiple pages on Tab A (e.g., Contacts list, Messages, Campaigns) to generate API requests against instance A.
+5. Do the same on Tab B, generating requests against instance B.
+6. Expected: once the workspace's global rate limit is reached, both tabs start receiving 429 responses, confirming the counter is shared across instances via Redis (not tracked per-instance).
+
+#### CLI alternative
+
 ```bash
 # Test rate limiting across instances
 # Start two instances with Redis backend
@@ -488,6 +527,24 @@ func TestDeliveryWorker_GracefulShutdown(t *testing.T)
 ```
 
 ### Manual Tests
+
+#### UI (primary)
+
+**Test 1: Duplicate prevention**
+
+1. Start two instances with Redis backend.
+2. In the UI, navigate to **Settings → Webhooks** and create 5 webhook subscriptions pointing to a local listener (e.g., `http://localhost:9999`).
+3. In the **Contacts** view, search for a contact and send 5 WhatsApp messages — each message triggers a webhook delivery.
+4. Check the listener logs — each event should appear exactly once, even though both instances compete to process the queue.
+
+**Test 2: Crash recovery**
+
+1. With two instances running, send a message to trigger a webhook delivery.
+2. Immediately kill instance A (`kill -9 <PID>`) while it may be processing deliveries.
+3. Wait for the lock TTL to expire (check configured TTL in the worker).
+4. Expected: instance B picks up any unfinished deliveries and the webhook endpoint receives all events.
+
+#### CLI alternative
 
 ```bash
 # Test 1: Duplicate prevention
@@ -540,6 +597,43 @@ make dev-scaled
 
 These are the definitive tests that prove horizontal scaling works. Run with `make dev-scaled`.
 
+#### UI (primary)
+
+**Test A: Message-Status Sync across instances**
+
+1. Open Tab A at `http://localhost:3000` and Tab B at `http://localhost:3001` (both backed by the same Redis).
+2. In Tab A, navigate to **Contacts**, search for a contact, and open their conversation.
+3. Send a WhatsApp text message from Tab A — the send request hits instance A.
+4. WhatsApp's status webhook will be routed by the load balancer to one of the instances (likely B in round-robin).
+5. Expected: the message in Tab A's conversation view updates its status (sent → delivered → read) in real time, proving the sync works across instances.
+
+**Test B: WebSocket broadcast across instances**
+
+1. Keep Tab A open on a conversation (connected to instance A's WebSocket).
+2. From a phone or an external WhatsApp tester, send a message to the workspace number — the incoming webhook may land on instance B.
+3. Expected: Tab A's conversation view shows the new inbound message without a page refresh.
+
+**Test C: Campaign across instances**
+
+1. In Tab A, open a campaign detail page (connected to instance A's campaign WebSocket).
+2. In Tab B, navigate to the same campaign and click **Send**.
+3. Expected: Tab A shows live progress (sent count increments) as instance B executes the campaign.
+4. In Tab A, click **Cancel**.
+5. Expected: the campaign stops and instance B's worker halts.
+
+**Test D: Billing counter across instances**
+
+1. With both tabs open and logged in to the same workspace, rapidly perform actions in both (browse contacts, open conversations, etc.).
+2. Expected: once the global rate limit is reached, requests from both tabs start failing with 429 — confirming the counter is shared.
+
+**Test E: Webhook delivery deduplication**
+
+1. In the UI, go to **Settings → Webhooks** and create a subscription.
+2. Send messages from Tab A and Tab B to generate delivery events.
+3. Check the webhook receiver — each event should appear exactly once.
+
+#### CLI alternative
+
 ```bash
 # Test A: Message-Status Sync across instances
 # 1. Send WhatsApp message via instance A (port 3000)
@@ -553,12 +647,16 @@ curl -X POST http://localhost:3000/message \
 
 # Test B: WebSocket broadcast across instances
 # 1. Connect WebSocket to instance A
+websocat ws://localhost:3000/ws/message/new
 # 2. Trigger webhook on instance B
 # 3. Verify WebSocket on instance A receives the event
 
 # Test C: Campaign across instances
 # 1. Connect campaign WebSocket to instance A
+websocat ws://localhost:3000/ws/campaign/{id}
 # 2. Start campaign via instance B
+curl -X POST http://localhost:3001/campaign/{id}/send \
+  -H "Authorization: Bearer $TOKEN"
 # 3. Verify progress updates arrive on instance A's WebSocket
 # 4. Cancel campaign via instance A
 # 5. Verify campaign stops on instance B
