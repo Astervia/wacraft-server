@@ -2,123 +2,81 @@ package billing_service
 
 import (
 	"fmt"
-	"sync"
 	"time"
 
 	billing_model "github.com/Astervia/wacraft-core/src/billing/model"
+	synch_contract "github.com/Astervia/wacraft-core/src/synch/contract"
 	synch_service "github.com/Astervia/wacraft-core/src/synch/service"
 	"github.com/google/uuid"
 )
 
-// Counter tracks weighted request counts per scope using fixed time windows.
-// Uses MutexSwapper for per-key locking so operations on different keys are fully parallel.
-type Counter struct {
-	entries sync.Map // map[string]*counterEntry
-	swapper *synch_service.MutexSwapper[string]
+// ThroughputCounter tracks weighted request counts per scope using fixed time windows.
+// It wraps a DistributedCounter and embeds the window boundary in each key so that
+// the counter resets automatically when the window expires (via TTL).
+type ThroughputCounter struct {
+	counter synch_contract.DistributedCounter
 }
 
-type counterEntry struct {
-	count       int64
-	windowStart time.Time
-	windowSec   int
-}
-
-// NewCounter creates a new throughput counter.
-func NewCounter() *Counter {
-	c := &Counter{
-		swapper: synch_service.CreateMutexSwapper[string](),
-	}
-	go c.cleanup()
-	return c
+// NewThroughputCounter creates a counter backed by the given DistributedCounter.
+func NewThroughputCounter(counter synch_contract.DistributedCounter) *ThroughputCounter {
+	return &ThroughputCounter{counter: counter}
 }
 
 // Increment adds weight to the counter for the given key and window size.
 // Returns the new total count within the current window.
-// Only serializes operations on the same key — different keys run in parallel.
-func (c *Counter) Increment(key string, windowSeconds int, weight int) int64 {
-	c.swapper.Lock(key)
-	defer c.swapper.Unlock(key)
-
-	now := time.Now()
-	raw, exists := c.entries.Load(key)
-
-	if !exists {
-		entry := &counterEntry{
-			count:       int64(weight),
-			windowStart: now,
-			windowSec:   windowSeconds,
-		}
-		c.entries.Store(key, entry)
-		return entry.count
-	}
-
-	entry := raw.(*counterEntry)
-	if now.Sub(entry.windowStart).Seconds() >= float64(entry.windowSec) {
-		// Window expired, start new one
-		entry = &counterEntry{
-			count:       int64(weight),
-			windowStart: now,
-			windowSec:   windowSeconds,
-		}
-		c.entries.Store(key, entry)
-		return entry.count
-	}
-
-	entry.count += int64(weight)
-	return entry.count
-}
-
-// Current returns the current count for a key within its window.
-// Lock-free read — does not block other operations.
-func (c *Counter) Current(key string) int64 {
-	raw, exists := c.entries.Load(key)
-	if !exists {
+func (c *ThroughputCounter) Increment(key string, windowSeconds int, weight int) int64 {
+	bk := bucketKey(key, windowSeconds)
+	val, err := c.counter.Increment(bk, int64(weight))
+	if err != nil {
 		return 0
 	}
-
-	entry := raw.(*counterEntry)
-	if time.Since(entry.windowStart).Seconds() >= float64(entry.windowSec) {
-		return 0 // Window expired
+	if weight > 0 && val == int64(weight) {
+		// First increment in this window — set TTL so the key is cleaned up automatically.
+		_ = c.counter.SetTTL(bk, time.Duration(windowSeconds)*time.Second)
 	}
-
-	return entry.count
+	return val
 }
 
-// WindowReset returns the time when the current window resets for a key.
-// Lock-free read.
-func (c *Counter) WindowReset(key string) time.Time {
-	raw, exists := c.entries.Load(key)
-	if !exists {
+// Current returns the current count for a key within its window without incrementing.
+func (c *ThroughputCounter) Current(key string, windowSeconds int) int64 {
+	bk := bucketKey(key, windowSeconds)
+	val, _ := c.counter.Get(bk)
+	return val
+}
+
+// WindowReset returns when the current window expires for the given key.
+func (c *ThroughputCounter) WindowReset(key string, windowSeconds int) time.Time {
+	if windowSeconds <= 0 {
 		return time.Time{}
 	}
+	bucketStart := time.Now().Unix() / int64(windowSeconds) * int64(windowSeconds)
+	return time.Unix(bucketStart+int64(windowSeconds), 0)
+}
 
-	entry := raw.(*counterEntry)
-	return entry.windowStart.Add(time.Duration(entry.windowSec) * time.Second)
+// bucketKey embeds the current window boundary in the key so counters from
+// different windows never collide and expired keys are cleaned up via TTL.
+func bucketKey(key string, windowSeconds int) string {
+	if windowSeconds <= 0 {
+		return key
+	}
+	bucketStart := time.Now().Unix() / int64(windowSeconds) * int64(windowSeconds)
+	return fmt.Sprintf("%s:%d", key, bucketStart)
+}
+
+// GlobalCounter is the singleton counter used by the throughput middleware.
+// Defaults to an in-memory implementation; replaced via SetThroughputCounter
+// when Redis mode is active.
+var GlobalCounter = NewThroughputCounter(synch_service.NewMemoryCounter())
+
+// SetThroughputCounter replaces the global counter. Called from src/synch/main.go.
+func SetThroughputCounter(c *ThroughputCounter) {
+	GlobalCounter = c
 }
 
 // Key builds a scope key for the counter.
 func Key(scope string, id string) string {
 	return fmt.Sprintf("%s:%s", scope, id)
 }
-
-// cleanup periodically removes expired entries.
-func (c *Counter) cleanup() {
-	ticker := time.NewTicker(5 * time.Minute)
-	defer ticker.Stop()
-	for range ticker.C {
-		now := time.Now()
-		c.entries.Range(func(key, value any) bool {
-			entry := value.(*counterEntry)
-			if now.Sub(entry.windowStart).Seconds() >= float64(entry.windowSec*2) {
-				c.entries.Delete(key)
-			}
-			return true
-		})
-	}
-}
-
-// GlobalCounter is the singleton counter used by the throughput middleware.
-var GlobalCounter = NewCounter()
 
 // ScopeKeyID returns the UUID string used as counter key for the given scope.
 func ScopeKeyID(scope billing_model.Scope, userID *uuid.UUID, workspaceID *uuid.UUID) string {

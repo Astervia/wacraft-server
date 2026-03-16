@@ -10,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	synch_contract "github.com/Astervia/wacraft-core/src/synch/contract"
 	webhook_entity "github.com/Astervia/wacraft-core/src/webhook/entity"
 	webhook_core_service "github.com/Astervia/wacraft-core/src/webhook/service"
 	"github.com/Astervia/wacraft-server/src/database"
@@ -33,14 +34,30 @@ type DeliveryWorker struct {
 	cancel     context.CancelFunc
 	wg         sync.WaitGroup
 	httpClient *http.Client
+	// lock guards per-delivery execution across instances.
+	// nil in memory mode (single instance — no distributed contention).
+	lock synch_contract.DistributedLock[string]
 }
 
-// NewDeliveryWorker creates a new delivery worker
+// deliveryLock is the package-level lock set during init from src/synch/main.go.
+// nil until SetDeliveryLock is called (memory mode: stays nil).
+var deliveryLock synch_contract.DistributedLock[string]
+
+// SetDeliveryLock sets the distributed lock used by new DeliveryWorker instances.
+// Called from src/synch/main.go when SYNC_BACKEND=redis.
+func SetDeliveryLock(l synch_contract.DistributedLock[string]) {
+	deliveryLock = l
+}
+
+// NewDeliveryWorker creates a new delivery worker.
+// It picks up the package-level deliveryLock (set by SetDeliveryLock) so that
+// all workers within a process share the same lock backend.
 func NewDeliveryWorker() *DeliveryWorker {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &DeliveryWorker{
 		ctx:    ctx,
 		cancel: cancel,
+		lock:   deliveryLock,
 		httpClient: &http.Client{
 			Timeout: 30 * time.Second, // Default timeout, will be overridden per-request
 		},
@@ -113,8 +130,24 @@ func (w *DeliveryWorker) processPendingDeliveries() {
 	}
 }
 
-// processDelivery handles a single delivery attempt
+// processDelivery handles a single delivery attempt.
+// When a distributed lock is configured, it acquires a per-delivery lock before
+// processing to prevent duplicate execution across instances. If the lock is
+// already held by another instance the delivery is silently skipped.
 func (w *DeliveryWorker) processDelivery(delivery *webhook_entity.WebhookDelivery) {
+	if w.lock != nil {
+		lockKey := delivery.ID.String()
+		acquired, err := w.lock.TryLock(lockKey)
+		if err != nil {
+			pterm.DefaultLogger.Error("Delivery lock error: " + err.Error())
+			return
+		}
+		if !acquired {
+			return // Another instance is already processing this delivery
+		}
+		defer w.lock.Unlock(lockKey) //nolint:errcheck
+	}
+
 	if delivery.Webhook == nil {
 		// Load webhook if not preloaded
 		var webhook webhook_entity.Webhook
