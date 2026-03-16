@@ -31,7 +31,7 @@ has_tool() { command -v "$1" &>/dev/null; }
 declare -A HINTS
 HINTS[gofmt]="run: gofmt -w . to auto-fix all formatting"
 HINTS[go_vet]="fix the reported issues; run: go vet ./..."
-HINTS[go_test]="fix failing tests; run: go test ./... -v -run <TestName>"
+HINTS[go_test]="fix failing tests; run: make test-distributed (or: go test ./... -v -run <TestName>)"
 HINTS[govulncheck]="upgrade the vulnerable module: go get -u <module>@<safe-version>"
 HINTS[conftest]="fix the Dockerfile policy violations listed above"
 HINTS[gitleaks]="remove the secret from history; see: git-filter-repo or BFG"
@@ -145,7 +145,49 @@ launch gofmt bash -c '
 '
 
 launch go_vet go vet ./...
-launch go_test go test ./... -v
+
+if has_tool docker; then
+    launch go_test bash -c '
+        REDIS_NAME="wacraft-pre-pr-redis-$$"
+        PG_NAME="wacraft-pre-pr-postgres-$$"
+        cleanup() { docker rm -f "$REDIS_NAME" "$PG_NAME" >/dev/null 2>&1 || true; }
+        trap cleanup EXIT
+
+        echo "Starting ephemeral Redis..."
+        docker run -d --name "$REDIS_NAME" -p 0:6379 redis:7-alpine >/dev/null
+        REDIS_PORT=$(docker inspect --format="{{(index (index .NetworkSettings.Ports \"6379/tcp\") 0).HostPort}}" "$REDIS_NAME")
+
+        echo "Starting ephemeral PostgreSQL..."
+        docker run -d --name "$PG_NAME" -p 0:5432 \
+            -e POSTGRES_DB=postgres \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=postgres \
+            postgres:17-alpine >/dev/null
+        PG_PORT=$(docker inspect --format="{{(index (index .NetworkSettings.Ports \"5432/tcp\") 0).HostPort}}" "$PG_NAME")
+
+        echo "Waiting for Redis (port $REDIS_PORT)..."
+        until docker exec "$REDIS_NAME" redis-cli ping 2>/dev/null | grep -q PONG; do sleep 0.1; done
+
+        echo "Waiting for PostgreSQL (port $PG_PORT)..."
+        until docker exec "$PG_NAME" pg_isready -U postgres -q 2>/dev/null; do sleep 0.1; done
+
+        echo "Running server tests..."
+        REDIS_URL="redis://localhost:$REDIS_PORT" \
+        DATABASE_URL="postgres://postgres:postgres@localhost:$PG_PORT/postgres?sslmode=disable" \
+        go test ./... -v -race
+        SERVER_EXIT=$?
+
+        echo "Running wacraft-core tests..."
+        cd wacraft-core
+        REDIS_URL="redis://localhost:$REDIS_PORT" go test ./... -v -race
+        CORE_EXIT=$?
+
+        exit $(( SERVER_EXIT || CORE_EXIT ))
+    '
+else
+    echo -e "  ${YELLOW}docker not found — running tests without DB/Redis (integration tests will be skipped)${RESET}"
+    launch go_test go test ./... -v
+fi
 
 if has_tool conftest; then
     launch conftest conftest test Dockerfile --policy policy/

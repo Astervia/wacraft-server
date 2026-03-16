@@ -29,6 +29,20 @@ jobs:
                     --health-timeout 5s
                     --health-retries 5
 
+            postgres:
+                image: postgres:17-alpine
+                ports:
+                    - 5432:5432
+                env:
+                    POSTGRES_DB: postgres
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: postgres
+                options: >-
+                    --health-cmd "pg_isready -U postgres"
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+
         steps:
             - name: Checkout repository
               uses: actions/checkout@v6
@@ -51,10 +65,13 @@ jobs:
             - name: Run go vet
               run: go vet ./...
 
-            - name: Run tests
-              run: go test ./... -v -race
+            - name: Run tests (server + core)
+              run: |
+                  go test ./... -v -race
+                  cd wacraft-core && REDIS_URL=redis://localhost:6379 go test ./... -v -race
               env:
                   REDIS_URL: redis://localhost:6379
+                  DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
 
     security:
         name: Dependency Security Scan (govulncheck)
