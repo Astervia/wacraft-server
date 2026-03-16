@@ -52,7 +52,7 @@ func buildScopeUsage(scope billing_model.Scope, userID *uuid.UUID, workspaceID *
 
 	scopeID := billing_service.ScopeKeyID(scope, userID, workspaceID)
 	key := billing_service.Key(string(scope), scopeID)
-	current := billing_service.GlobalCounter.Current(key)
+	current := billing_service.GlobalCounter.Current(key, info.WindowSeconds)
 	remaining := max(int64(info.Limit)-current, 0)
 
 	summaries := []billing_model.UsageSummary{{
@@ -80,7 +80,7 @@ func buildScopeUsage(scope billing_model.Scope, userID *uuid.UUID, workspaceID *
 			})
 		} else {
 			fallbackKey := billing_service.Key(string(scope)+"-fallback", scopeID)
-			fallbackCurrent := billing_service.GlobalCounter.Current(fallbackKey)
+			fallbackCurrent := billing_service.GlobalCounter.Current(fallbackKey, freeInfo.WindowSeconds)
 			fallbackRemaining := max(int64(freeInfo.Limit)-fallbackCurrent, 0)
 
 			summaries = append(summaries, billing_model.UsageSummary{

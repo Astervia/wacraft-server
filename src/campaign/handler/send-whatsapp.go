@@ -124,7 +124,7 @@ func handleSendWhatsAppCampaignMessage(
 			campaignID,
 			campaignChannel,
 			func(data *campaign_model.CampaignResults) {
-				campaignChannel.BroadcastJsonMultithread(*data)
+				campaignChannel.BroadcastProgress(*data)
 			},
 		)
 		return err

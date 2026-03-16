@@ -12,11 +12,15 @@ import (
 	campaign_model "github.com/Astervia/wacraft-core/src/campaign/model"
 	synch "github.com/Astervia/wacraft-core/src/synch"
 	synch_redis "github.com/Astervia/wacraft-core/src/synch/redis"
+	billing_service "github.com/Astervia/wacraft-server/src/billing/service"
 	campaign_handler "github.com/Astervia/wacraft-server/src/campaign/handler"
 	campaign_service "github.com/Astervia/wacraft-server/src/campaign/service"
 	"github.com/Astervia/wacraft-server/src/config/env"
+	message_handler "github.com/Astervia/wacraft-server/src/message/handler"
 	message_service "github.com/Astervia/wacraft-server/src/message/service"
+	status_handler "github.com/Astervia/wacraft-server/src/status/handler"
 	whk_service "github.com/Astervia/wacraft-server/src/webhook-in/service"
+	webhook_worker "github.com/Astervia/wacraft-server/src/webhook/worker"
 	"github.com/pterm/pterm"
 )
 
@@ -81,6 +85,42 @@ func init() {
 		)
 		pterm.DefaultLogger.Info("CampaignChannelPool: using Redis backend")
 	}
+
+	// Wire delivery worker lock (Redis mode only — memory mode uses nil, no locking needed).
+	if backend == synch.BackendRedis {
+		webhook_worker.SetDeliveryLock(synch.NewLock[string](SyncFactory))
+		pterm.DefaultLogger.Info("DeliveryWorker: using Redis lock backend")
+	}
+
+	// Wire WebSocket workspace managers with PubSub for cross-instance broadcast.
+	if backend == synch.BackendRedis {
+		message_handler.NewMessageWorkspaceManager.SetPubSub(
+			SyncFactory.NewPubSub(),
+			"workspace:messages",
+		)
+		status_handler.NewStatusWorkspaceManager.SetPubSub(
+			SyncFactory.NewPubSub(),
+			"workspace:statuses",
+		)
+		pterm.DefaultLogger.Info("WorkspaceChannelManagers: using Redis PubSub backend")
+	}
+
+	// Wire billing throughput counter.
+	billing_service.SetThroughputCounter(
+		billing_service.NewThroughputCounter(SyncFactory.NewCounter()),
+	)
+
+	// Wire billing plan cache and lock.
+	billing_service.SetPlanCache(
+		SyncFactory.NewCache(),
+		synch.NewLock[string](SyncFactory),
+	)
+
+	// Wire endpoint weight cache and lock.
+	billing_service.SetEndpointWeightCache(
+		SyncFactory.NewCache(),
+		synch.NewLock[string](SyncFactory),
+	)
 
 	pterm.DefaultLogger.Info("Sync primitives wired successfully")
 }
