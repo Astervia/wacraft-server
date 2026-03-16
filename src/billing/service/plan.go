@@ -1,11 +1,12 @@
 package billing_service
 
 import (
-	"sync"
+	"encoding/json"
 	"time"
 
 	billing_entity "github.com/Astervia/wacraft-core/src/billing/entity"
 	billing_model "github.com/Astervia/wacraft-core/src/billing/model"
+	synch_contract "github.com/Astervia/wacraft-core/src/synch/contract"
 	synch_service "github.com/Astervia/wacraft-core/src/synch/service"
 	"github.com/Astervia/wacraft-server/src/config/env"
 	"github.com/Astervia/wacraft-server/src/database"
@@ -20,24 +21,22 @@ type ThroughputInfo struct {
 	Unlimited     bool
 }
 
-// subscriptionCache caches active subscriptions per scope key with TTL.
-// Uses sync.Map for lock-free reads and MutexSwapper for per-key write serialization
-// to prevent thundering herd on the same key without blocking unrelated keys.
-type subscriptionCache struct {
-	entries sync.Map // map[string]*cacheEntry
-	swapper *synch_service.MutexSwapper[string]
-	ttl     time.Duration
+const planCacheTTL = 5 * time.Minute
+
+var (
+	planCache synch_contract.DistributedCache        = synch_service.NewMemoryCache()
+	planLock  synch_contract.DistributedLock[string] = synch_service.NewMemoryLock[string]()
+)
+
+// SetPlanCache replaces the plan cache and lock. Called from src/synch/main.go.
+func SetPlanCache(c synch_contract.DistributedCache, l synch_contract.DistributedLock[string]) {
+	planCache = c
+	planLock = l
 }
 
-type cacheEntry struct {
-	info      ThroughputInfo
-	fetchedAt time.Time
-}
-
-var cache = &subscriptionCache{
-	swapper: synch_service.CreateMutexSwapper[string](),
-	ttl:     5 * time.Minute,
-}
+// queryThroughputFn is the function used to load throughput from the database.
+// It can be overridden in tests to avoid a real DB connection.
+var queryThroughputFn = queryThroughput
 
 // ResolveThroughput returns the effective throughput limit for a given scope.
 // It sums all active subscription limits. Falls back to the default free plan if none.
@@ -51,42 +50,45 @@ func ResolveThroughput(scope billing_model.Scope, userID *uuid.UUID, workspaceID
 		return DefaultFreeInfo()
 	}
 
-	// Lock-free cache read
-	if raw, exists := cache.entries.Load(key); exists {
-		entry := raw.(*cacheEntry)
-		if time.Since(entry.fetchedAt) < cache.ttl {
-			return entry.info
-		}
+	// Fast path: cache hit.
+	if info, ok := getFromPlanCache(key); ok {
+		return info
 	}
 
-	// Cache miss or stale — lock only this key to prevent thundering herd
-	cache.swapper.Lock(key)
-	defer cache.swapper.Unlock(key)
+	// Cache miss — lock this key to prevent thundering herd.
+	_ = planLock.Lock(key)
+	defer planLock.Unlock(key) //nolint:errcheck
 
-	// Double-check after acquiring per-key lock (another goroutine may have populated it)
-	if raw, exists := cache.entries.Load(key); exists {
-		entry := raw.(*cacheEntry)
-		if time.Since(entry.fetchedAt) < cache.ttl {
-			return entry.info
-		}
+	// Double-check after acquiring the lock.
+	if info, ok := getFromPlanCache(key); ok {
+		return info
 	}
 
-	// Query active subscriptions from database
-	info := queryThroughput(scope, userID, workspaceID)
+	info := queryThroughputFn(scope, userID, workspaceID)
 
-	// Update cache
-	cache.entries.Store(key, &cacheEntry{
-		info:      info,
-		fetchedAt: time.Now(),
-	})
+	if data, err := json.Marshal(info); err == nil {
+		_ = planCache.Set(key, data, planCacheTTL)
+	}
 
 	return info
+}
+
+func getFromPlanCache(key string) (ThroughputInfo, bool) {
+	data, found, err := planCache.Get(key)
+	if !found || err != nil {
+		return ThroughputInfo{}, false
+	}
+	var info ThroughputInfo
+	if err := json.Unmarshal(data, &info); err != nil {
+		return ThroughputInfo{}, false
+	}
+	return info, true
 }
 
 // InvalidateCache removes a specific scope key from the cache.
 func InvalidateCache(scope billing_model.Scope, id uuid.UUID) {
 	key := Key(string(scope), id.String())
-	cache.entries.Delete(key)
+	_ = planCache.Delete(key)
 }
 
 func queryThroughput(scope billing_model.Scope, userID *uuid.UUID, workspaceID *uuid.UUID) ThroughputInfo {

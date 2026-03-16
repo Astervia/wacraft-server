@@ -85,7 +85,7 @@ func ThroughputMiddleware(c *fiber.Ctx) error {
 			// Workspace has budget — charge it and return.
 			c.Set("X-RateLimit-Limit", strconv.Itoa(wsInfo.Limit))
 			c.Set("X-RateLimit-Remaining", strconv.FormatInt(max(0, int64(wsInfo.Limit)-wsCount), 10))
-			resetTime := billing_service.GlobalCounter.WindowReset(wsKey)
+			resetTime := billing_service.GlobalCounter.WindowReset(wsKey, wsInfo.WindowSeconds)
 			if !resetTime.IsZero() {
 				c.Set("X-RateLimit-Reset", strconv.FormatInt(resetTime.Unix(), 10))
 			}
@@ -143,7 +143,7 @@ func enforceScope(c *fiber.Ctx, scope billing_model.Scope, userID *uuid.UUID, wo
 	// Set rate limit headers
 	c.Set("X-RateLimit-Limit", strconv.Itoa(info.Limit))
 	c.Set("X-RateLimit-Remaining", strconv.FormatInt(max(0, int64(info.Limit)-count), 10))
-	resetTime := billing_service.GlobalCounter.WindowReset(key)
+	resetTime := billing_service.GlobalCounter.WindowReset(key, info.WindowSeconds)
 	if !resetTime.IsZero() {
 		c.Set("X-RateLimit-Reset", strconv.FormatInt(resetTime.Unix(), 10))
 	}
@@ -162,7 +162,7 @@ func setScopeHeaders(c *fiber.Ctx, scope billing_model.Scope, scopeID string, fa
 }
 
 func throughputExceeded(c *fiber.Ctx, info billing_service.ThroughputInfo, key string) error {
-	resetTime := billing_service.GlobalCounter.WindowReset(key)
+	resetTime := billing_service.GlobalCounter.WindowReset(key, info.WindowSeconds)
 	retryAfter := time.Until(resetTime).Seconds()
 	if retryAfter < 1 {
 		retryAfter = 1

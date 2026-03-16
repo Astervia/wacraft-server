@@ -1,68 +1,94 @@
 package billing_service
 
 import (
-	"sync"
+	"encoding/json"
+	"time"
 
 	billing_entity "github.com/Astervia/wacraft-core/src/billing/entity"
+	synch_contract "github.com/Astervia/wacraft-core/src/synch/contract"
+	synch_service "github.com/Astervia/wacraft-core/src/synch/service"
 	"github.com/Astervia/wacraft-server/src/database"
 )
 
-// endpointWeightCache caches endpoint weights in memory.
-var endpointWeightCache struct {
-	mu      sync.RWMutex
-	weights map[string]int // key: "METHOD:path" -> weight
-	loaded  bool
+const (
+	endpointWeightCacheKey = "endpoint-weights"
+	endpointWeightCacheTTL = 5 * time.Minute
+)
+
+var (
+	weightCache synch_contract.DistributedCache        = synch_service.NewMemoryCache()
+	weightLock  synch_contract.DistributedLock[string] = synch_service.NewMemoryLock[string]()
+)
+
+// SetEndpointWeightCache replaces the weight cache and lock. Called from src/synch/main.go.
+func SetEndpointWeightCache(c synch_contract.DistributedCache, l synch_contract.DistributedLock[string]) {
+	weightCache = c
+	weightLock = l
 }
+
+// loadWeightsFn is the function used to load endpoint weights from the database.
+// It can be overridden in tests to avoid a real DB connection.
+var loadWeightsFn = loadWeightsFromDB
 
 // GetEndpointWeight returns the weight for a given method+path, defaulting to 1.
 func GetEndpointWeight(method string, path string) int {
-	loadWeightsIfNeeded()
-
+	weights := loadWeights()
 	key := method + ":" + path
-	endpointWeightCache.mu.RLock()
-	defer endpointWeightCache.mu.RUnlock()
-
-	if w, exists := endpointWeightCache.weights[key]; exists {
+	if w, exists := weights[key]; exists {
 		return w
 	}
-	return 1 // Default weight
+	return 1
 }
 
-// InvalidateEndpointWeightCache forces a reload of endpoint weights.
+// InvalidateEndpointWeightCache forces a reload of endpoint weights on next access.
 func InvalidateEndpointWeightCache() {
-	endpointWeightCache.mu.Lock()
-	endpointWeightCache.loaded = false
-	endpointWeightCache.mu.Unlock()
+	_ = weightCache.Delete(endpointWeightCacheKey)
 }
 
-func loadWeightsIfNeeded() {
-	endpointWeightCache.mu.RLock()
-	if endpointWeightCache.loaded {
-		endpointWeightCache.mu.RUnlock()
-		return
-	}
-	endpointWeightCache.mu.RUnlock()
-
-	endpointWeightCache.mu.Lock()
-	defer endpointWeightCache.mu.Unlock()
-
-	// Double-check after acquiring write lock
-	if endpointWeightCache.loaded {
-		return
+func loadWeights() map[string]int {
+	// Fast path: cache hit.
+	if m, ok := getFromWeightCache(); ok {
+		return m
 	}
 
+	// Cache miss — lock to prevent multiple concurrent DB loads.
+	_ = weightLock.Lock(endpointWeightCacheKey)
+	defer weightLock.Unlock(endpointWeightCacheKey) //nolint:errcheck
+
+	// Double-check after acquiring the lock.
+	if m, ok := getFromWeightCache(); ok {
+		return m
+	}
+
+	m := loadWeightsFn()
+
+	if data, err := json.Marshal(m); err == nil {
+		_ = weightCache.Set(endpointWeightCacheKey, data, endpointWeightCacheTTL)
+	}
+
+	return m
+}
+
+func getFromWeightCache() (map[string]int, bool) {
+	data, found, err := weightCache.Get(endpointWeightCacheKey)
+	if !found || err != nil {
+		return nil, false
+	}
+	var m map[string]int
+	if err := json.Unmarshal(data, &m); err != nil {
+		return nil, false
+	}
+	return m, true
+}
+
+func loadWeightsFromDB() map[string]int {
 	var weights []billing_entity.EndpointWeight
+	m := make(map[string]int)
 	if err := database.DB.Find(&weights).Error; err != nil {
-		endpointWeightCache.weights = make(map[string]int)
-		endpointWeightCache.loaded = true
-		return
+		return m
 	}
-
-	m := make(map[string]int, len(weights))
 	for _, w := range weights {
-		key := w.Method + ":" + w.PathPattern
-		m[key] = w.Weight
+		m[w.Method+":"+w.PathPattern] = w.Weight
 	}
-	endpointWeightCache.weights = m
-	endpointWeightCache.loaded = true
+	return m
 }
