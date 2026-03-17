@@ -171,22 +171,14 @@ if has_tool docker; then
         echo "Waiting for PostgreSQL (port $PG_PORT)..."
         until docker exec "$PG_NAME" pg_isready -U postgres -q 2>/dev/null; do sleep 0.1; done
 
-        echo "Running server tests..."
+        echo "Running tests..."
         REDIS_URL="redis://localhost:$REDIS_PORT" \
         DATABASE_URL="postgres://postgres:postgres@localhost:$PG_PORT/postgres?sslmode=disable" \
-        go test ./... -v -race
-        SERVER_EXIT=$?
-
-        echo "Running wacraft-core tests..."
-        cd wacraft-core
-        REDIS_URL="redis://localhost:$REDIS_PORT" go test ./... -v -race
-        CORE_EXIT=$?
-
-        exit $(( SERVER_EXIT || CORE_EXIT ))
+        go test ./... -v -race -count=1
     '
 else
     echo -e "  ${YELLOW}docker not found — running tests without DB/Redis (integration tests will be skipped)${RESET}"
-    launch go_test go test ./... -v
+    launch go_test go test ./... -v -count=1
 fi
 
 if has_tool conftest; then
