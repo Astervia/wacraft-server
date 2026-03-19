@@ -99,10 +99,11 @@ func planPriceRoutes(group fiber.Router) {
 func subscriptionRoutes(group fiber.Router) {
 	sub := group.Group("/subscription")
 
-	// List own subscriptions
+	// List subscriptions – user-scoped by default, workspace-scoped when X-Workspace-ID is provided
 	sub.Get("/",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
+		workspace_middleware.OptionalWorkspaceMiddleware,
 		billing_middleware.ThroughputMiddleware,
 		billing_handler.GetSubscriptions)
 
@@ -110,6 +111,7 @@ func subscriptionRoutes(group fiber.Router) {
 	sub.Post("/checkout",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
+		workspace_middleware.OptionalWorkspaceMiddleware,
 		billing_middleware.ThroughputMiddleware,
 		billing_handler.Checkout)
 
@@ -126,6 +128,7 @@ func subscriptionRoutes(group fiber.Router) {
 	sub.Post("/sync",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
+		workspace_middleware.OptionalWorkspaceMiddleware,
 		billing_middleware.ThroughputMiddleware,
 		billing_handler.SyncSubscription)
 
@@ -133,6 +136,7 @@ func subscriptionRoutes(group fiber.Router) {
 	sub.Post("/reactivate",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
+		workspace_middleware.OptionalWorkspaceMiddleware,
 		billing_middleware.ThroughputMiddleware,
 		billing_handler.ReactivateSubscription)
 
@@ -140,6 +144,7 @@ func subscriptionRoutes(group fiber.Router) {
 	sub.Delete("/",
 		auth_middleware.UserMiddleware,
 		auth_middleware.EmailVerifiedMiddleware,
+		workspace_middleware.OptionalWorkspaceMiddleware,
 		billing_middleware.ThroughputMiddleware,
 		billing_handler.CancelSubscription)
 }

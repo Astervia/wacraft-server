@@ -7,25 +7,41 @@ import (
 	billing_model "github.com/Astervia/wacraft-core/src/billing/model"
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
 	"github.com/Astervia/wacraft-core/src/repository"
+	workspace_model "github.com/Astervia/wacraft-core/src/workspace/model"
 	billing_service "github.com/Astervia/wacraft-server/src/billing/service"
 	"github.com/Astervia/wacraft-server/src/billing/service/payment"
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/Astervia/wacraft-server/src/validators"
 	workspace_middleware "github.com/Astervia/wacraft-server/src/workspace/middleware"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
-// GetSubscriptions returns paginated subscriptions for the current user.
-// If a workspace is in context, filters by that workspace too.
+// requireWorkspacePolicy checks that the workspace user has the given policy
+// and returns the workspace ID. Returns a non-nil error response if the check fails.
+func requireWorkspacePolicy(c *fiber.Ctx, policy workspace_model.Policy) (*uuid.UUID, error) {
+	if !workspace_middleware.HasPolicy(c, policy) {
+		return nil, c.Status(fiber.StatusForbidden).JSON(
+			common_model.NewApiError("insufficient permissions", nil, "handler").Send(),
+		)
+	}
+	workspace := workspace_middleware.GetWorkspace(c)
+	return &workspace.ID, nil
+}
+
+// GetSubscriptions returns paginated subscriptions.
+// Without X-Workspace-ID: returns the authenticated user's subscriptions.
+// With X-Workspace-ID: returns workspace subscriptions (requires billing.read policy).
 //
 //	@Summary		Retrieve subscriptions
-//	@Description	Returns paginated subscriptions for the authenticated user. If X-Workspace-ID is provided, filters by that workspace.
+//	@Description	Returns paginated subscriptions. Without X-Workspace-ID returns user subscriptions. With X-Workspace-ID returns workspace subscriptions (requires billing.read policy).
 //	@Tags			Billing Subscription
 //	@Accept			json
 //	@Produce		json
 //	@Param			subscription	query		billing_model.SubscriptionQueryPaginated	true	"Pagination and query parameters"
 //	@Success		200				{array}		billing_entity.Subscription					"List of subscriptions"
 //	@Failure		400				{object}	common_model.DescriptiveError				"Invalid query parameters"
+//	@Failure		403				{object}	common_model.DescriptiveError				"Insufficient permissions"
 //	@Failure		500				{object}	common_model.DescriptiveError				"Internal server error"
 //	@Security		ApiKeyAuth
 //	@Router			/billing/subscription/ [get]
@@ -45,12 +61,18 @@ func GetSubscriptions(c *fiber.Ctx) error {
 		)
 	}
 
-	filter := billing_entity.Subscription{UserID: user.ID}
+	var filter billing_entity.Subscription
 
-	// Optionally filter by workspace if present
-	workspace := workspace_middleware.GetWorkspace(c)
-	if workspace != nil {
-		filter.WorkspaceID = &workspace.ID
+	if workspace := workspace_middleware.GetWorkspace(c); workspace != nil {
+		// Workspace-scoped: require billing.read policy
+		wsID, err := requireWorkspacePolicy(c, workspace_model.PolicyBillingRead)
+		if err != nil {
+			return err
+		}
+		filter.WorkspaceID = wsID
+	} else {
+		// User-scoped: return own subscriptions
+		filter.UserID = user.ID
 	}
 
 	subs, err := repository.GetPaginated(
@@ -104,6 +126,16 @@ func Checkout(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			common_model.NewValidationError(err).Send(),
 		)
+	}
+
+	// When workspace header is present, auto-fill scope and workspace ID
+	if workspace := workspace_middleware.GetWorkspace(c); workspace != nil {
+		wsID, err := requireWorkspacePolicy(c, workspace_model.PolicyBillingManage)
+		if err != nil {
+			return err
+		}
+		body.Scope = billing_model.ScopeWorkspace
+		body.WorkspaceID = wsID
 	}
 
 	if body.Scope == billing_model.ScopeWorkspace && body.WorkspaceID == nil {
@@ -243,7 +275,16 @@ func ReactivateSubscription(c *fiber.Ctx) error {
 		)
 	}
 
-	if err := billing_service.ReactivateSubscription(id.ID, user.ID); err != nil {
+	var workspaceID *uuid.UUID
+	if workspace := workspace_middleware.GetWorkspace(c); workspace != nil {
+		wsID, err := requireWorkspacePolicy(c, workspace_model.PolicyBillingManage)
+		if err != nil {
+			return err
+		}
+		workspaceID = wsID
+	}
+
+	if err := billing_service.ReactivateSubscription(id.ID, user.ID, workspaceID); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("unable to reactivate subscription", err, "billing_service").Send(),
 		)
@@ -289,7 +330,16 @@ func SyncSubscription(c *fiber.Ctx) error {
 		)
 	}
 
-	sub, err := billing_service.SyncSubscription(id.ID, user.ID)
+	var workspaceID *uuid.UUID
+	if workspace := workspace_middleware.GetWorkspace(c); workspace != nil {
+		wsID, err := requireWorkspacePolicy(c, workspace_model.PolicyBillingRead)
+		if err != nil {
+			return err
+		}
+		workspaceID = wsID
+	}
+
+	sub, err := billing_service.SyncSubscription(id.ID, user.ID, workspaceID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("unable to sync subscription", err, "billing_service").Send(),
@@ -328,7 +378,16 @@ func CancelSubscription(c *fiber.Ctx) error {
 		)
 	}
 
-	if err := billing_service.CancelSubscription(id.ID, user.ID); err != nil {
+	var workspaceID *uuid.UUID
+	if workspace := workspace_middleware.GetWorkspace(c); workspace != nil {
+		wsID, err := requireWorkspacePolicy(c, workspace_model.PolicyBillingManage)
+		if err != nil {
+			return err
+		}
+		workspaceID = wsID
+	}
+
+	if err := billing_service.CancelSubscription(id.ID, user.ID, workspaceID); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("unable to cancel subscription", err, "billing_service").Send(),
 		)
