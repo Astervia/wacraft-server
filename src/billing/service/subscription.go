@@ -196,14 +196,18 @@ func ActivateSubscription(
 // customer.subscription.deleted webhook.
 // One-time (payment mode) subscriptions cannot be cancelled — they simply
 // expire at ExpiresAt.
-func CancelSubscription(subscriptionID uuid.UUID, userID uuid.UUID) error {
+func CancelSubscription(subscriptionID uuid.UUID, userID uuid.UUID, workspaceID *uuid.UUID) error {
 	var sub billing_entity.Subscription
 	if err := database.DB.First(&sub, subscriptionID).Error; err != nil {
 		return errors.New("subscription not found")
 	}
 
-	// Only the owner can cancel
-	if sub.UserID != userID {
+	// Ownership check: workspace-scoped or user-scoped
+	if workspaceID != nil {
+		if sub.WorkspaceID == nil || *sub.WorkspaceID != *workspaceID {
+			return errors.New("unauthorized: subscription does not belong to this workspace")
+		}
+	} else if sub.UserID != userID {
 		return errors.New("unauthorized: you can only cancel your own subscriptions")
 	}
 
@@ -236,13 +240,18 @@ func CancelSubscription(subscriptionID uuid.UUID, userID uuid.UUID) error {
 
 // ReactivateSubscription reverses a pending cancellation, re-enabling auto-renewal.
 // Only works for subscription-mode subscriptions with cancel_at_period_end=true.
-func ReactivateSubscription(subscriptionID uuid.UUID, userID uuid.UUID) error {
+func ReactivateSubscription(subscriptionID uuid.UUID, userID uuid.UUID, workspaceID *uuid.UUID) error {
 	var sub billing_entity.Subscription
 	if err := database.DB.First(&sub, subscriptionID).Error; err != nil {
 		return errors.New("subscription not found")
 	}
 
-	if sub.UserID != userID {
+	// Ownership check: workspace-scoped or user-scoped
+	if workspaceID != nil {
+		if sub.WorkspaceID == nil || *sub.WorkspaceID != *workspaceID {
+			return errors.New("unauthorized: subscription does not belong to this workspace")
+		}
+	} else if sub.UserID != userID {
 		return errors.New("unauthorized: you can only reactivate your own subscriptions")
 	}
 
@@ -341,13 +350,18 @@ func SyncCancelAtPeriodEnd(stripeSubscriptionID string, cancelAtPeriodEnd bool) 
 //     If paid, activates it. If session expired/unpaid, marks cancelled.
 //   - Active subscription-mode with StripeSubscriptionID: existing behavior (fetch from Stripe subscription API).
 //   - Active subscription-mode without StripeSubscriptionID: error (shouldn't happen).
-func SyncSubscription(subscriptionID uuid.UUID, userID uuid.UUID) (billing_entity.Subscription, error) {
+func SyncSubscription(subscriptionID uuid.UUID, userID uuid.UUID, workspaceID *uuid.UUID) (billing_entity.Subscription, error) {
 	var sub billing_entity.Subscription
 	if err := database.DB.Preload("Plan").First(&sub, subscriptionID).Error; err != nil {
 		return billing_entity.Subscription{}, errors.New("subscription not found")
 	}
 
-	if sub.UserID != userID {
+	// Ownership check: workspace-scoped or user-scoped
+	if workspaceID != nil {
+		if sub.WorkspaceID == nil || *sub.WorkspaceID != *workspaceID {
+			return billing_entity.Subscription{}, errors.New("unauthorized: subscription does not belong to this workspace")
+		}
+	} else if sub.UserID != userID {
 		return billing_entity.Subscription{}, errors.New("unauthorized: you can only sync your own subscriptions")
 	}
 

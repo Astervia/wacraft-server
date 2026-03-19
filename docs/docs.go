@@ -1106,7 +1106,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Returns paginated subscriptions for the authenticated user. If X-Workspace-ID is provided, filters by that workspace.",
+                "description": "Returns paginated subscriptions. Without X-Workspace-ID returns user subscriptions. With X-Workspace-ID returns workspace subscriptions (requires billing.read policy).",
                 "consumes": [
                     "application/json"
                 ],
@@ -1193,6 +1193,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Invalid query parameters",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
+                        }
+                    },
+                    "403": {
+                        "description": "Insufficient permissions",
                         "schema": {
                             "$ref": "#/definitions/github_com_Astervia_wacraft-core_src_common_model.DescriptiveError"
                         }
