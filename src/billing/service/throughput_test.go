@@ -6,9 +6,17 @@ import (
 	"testing"
 	"time"
 
+	billing_model "github.com/Astervia/wacraft-core/src/billing/model"
 	synch_redis "github.com/Astervia/wacraft-core/src/synch/redis"
 	synch_service "github.com/Astervia/wacraft-core/src/synch/service"
+	"github.com/Astervia/wacraft-server/src/config/env"
+	"github.com/google/uuid"
 )
+
+// resetGlobalCounter replaces GlobalCounter with a fresh in-memory counter.
+func resetGlobalCounter() {
+	SetThroughputCounter(NewThroughputCounter(synch_service.NewMemoryCounter()))
+}
 
 func TestThroughput_MemoryIncrement(t *testing.T) {
 	c := NewThroughputCounter(synch_service.NewMemoryCounter())
@@ -103,5 +111,88 @@ func TestThroughput_RedisCrossInstance(t *testing.T) {
 	}
 	if gotB != 10 {
 		t.Fatalf("instance B: expected 10, got %d", gotB)
+	}
+}
+
+func TestConsumeWorkspaceThroughput_BillingDisabled(t *testing.T) {
+	env.BillingEnabled = false
+	t.Cleanup(func() { env.BillingEnabled = false })
+
+	wsID := uuid.New()
+	if !ConsumeWorkspaceThroughput(&wsID, 1) {
+		t.Fatal("expected true when billing is disabled")
+	}
+}
+
+func TestConsumeWorkspaceThroughput_NilWorkspace(t *testing.T) {
+	env.BillingEnabled = true
+	t.Cleanup(func() { env.BillingEnabled = false })
+
+	if !ConsumeWorkspaceThroughput(nil, 1) {
+		t.Fatal("expected true when workspace ID is nil")
+	}
+}
+
+func TestConsumeWorkspaceThroughput_WithinLimit(t *testing.T) {
+	env.BillingEnabled = true
+	t.Cleanup(func() { env.BillingEnabled = false })
+	resetGlobalCounter()
+	t.Cleanup(resetGlobalCounter)
+
+	const limit = 5
+	mock := &mockQuery{info: ThroughputInfo{Limit: limit, WindowSeconds: 60}}
+	queryThroughputFn = mock.query
+	t.Cleanup(func() { queryThroughputFn = queryThroughput })
+
+	wsID := uuid.New()
+	InvalidateCache(billing_model.ScopeWorkspace, wsID)
+
+	for i := 0; i < limit; i++ {
+		if !ConsumeWorkspaceThroughput(&wsID, 1) {
+			t.Fatalf("expected allowed at request %d/%d", i+1, limit)
+		}
+	}
+}
+
+func TestConsumeWorkspaceThroughput_ExceedsLimit(t *testing.T) {
+	env.BillingEnabled = true
+	t.Cleanup(func() { env.BillingEnabled = false })
+	resetGlobalCounter()
+	t.Cleanup(resetGlobalCounter)
+
+	const limit = 3
+	mock := &mockQuery{info: ThroughputInfo{Limit: limit, WindowSeconds: 60}}
+	queryThroughputFn = mock.query
+	t.Cleanup(func() { queryThroughputFn = queryThroughput })
+
+	wsID := uuid.New()
+	InvalidateCache(billing_model.ScopeWorkspace, wsID)
+
+	for i := 0; i < limit; i++ {
+		ConsumeWorkspaceThroughput(&wsID, 1)
+	}
+
+	if ConsumeWorkspaceThroughput(&wsID, 1) {
+		t.Fatal("expected false when limit is exceeded")
+	}
+}
+
+func TestConsumeWorkspaceThroughput_Unlimited(t *testing.T) {
+	env.BillingEnabled = true
+	t.Cleanup(func() { env.BillingEnabled = false })
+	resetGlobalCounter()
+	t.Cleanup(resetGlobalCounter)
+
+	mock := &mockQuery{info: ThroughputInfo{Unlimited: true}}
+	queryThroughputFn = mock.query
+	t.Cleanup(func() { queryThroughputFn = queryThroughput })
+
+	wsID := uuid.New()
+	InvalidateCache(billing_model.ScopeWorkspace, wsID)
+
+	for i := 0; i < 1000; i++ {
+		if !ConsumeWorkspaceThroughput(&wsID, 1) {
+			t.Fatalf("expected allowed at request %d for unlimited workspace", i+1)
+		}
 	}
 }

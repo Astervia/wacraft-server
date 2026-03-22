@@ -8,6 +8,7 @@ import (
 
 	billing_model "github.com/Astervia/wacraft-core/src/billing/model"
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
+	phone_config_entity "github.com/Astervia/wacraft-core/src/phone-config/entity"
 	user_entity "github.com/Astervia/wacraft-core/src/user/entity"
 	workspace_entity "github.com/Astervia/wacraft-core/src/workspace/entity"
 	billing_service "github.com/Astervia/wacraft-server/src/billing/service"
@@ -83,12 +84,7 @@ func ThroughputMiddleware(c *fiber.Ctx) error {
 
 		if wsCount <= int64(wsInfo.Limit) {
 			// Workspace has budget — charge it and return.
-			c.Set("X-RateLimit-Limit", strconv.Itoa(wsInfo.Limit))
-			c.Set("X-RateLimit-Remaining", strconv.FormatInt(max(0, int64(wsInfo.Limit)-wsCount), 10))
-			resetTime := billing_service.GlobalCounter.WindowReset(wsKey, wsInfo.WindowSeconds)
-			if !resetTime.IsZero() {
-				c.Set("X-RateLimit-Reset", strconv.FormatInt(resetTime.Unix(), 10))
-			}
+			setLimitedRateLimitHeaders(c, wsInfo, wsCount, wsKey)
 			setScopeHeaders(c, billing_model.ScopeWorkspace, scopeID, false)
 			return c.Next()
 		}
@@ -140,16 +136,55 @@ func enforceScope(c *fiber.Ctx, scope billing_model.Scope, userID *uuid.UUID, wo
 		key = fallbackKey
 	}
 
-	// Set rate limit headers
-	c.Set("X-RateLimit-Limit", strconv.Itoa(info.Limit))
-	c.Set("X-RateLimit-Remaining", strconv.FormatInt(max(0, int64(info.Limit)-count), 10))
-	resetTime := billing_service.GlobalCounter.WindowReset(key, info.WindowSeconds)
-	if !resetTime.IsZero() {
-		c.Set("X-RateLimit-Reset", strconv.FormatInt(resetTime.Unix(), 10))
-	}
+	setLimitedRateLimitHeaders(c, info, count, key)
 	setScopeHeaders(c, scope, scopeID, fallback)
 
 	return c.Next()
+}
+
+// WebhookInThroughputMiddleware enforces workspace throughput for /webhook-in requests.
+// It reads the PhoneConfig from context (keyed by phoneConfigCtxKey, set by the webhook
+// config after signature verification) and charges the associated workspace's throughput
+// budget. When BILLING_ENABLED=false (default), this middleware is a complete no-op.
+// Requests whose phone config has no workspace are passed through without counting.
+func WebhookInThroughputMiddleware(phoneConfigCtxKey string) func(*fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
+		if !env.BillingEnabled {
+			return c.Next()
+		}
+
+		phoneConfig, ok := c.Locals(phoneConfigCtxKey).(*phone_config_entity.PhoneConfig)
+		if !ok || phoneConfig == nil || phoneConfig.WorkspaceID == nil {
+			return c.Next()
+		}
+
+		workspaceID := phoneConfig.WorkspaceID
+		method := c.Method()
+		path := c.Path()
+		weight := billing_service.GetEndpointWeight(method, path)
+
+		wsInfo := billing_service.ResolveThroughput(billing_model.ScopeWorkspace, nil, workspaceID)
+		scopeID := billing_service.ScopeKeyID(billing_model.ScopeWorkspace, nil, workspaceID)
+
+		if wsInfo.Unlimited {
+			setUnlimitedRateLimitHeaders(c)
+			setScopeHeaders(c, billing_model.ScopeWorkspace, scopeID, false)
+			return c.Next()
+		}
+
+		wsKey := billing_service.Key(string(billing_model.ScopeWorkspace), scopeID)
+		wsCount := billing_service.GlobalCounter.Increment(wsKey, wsInfo.WindowSeconds, weight)
+
+		if wsCount > int64(wsInfo.Limit) {
+			setScopeHeaders(c, billing_model.ScopeWorkspace, scopeID, false)
+			return throughputExceeded(c, wsInfo, wsKey)
+		}
+
+		setLimitedRateLimitHeaders(c, wsInfo, wsCount, wsKey)
+		setScopeHeaders(c, billing_model.ScopeWorkspace, scopeID, false)
+
+		return c.Next()
+	}
 }
 
 // setScopeHeaders adds headers that describe which scope was charged.
@@ -180,6 +215,17 @@ func throughputExceeded(c *fiber.Ctx, info billing_service.ThroughputInfo, key s
 			"billing",
 		).Send(),
 	)
+}
+
+// setLimitedRateLimitHeaders sets X-RateLimit-Limit, X-RateLimit-Remaining, and
+// X-RateLimit-Reset headers for a limited (non-unlimited) scope.
+func setLimitedRateLimitHeaders(c *fiber.Ctx, info billing_service.ThroughputInfo, count int64, key string) {
+	c.Set("X-RateLimit-Limit", strconv.Itoa(info.Limit))
+	c.Set("X-RateLimit-Remaining", strconv.FormatInt(max(0, int64(info.Limit)-count), 10))
+	resetTime := billing_service.GlobalCounter.WindowReset(key, info.WindowSeconds)
+	if !resetTime.IsZero() {
+		c.Set("X-RateLimit-Reset", strconv.FormatInt(resetTime.Unix(), 10))
+	}
 }
 
 func setUnlimitedRateLimitHeaders(c *fiber.Ctx) {

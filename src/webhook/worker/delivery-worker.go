@@ -13,6 +13,7 @@ import (
 	synch_contract "github.com/Astervia/wacraft-core/src/synch/contract"
 	webhook_entity "github.com/Astervia/wacraft-core/src/webhook/entity"
 	webhook_core_service "github.com/Astervia/wacraft-core/src/webhook/service"
+	billing_service "github.com/Astervia/wacraft-server/src/billing/service"
 	"github.com/Astervia/wacraft-server/src/database"
 	webhook_service "github.com/Astervia/wacraft-server/src/webhook/service"
 	"github.com/pterm/pterm"
@@ -170,6 +171,16 @@ func (w *DeliveryWorker) processDelivery(delivery *webhook_entity.WebhookDeliver
 	if !allowed {
 		pterm.DefaultLogger.Warn("Circuit open for webhook: " + delivery.WebhookID.String())
 		return // Don't update status, will retry when circuit closes
+	}
+
+	// Check workspace throughput budget before sending.
+	// Treated as a failed attempt: counts against MaxAttempts and surfaces in webhook logs.
+	if !billing_service.ConsumeWorkspaceThroughput(delivery.Webhook.WorkspaceID, 1) {
+		pterm.DefaultLogger.Warn("Workspace throughput limit exceeded for webhook delivery: " + delivery.ID.String())
+		if updateErr := webhook_service.UpdateDeliveryStatus(delivery, false, 0, "", "workspace throughput limit exceeded — upgrade your plan to increase quota"); updateErr != nil {
+			pterm.DefaultLogger.Error("Failed to update delivery status: " + updateErr.Error())
+		}
+		return
 	}
 
 	// Execute the webhook
