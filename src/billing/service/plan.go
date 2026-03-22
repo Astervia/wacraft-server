@@ -38,6 +38,16 @@ func SetPlanCache(c synch_contract.DistributedCache, l synch_contract.Distribute
 // It can be overridden in tests to avoid a real DB connection.
 var queryThroughputFn = queryThroughput
 
+// SetQueryThroughputFn replaces the throughput query function used by ResolveThroughput.
+// Pass nil to restore the default database-backed implementation.
+func SetQueryThroughputFn(fn func(billing_model.Scope, *uuid.UUID, *uuid.UUID) ThroughputInfo) {
+	if fn == nil {
+		queryThroughputFn = queryThroughput
+		return
+	}
+	queryThroughputFn = fn
+}
+
 // ResolveThroughput returns the effective throughput limit for a given scope.
 // It sums all active subscription limits. Falls back to the default free plan if none.
 func ResolveThroughput(scope billing_model.Scope, userID *uuid.UUID, workspaceID *uuid.UUID) ThroughputInfo {

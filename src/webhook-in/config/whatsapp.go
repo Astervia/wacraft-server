@@ -2,6 +2,7 @@ package webhook_config
 
 import (
 	phone_config_entity "github.com/Astervia/wacraft-core/src/phone-config/entity"
+	billing_middleware "github.com/Astervia/wacraft-server/src/billing/middleware"
 	"github.com/Astervia/wacraft-server/src/config/env"
 	"github.com/Astervia/wacraft-server/src/database"
 	phone_config_service "github.com/Astervia/wacraft-server/src/phone-config/service"
@@ -76,6 +77,7 @@ func registerWabaWebhook(app *fiber.App) {
 				}
 				return auth_middleware.VerifyMetaSignature(appSecret)(ctx)
 			},
+			billing_middleware.WebhookInThroughputMiddleware(webhook_handler.PhoneConfigCtxKey),
 		},
 		GetMiddlewares: []func(ctx *fiber.Ctx) error{
 			func(ctx *fiber.Ctx) error {
