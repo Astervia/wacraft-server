@@ -7,6 +7,7 @@ import (
 	billing_model "github.com/Astervia/wacraft-core/src/billing/model"
 	synch_contract "github.com/Astervia/wacraft-core/src/synch/contract"
 	synch_service "github.com/Astervia/wacraft-core/src/synch/service"
+	"github.com/Astervia/wacraft-server/src/config/env"
 	"github.com/google/uuid"
 )
 
@@ -71,6 +72,28 @@ var GlobalCounter = NewThroughputCounter(synch_service.NewMemoryCounter())
 // SetThroughputCounter replaces the global counter. Called from src/synch/main.go.
 func SetThroughputCounter(c *ThroughputCounter) {
 	GlobalCounter = c
+}
+
+// ConsumeWorkspaceThroughput increments the workspace throughput counter by weight
+// and reports whether the request is within budget.
+// Returns true (allowed) when billing is disabled, the workspace ID is nil,
+// the workspace has unlimited throughput, or the count is within limit.
+// Returns false (blocked) when the workspace has exceeded its throughput limit.
+func ConsumeWorkspaceThroughput(workspaceID *uuid.UUID, weight int) bool {
+	if !env.BillingEnabled || workspaceID == nil {
+		return true
+	}
+
+	info := ResolveThroughput(billing_model.ScopeWorkspace, nil, workspaceID)
+	if info.Unlimited {
+		return true
+	}
+
+	scopeID := ScopeKeyID(billing_model.ScopeWorkspace, nil, workspaceID)
+	key := Key(string(billing_model.ScopeWorkspace), scopeID)
+	count := GlobalCounter.Increment(key, info.WindowSeconds, weight)
+
+	return count <= int64(info.Limit)
 }
 
 // Key builds a scope key for the counter.
