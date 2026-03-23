@@ -96,9 +96,33 @@ test-redis:
 		CORE_EXIT=0; \
 		cd wacraft-core && REDIS_URL=redis://localhost:16379 go test ./... -v -race || CORE_EXIT=$$?; \
 		cd ..; \
-		echo "Stopping Redis container..."; \
+		echo "Removing Redis container..."; \
 		docker rm -f wacraft-test-redis > /dev/null; \
 		exit $$CORE_EXIT
+
+# Run tests in memory mode (Postgres only, no Redis).
+# Mirrors the CI "Run tests (memory mode)" step.
+# Starts an ephemeral PostgreSQL container, runs all tests (server + core), then removes it.
+test-memory:
+	@echo "Starting ephemeral PostgreSQL container..."
+	@docker run -d --name wacraft-test-postgres-mem -p 15433:5432 \
+		-e POSTGRES_DB=postgres \
+		-e POSTGRES_USER=postgres \
+		-e POSTGRES_PASSWORD=postgres \
+		postgres:17-alpine > /dev/null
+	@echo "Waiting for PostgreSQL to be ready..."
+	@until docker exec wacraft-test-postgres-mem pg_isready -U postgres -q 2>/dev/null; do sleep 0.1; done
+	@echo "Running tests (memory mode)..."
+	@SERVER_EXIT=0; CORE_EXIT=0; \
+		SYNC_BACKEND=memory \
+		REDIS_URL="" \
+		DATABASE_URL="postgres://postgres:postgres@localhost:15433/postgres?sslmode=disable" \
+		go test ./... -v -race || SERVER_EXIT=$$?; \
+		cd wacraft-core && REDIS_URL="" go test ./... -v -race || CORE_EXIT=$$?; \
+		cd ..; \
+		echo "Removing PostgreSQL container..."; \
+		docker rm -f wacraft-test-postgres-mem > /dev/null; \
+		exit $$(( SERVER_EXIT || CORE_EXIT ))
 
 # Run the full test suite with both Redis and PostgreSQL.
 # Starts ephemeral containers for both services, runs all tests (server + core), then removes them.
@@ -116,13 +140,14 @@ test-distributed:
 	@until docker exec wacraft-test-redis redis-cli ping 2>/dev/null | grep -q PONG; do sleep 0.1; done
 	@echo "Waiting for PostgreSQL to be ready..."
 	@until docker exec wacraft-test-postgres pg_isready -U postgres -q 2>/dev/null; do sleep 0.1; done
-	@echo "Running tests..."
+	@echo "Running tests (distributed mode)..."
 	@SERVER_EXIT=0; CORE_EXIT=0; \
+		SYNC_BACKEND=redis \
 		REDIS_URL=redis://localhost:16379 \
 		DATABASE_URL="postgres://postgres:postgres@localhost:15432/postgres?sslmode=disable" \
 		go test ./... -v -race || SERVER_EXIT=$$?; \
 		cd wacraft-core && REDIS_URL=redis://localhost:16379 go test ./... -v -race || CORE_EXIT=$$?; \
 		cd ..; \
-		echo "Stopping containers..."; \
+		echo "Removing containers..."; \
 		docker rm -f wacraft-test-redis wacraft-test-postgres > /dev/null; \
 		exit $$(( SERVER_EXIT || CORE_EXIT ))
