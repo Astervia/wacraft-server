@@ -16,7 +16,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/gosimple/slug v1.15.0
 	github.com/joho/godotenv v1.5.1
-	github.com/lib/pq v1.11.2
+	github.com/lib/pq v1.12.0
 	github.com/pressly/goose/v3 v3.27.0
 	github.com/pterm/pterm v0.12.83
 	github.com/stripe/stripe-go/v84 v84.4.1
