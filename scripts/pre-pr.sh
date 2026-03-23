@@ -8,8 +8,8 @@
 #   everything else → check only (no automatic fix available)
 #
 # Dependency graph (matches CI jobs):
-#   Wave 1 (parallel): gofmt | go_vet | go_test | conftest | gitleaks
-#   Wave 2:            govulncheck    <- needs gofmt + go_vet + go_test
+#   Wave 1 (parallel): gofmt | go_vet | go_test_memory | go_test_distributed | conftest | gitleaks
+#   Wave 2:            govulncheck    <- needs gofmt + go_vet + go_test_memory + go_test_distributed
 #   Wave 3:            go_build       <- needs govulncheck
 #   conftest / gitleaks run freely and never block other waves.
 set -uo pipefail
@@ -35,7 +35,8 @@ has_tool() { command -v "$1" &>/dev/null; }
 declare -A HINTS
 HINTS[gofmt]="gofmt -w was run automatically — check the diff and re-stage if needed"
 HINTS[go_vet]="fix the reported issues; run: go vet ./..."
-HINTS[go_test]="fix failing tests; run: make test-distributed (or: go test ./... -v -run <TestName>)"
+HINTS[go_test_memory]="fix failing tests; run: make test (or: DATABASE_URL=... go test ./... -v -run <TestName>)"
+HINTS[go_test_distributed]="fix failing tests; run: make test-distributed (or: REDIS_URL=... DATABASE_URL=... go test ./... -v -run <TestName>)"
 HINTS[govulncheck]="upgrade the vulnerable module: go get -u <module>@<safe-version>"
 HINTS[conftest]="fix the Dockerfile policy violations listed above"
 HINTS[gitleaks]="remove the secret from history; see: git-filter-repo or BFG"
@@ -128,7 +129,7 @@ gate_ok() {
 # ─────────────────────────────────────────────────────────────────────────────
 # Wave 1 — all independent checks in parallel
 # ─────────────────────────────────────────────────────────────────────────────
-banner "Wave 1 — parallel: gofmt | go_vet | go_test | conftest | gitleaks"
+banner "Wave 1 — parallel: gofmt | go_vet | go_test_memory | go_test_distributed | conftest | gitleaks"
 
 # gofmt: auto-fix, then report which files were changed (always exits 0 unless
 # gofmt itself crashes — formatting is never a blocking failure after a fix).
@@ -146,9 +147,30 @@ launch gofmt bash -c '
 launch go_vet go vet ./...
 
 if has_tool docker; then
-    launch go_test bash -c '
+    launch go_test_memory bash -c '
+        PG_NAME="wacraft-pre-pr-pg-mem-$$"
+        cleanup() { docker rm -f "$PG_NAME" >/dev/null 2>&1 || true; }
+        trap cleanup EXIT
+
+        echo "Starting ephemeral PostgreSQL..."
+        docker run -d --name "$PG_NAME" -p 0:5432 \
+            -e POSTGRES_DB=postgres \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=postgres \
+            postgres:17-alpine >/dev/null
+        PG_PORT=$(docker inspect --format="{{(index (index .NetworkSettings.Ports \"5432/tcp\") 0).HostPort}}" "$PG_NAME")
+
+        echo "Waiting for PostgreSQL (port $PG_PORT)..."
+        until docker exec "$PG_NAME" pg_isready -U postgres -q 2>/dev/null; do sleep 0.1; done
+
+        echo "Running tests (memory mode)..."
+        DATABASE_URL="postgres://postgres:postgres@localhost:$PG_PORT/postgres?sslmode=disable" \
+        go test ./... -v -race -count=1
+    '
+
+    launch go_test_distributed bash -c '
         REDIS_NAME="wacraft-pre-pr-redis-$$"
-        PG_NAME="wacraft-pre-pr-postgres-$$"
+        PG_NAME="wacraft-pre-pr-pg-dist-$$"
         cleanup() { docker rm -f "$REDIS_NAME" "$PG_NAME" >/dev/null 2>&1 || true; }
         trap cleanup EXIT
 
@@ -170,14 +192,15 @@ if has_tool docker; then
         echo "Waiting for PostgreSQL (port $PG_PORT)..."
         until docker exec "$PG_NAME" pg_isready -U postgres -q 2>/dev/null; do sleep 0.1; done
 
-        echo "Running tests..."
+        echo "Running tests (distributed mode)..."
         REDIS_URL="redis://localhost:$REDIS_PORT" \
         DATABASE_URL="postgres://postgres:postgres@localhost:$PG_PORT/postgres?sslmode=disable" \
         go test ./... -v -race -count=1
     '
 else
     echo -e "  ${YELLOW}docker not found — running tests without DB/Redis (integration tests will be skipped)${RESET}"
-    launch go_test go test ./... -v -count=1
+    launch go_test_memory       go test ./... -v -count=1
+    mark_skip go_test_distributed "docker not available"
 fi
 
 if has_tool conftest; then
@@ -196,13 +219,13 @@ fi
 # Gate: wait for lint checks before proceeding to govulncheck.
 # conftest/gitleaks sections also appear here as they complete.
 # ─────────────────────────────────────────────────────────────────────────────
-banner "Gate — gofmt | go_vet | go_test"
-wait_for gofmt go_vet go_test
+banner "Gate — gofmt | go_vet | go_test_memory | go_test_distributed"
+wait_for gofmt go_vet go_test_memory go_test_distributed
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Wave 2 — govulncheck (needs lint gate)
 # ─────────────────────────────────────────────────────────────────────────────
-if gate_ok gofmt go_vet go_test; then
+if gate_ok gofmt go_vet go_test_memory go_test_distributed; then
     banner "Wave 2 — govulncheck"
     GOVULNCHECK="$(go env GOPATH)/bin/govulncheck"
     if [[ ! -x "$GOVULNCHECK" ]]; then
