@@ -173,8 +173,8 @@ func (w *DeliveryWorker) processDelivery(delivery *webhook_entity.WebhookDeliver
 		return // Don't update status, will retry when circuit closes
 	}
 
-	// Check workspace throughput budget before sending.
-	// Treated as a failed attempt: counts against MaxAttempts and surfaces in webhook logs.
+	// Check and consume throughput before executing the webhook.
+	// Quota is reserved upfront so every attempt counts, regardless of outcome.
 	if !billing_service.ConsumeWorkspaceThroughput(delivery.Webhook.WorkspaceID, 1) {
 		pterm.DefaultLogger.Warn("Workspace throughput limit exceeded for webhook delivery: " + delivery.ID.String())
 		if updateErr := webhook_service.UpdateDeliveryStatus(delivery, false, 0, "", "workspace throughput limit exceeded — upgrade your plan to increase quota"); updateErr != nil {
