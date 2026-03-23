@@ -399,7 +399,7 @@ func TestWebhookConsumerLoop_ColdCacheFirstMessage(t *testing.T) {
 	wg.Wait()
 
 	total := int(rejectedDeliveries.Load()) + poolSize // delivered + rejected
-	_ = total // all poolSize attempts ran; some may be rejected if limit < poolSize
+	_ = total                                          // all poolSize attempts ran; some may be rejected if limit < poolSize
 	if callbackStatus.Load() != fiber.StatusOK {
 		t.Errorf("n8n callback got %d on cold cache (first message), want 200", callbackStatus.Load())
 	}
