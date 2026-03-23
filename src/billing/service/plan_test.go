@@ -111,11 +111,11 @@ func TestSubscriptionCache_CrossInstance(t *testing.T) {
 		t.Skip("REDIS_URL not set — skipping Redis integration test")
 	}
 
-	clientA, err := synch_redis.NewClient(synch_redis.Config{URL: redisURL, DB: 15})
+	clientA, err := synch_redis.NewClient(synch_redis.Config{URL: redisURL, DB: 11})
 	if err != nil {
 		t.Fatalf("clientA: %v", err)
 	}
-	clientB, err := synch_redis.NewClient(synch_redis.Config{URL: redisURL, DB: 15})
+	clientB, err := synch_redis.NewClient(synch_redis.Config{URL: redisURL, DB: 11})
 	if err != nil {
 		t.Fatalf("clientB: %v", err)
 	}

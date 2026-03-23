@@ -93,11 +93,11 @@ func TestDeliveryWorker_RedisNoDuplicates(t *testing.T) {
 		t.Skip("REDIS_URL not set — skipping Redis integration test")
 	}
 
-	clientA, err := synch_redis.NewClient(synch_redis.Config{URL: redisURL, DB: 15, LockTTL: 5 * time.Second})
+	clientA, err := synch_redis.NewClient(synch_redis.Config{URL: redisURL, DB: 14, LockTTL: 5 * time.Second})
 	if err != nil {
 		t.Fatalf("clientA: %v", err)
 	}
-	clientB, err := synch_redis.NewClient(synch_redis.Config{URL: redisURL, DB: 15, LockTTL: 5 * time.Second})
+	clientB, err := synch_redis.NewClient(synch_redis.Config{URL: redisURL, DB: 14, LockTTL: 5 * time.Second})
 	if err != nil {
 		t.Fatalf("clientB: %v", err)
 	}
@@ -173,11 +173,11 @@ func TestDeliveryWorker_LockExpiry(t *testing.T) {
 	}
 
 	// Use a very short TTL to simulate lock expiry.
-	clientA, err := synch_redis.NewClient(synch_redis.Config{URL: redisURL, DB: 15, LockTTL: 200 * time.Millisecond})
+	clientA, err := synch_redis.NewClient(synch_redis.Config{URL: redisURL, DB: 14, LockTTL: 200 * time.Millisecond})
 	if err != nil {
 		t.Fatalf("clientA: %v", err)
 	}
-	clientB, err := synch_redis.NewClient(synch_redis.Config{URL: redisURL, DB: 15, LockTTL: 200 * time.Millisecond})
+	clientB, err := synch_redis.NewClient(synch_redis.Config{URL: redisURL, DB: 14, LockTTL: 200 * time.Millisecond})
 	if err != nil {
 		t.Fatalf("clientB: %v", err)
 	}

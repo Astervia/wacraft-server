@@ -76,16 +76,16 @@ func TestThroughput_RedisCrossInstance(t *testing.T) {
 		t.Skip("REDIS_URL not set — skipping Redis integration test")
 	}
 
-	clientA, err := synch_redis.NewClient(synch_redis.Config{URL: redisURL, DB: 15})
+	clientA, err := synch_redis.NewClient(synch_redis.Config{URL: redisURL, DB: 11})
 	if err != nil {
 		t.Fatalf("clientA: %v", err)
 	}
-	clientB, err := synch_redis.NewClient(synch_redis.Config{URL: redisURL, DB: 15})
+	clientB, err := synch_redis.NewClient(synch_redis.Config{URL: redisURL, DB: 11})
 	if err != nil {
 		t.Fatalf("clientB: %v", err)
 	}
 
-	// Flush DB 15 before the test.
+	// Flush DB 11 before the test.
 	clientA.Redis().FlushDB(t.Context())
 	t.Cleanup(func() { clientA.Redis().FlushDB(t.Context()) })
 

@@ -20,7 +20,7 @@ func testRedisClientCampaign(t *testing.T) *synch_redis.Client {
 	}
 	client, err := synch_redis.NewClient(synch_redis.Config{
 		URL:       redisURL,
-		DB:        15,
+		DB:        12,
 		KeyPrefix: "wacraft:test:",
 	})
 	if err != nil {
