@@ -65,7 +65,12 @@ jobs:
             - name: Run go vet
               run: go vet ./...
 
-            - name: Run tests
+            - name: Run tests (memory mode)
+              run: go test ./... -v -race
+              env:
+                  DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+
+            - name: Run tests (distributed mode — with Redis)
               run: go test ./... -v -race
               env:
                   REDIS_URL: redis://localhost:6379
