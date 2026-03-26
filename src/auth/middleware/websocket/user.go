@@ -54,8 +54,19 @@ func UserMiddleware(c *fiber.Ctx) error {
 	}
 
 	// Add the user ID to the context
-	claims := token.Claims.(jwt.MapClaims)
-	userID, err := uuid.Parse(claims["sub"].(string))
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "invalid claims structure"})
+	}
+	subClaim, ok := claims["sub"]
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "token is missing subject claim"})
+	}
+	subStr, ok := subClaim.(string)
+	if !ok || subStr == "" {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "subject claim is invalid"})
+	}
+	userID, err := uuid.Parse(subStr)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Unable to convert id to uuid"})
 	}
