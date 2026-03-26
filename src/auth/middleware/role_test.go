@@ -1,11 +1,11 @@
 package auth_middleware
 
 import (
-	"net/http/httptest"
-	"testing"
 	user_entity "github.com/Astervia/wacraft-core/src/user/entity"
 	user_model "github.com/Astervia/wacraft-core/src/user/model"
 	"github.com/gofiber/fiber/v2"
+	"net/http/httptest"
+	"testing"
 )
 
 func TestRoleMiddleware_NoLocals(t *testing.T) {

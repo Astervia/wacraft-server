@@ -1,10 +1,10 @@
 package auth_middleware
 
 import (
-	"net/http/httptest"
-	"testing"
 	"github.com/Astervia/wacraft-server/src/config/env"
 	"github.com/gofiber/fiber/v2"
+	"net/http/httptest"
+	"testing"
 )
 
 func TestTokenMiddleware_NoAuthTokenEnv(t *testing.T) {
@@ -12,7 +12,7 @@ func TestTokenMiddleware_NoAuthTokenEnv(t *testing.T) {
 	app := fiber.New()
 	app.Use(TokenMiddleware)
 	app.Get("/", func(c *fiber.Ctx) error { return c.SendStatus(fiber.StatusOK) })
-	
+
 	req := httptest.NewRequest("GET", "/", nil)
 	resp, _ := app.Test(req)
 	if resp.StatusCode != fiber.StatusOK {
@@ -25,7 +25,7 @@ func TestTokenMiddleware_MissingHeader(t *testing.T) {
 	app := fiber.New()
 	app.Use(TokenMiddleware)
 	app.Get("/", func(c *fiber.Ctx) error { return c.SendStatus(fiber.StatusOK) })
-	
+
 	req := httptest.NewRequest("GET", "/", nil)
 	resp, _ := app.Test(req)
 	if resp.StatusCode != fiber.StatusUnauthorized {
@@ -38,7 +38,7 @@ func TestTokenMiddleware_InvalidFormat(t *testing.T) {
 	app := fiber.New()
 	app.Use(TokenMiddleware)
 	app.Get("/", func(c *fiber.Ctx) error { return c.SendStatus(fiber.StatusOK) })
-	
+
 	req := httptest.NewRequest("GET", "/", nil)
 	req.Header.Set("Authorization", "secret_valid_token") // missing Bearer
 	resp, _ := app.Test(req)
@@ -52,7 +52,7 @@ func TestTokenMiddleware_InvalidToken(t *testing.T) {
 	app := fiber.New()
 	app.Use(TokenMiddleware)
 	app.Get("/", func(c *fiber.Ctx) error { return c.SendStatus(fiber.StatusOK) })
-	
+
 	req := httptest.NewRequest("GET", "/", nil)
 	req.Header.Set("Authorization", "Bearer invalid_token")
 	resp, _ := app.Test(req)
@@ -66,7 +66,7 @@ func TestTokenMiddleware_ValidToken(t *testing.T) {
 	app := fiber.New()
 	app.Use(TokenMiddleware)
 	app.Get("/", func(c *fiber.Ctx) error { return c.SendStatus(fiber.StatusOK) })
-	
+
 	req := httptest.NewRequest("GET", "/", nil)
 	req.Header.Set("Authorization", "Bearer secret_valid_token")
 	resp, _ := app.Test(req)

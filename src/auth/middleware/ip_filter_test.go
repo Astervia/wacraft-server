@@ -1,10 +1,10 @@
 package auth_middleware
 
 import (
-	"net/http/httptest"
-	"testing"
 	"github.com/Astervia/wacraft-server/src/config/env"
 	"github.com/gofiber/fiber/v2"
+	"net/http/httptest"
+	"testing"
 )
 
 func TestIPAllowlist_Empty(t *testing.T) {
@@ -20,7 +20,7 @@ func TestIPAllowlist_Empty(t *testing.T) {
 }
 
 func TestIPAllowlist_Denied(t *testing.T) {
-    app := fiber.New(fiber.Config{ProxyHeader: fiber.HeaderXForwardedFor})
+	app := fiber.New(fiber.Config{ProxyHeader: fiber.HeaderXForwardedFor})
 	app.Use(IPAllowlistMiddleware([]string{"192.168.1.0/24"}))
 	app.Get("/", func(c *fiber.Ctx) error { return c.SendStatus(200) })
 
@@ -72,11 +72,11 @@ func TestIPDenylist_Allowed(t *testing.T) {
 }
 
 func TestEnvInitializers(t *testing.T) {
-    env.IPAllowlist = []string{"127.0.0.1/32"}
-    env.IPDenylist = []string{"1.1.1.1/32"}
-    allow := NewAllowlistMiddleware()
-    deny := NewDenylistMiddleware()
-    if allow == nil || deny == nil {
-        t.Errorf("Expected valid handlers")
-    }
+	env.IPAllowlist = []string{"127.0.0.1/32"}
+	env.IPDenylist = []string{"1.1.1.1/32"}
+	allow := NewAllowlistMiddleware()
+	deny := NewDenylistMiddleware()
+	if allow == nil || deny == nil {
+		t.Errorf("Expected valid handlers")
+	}
 }

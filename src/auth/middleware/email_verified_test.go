@@ -1,11 +1,11 @@
 package auth_middleware
 
 import (
-	"net/http/httptest"
-	"testing"
 	user_entity "github.com/Astervia/wacraft-core/src/user/entity"
 	"github.com/Astervia/wacraft-server/src/config/env"
 	"github.com/gofiber/fiber/v2"
+	"net/http/httptest"
+	"testing"
 )
 
 func TestEmailVerifiedMiddleware_NotRequired(t *testing.T) {

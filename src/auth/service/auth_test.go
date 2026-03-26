@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	user_entity "github.com/Astervia/wacraft-core/src/user/entity"
 	crypto_service "github.com/Astervia/wacraft-core/src/crypto/service"
+	user_entity "github.com/Astervia/wacraft-core/src/user/entity"
 	"github.com/Astervia/wacraft-server/src/config/env"
 	"github.com/Astervia/wacraft-server/src/database"
 	"github.com/golang-jwt/jwt/v4"
