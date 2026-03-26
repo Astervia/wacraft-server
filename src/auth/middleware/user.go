@@ -48,8 +48,26 @@ func UserMiddleware(c *fiber.Ctx) error {
 	}
 
 	// Add the user ID to the context
-	claims := token.Claims.(jwt.MapClaims)
-	userID, err := uuid.Parse(claims["sub"].(string))
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).JSON(
+			common_model.NewApiError("invalid claims type", errors.New("claims is not jwt.MapClaims"), "middleware").Send(),
+		)
+	}
+	subClaim, ok := claims["sub"]
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).JSON(
+			common_model.NewApiError("sub claim is missing", errors.New("token does not contain subject"), "middleware").Send(),
+		)
+	}
+	subStr, ok := subClaim.(string)
+	if !ok || subStr == "" {
+		return c.Status(fiber.StatusUnauthorized).JSON(
+			common_model.NewApiError("sub claim is invalid", errors.New("subject is not a string"), "middleware").Send(),
+		)
+	}
+
+	userID, err := uuid.Parse(subStr)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("unable to parse user id", err, "github.com/google/uuid").Send(),
