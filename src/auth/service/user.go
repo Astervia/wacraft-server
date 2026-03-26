@@ -20,7 +20,14 @@ func GetFromToken(tokenString string) (*user_entity.User, error) {
 		return nil, errors.New("failed to parse claims from token")
 	}
 
-	userID := claims["sub"].(string)
+	subClaim, ok := claims["sub"]
+	if !ok {
+		return nil, errors.New("token is missing subject claim")
+	}
+	userID, ok := subClaim.(string)
+	if !ok || userID == "" {
+		return nil, errors.New("subject claim is not a valid string")
+	}
 	var user user_entity.User
 
 	// Find user in the database based on userID
