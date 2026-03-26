@@ -20,12 +20,12 @@ func TestIPAllowlist_Empty(t *testing.T) {
 }
 
 func TestIPAllowlist_Denied(t *testing.T) {
-    app := fiber.New()
+    app := fiber.New(fiber.Config{ProxyHeader: fiber.HeaderXForwardedFor})
 	app.Use(IPAllowlistMiddleware([]string{"192.168.1.0/24"}))
 	app.Get("/", func(c *fiber.Ctx) error { return c.SendStatus(200) })
 
 	req := httptest.NewRequest("GET", "/", nil)
-	req.RemoteAddr = "10.0.0.5:1234"
+	req.Header.Set(fiber.HeaderXForwardedFor, "10.0.0.5")
 	resp, _ := app.Test(req)
 	if resp.StatusCode != fiber.StatusForbidden {
 		t.Errorf("Expected 403 Forbidden")
@@ -33,12 +33,12 @@ func TestIPAllowlist_Denied(t *testing.T) {
 }
 
 func TestIPAllowlist_Allowed(t *testing.T) {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{ProxyHeader: fiber.HeaderXForwardedFor})
 	app.Use(IPAllowlistMiddleware([]string{"192.168.1.0/24"}))
 	app.Get("/", func(c *fiber.Ctx) error { return c.SendStatus(200) })
 
 	req := httptest.NewRequest("GET", "/", nil)
-	req.RemoteAddr = "192.168.1.50:1234"
+	req.Header.Set(fiber.HeaderXForwardedFor, "192.168.1.50")
 	resp, _ := app.Test(req)
 	if resp.StatusCode != 200 {
 		t.Errorf("Expected 200 permitted, got %d", resp.StatusCode)
@@ -46,12 +46,12 @@ func TestIPAllowlist_Allowed(t *testing.T) {
 }
 
 func TestIPDenylist_Denied(t *testing.T) {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{ProxyHeader: fiber.HeaderXForwardedFor})
 	app.Use(IPDenylistMiddleware([]string{"10.0.0.0/8"}))
 	app.Get("/", func(c *fiber.Ctx) error { return c.SendStatus(200) })
 
 	req := httptest.NewRequest("GET", "/", nil)
-	req.RemoteAddr = "10.0.0.5:1234"
+	req.Header.Set(fiber.HeaderXForwardedFor, "10.0.0.5")
 	resp, _ := app.Test(req)
 	if resp.StatusCode != fiber.StatusForbidden {
 		t.Errorf("Expected 403 Forbidden")
@@ -59,12 +59,12 @@ func TestIPDenylist_Denied(t *testing.T) {
 }
 
 func TestIPDenylist_Allowed(t *testing.T) {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{ProxyHeader: fiber.HeaderXForwardedFor})
 	app.Use(IPDenylistMiddleware([]string{"10.0.0.0/8"}))
 	app.Get("/", func(c *fiber.Ctx) error { return c.SendStatus(200) })
 
 	req := httptest.NewRequest("GET", "/", nil)
-	req.RemoteAddr = "192.168.1.50:1234"
+	req.Header.Set(fiber.HeaderXForwardedFor, "192.168.1.50")
 	resp, _ := app.Test(req)
 	if resp.StatusCode != 200 {
 		t.Errorf("Expected 200 permitted")

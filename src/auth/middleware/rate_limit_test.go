@@ -83,7 +83,7 @@ func TestLoginRateLimiter_LimitReached(t *testing.T) {
 
 	app := fiber.New()
 	app.Use(limiterHandler)
-	app.Get("/", func(c *fiber.Ctx) error { return c.SendStatus(200) })
+	app.Post("/", func(c *fiber.Ctx) error { return c.SendStatus(200) })
 
 	payload, _ := json.Marshal(map[string]string{"email": "test@example.com"})
 
