@@ -60,8 +60,7 @@ func VerifyEmail(c *fiber.Ctx) error {
 	}
 
 	// Mark verification as complete
-	verification.Verified = true
-	if err := tx.Save(&verification).Error; err != nil {
+	if err := tx.Model(&user_entity.EmailVerification{}).Where("id = ?", verification.ID).Update("verified", true).Error; err != nil {
 		tx.Rollback()
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("Failed to update verification record", err, "database").Send(),
