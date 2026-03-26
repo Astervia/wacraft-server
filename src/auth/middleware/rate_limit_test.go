@@ -1,10 +1,10 @@
 package auth_middleware
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http/httptest"
 	"strconv"
-	"bytes"
 	"testing"
 	"time"
 
@@ -106,7 +106,7 @@ func TestLoginRateLimiter_LimitReached(t *testing.T) {
 
 func TestRateLimiters_Disabled(t *testing.T) {
 	env.RateLimitEnabled = false
-	
+
 	app := fiber.New()
 	app.Use(newLoginRateLimiter())
 	app.Use(newRateLimiter("test", 1, 1*time.Minute, "Err"))
