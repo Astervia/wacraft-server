@@ -31,7 +31,9 @@ func createMockUser(t *testing.T) *user_entity.User {
 		Password: hashedPassword,
 	}
 	user.ID = uuid.New()
-	database.DB.Exec("INSERT INTO users (id, email, password) VALUES (?, ?, ?)", user.ID, user.Email, user.Password)
+	if err := database.DB.Exec("INSERT INTO users (id, email, password, name, role) VALUES (?, ?, ?, '', 'user')", user.ID, user.Email, user.Password).Error; err != nil {
+		t.Fatalf("Failed to insert mock user: %v", err)
+	}
 	t.Cleanup(func() {
 		database.DB.Exec("DELETE FROM users WHERE id = ?", user.ID)
 	})
