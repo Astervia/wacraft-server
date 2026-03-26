@@ -156,8 +156,7 @@ func ResetPassword(c *fiber.Ctx) error {
 
 	// Mark token as used
 	now := time.Now()
-	resetToken.UsedAt = &now
-	if err := tx.Save(&resetToken).Error; err != nil {
+	if err := tx.Model(&user_entity.PasswordResetToken{}).Where("id = ?", resetToken.ID).Update("used_at", now).Error; err != nil {
 		tx.Rollback()
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("Failed to update reset token", err, "database").Send(),
