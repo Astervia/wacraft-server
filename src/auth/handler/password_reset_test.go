@@ -189,7 +189,7 @@ func TestResetPassword_UsedToken(t *testing.T) {
 		UserID:    user.ID,
 		Token:     token,
 		ExpiresAt: time.Now().Add(1 * time.Hour), // not expired
-		UsedAt:    &usedAt,                        // but already used
+		UsedAt:    &usedAt,                       // but already used
 	})
 
 	app := fiber.New()
@@ -206,5 +206,3 @@ func TestResetPassword_UsedToken(t *testing.T) {
 		t.Errorf("Expected 400, got %d", resp.StatusCode)
 	}
 }
-
-
