@@ -55,7 +55,14 @@ func RefreshToken(refreshToken string) (*auth_model.TokenResponse, error) {
 	if !ok {
 		return nil, errors.New("failed to parse claims from token")
 	}
-	userID := claims["sub"].(string)
+	subClaim, ok := claims["sub"]
+	if !ok {
+		return nil, errors.New("token is missing subject claim")
+	}
+	userID, ok := subClaim.(string)
+	if !ok || userID == "" {
+		return nil, errors.New("subject claim is not a valid string")
+	}
 
 	// Generate new access token
 	accessToken, err := generateToken(userID, 1*time.Hour)
