@@ -81,6 +81,9 @@ type Provider interface {
 	// from the payment provider. Used to sync pending subscriptions.
 	GetCheckoutSessionStatus(sessionID string) (*CheckoutSessionStatus, error)
 
+	// GetSubscriptionRetryURL returns a URL where the user can pay to recover an unpaid/past due subscription.
+	GetSubscriptionRetryURL(subscriptionID string) (string, error)
+
 	// VerifyWebhookSignature validates the authenticity of a webhook payload.
 	VerifyWebhookSignature(payload []byte, signature string) error
 

@@ -140,6 +140,14 @@ func subscriptionRoutes(group fiber.Router) {
 		billing_middleware.ThroughputMiddleware,
 		billing_handler.ReactivateSubscription)
 
+	// Retry subscription payment
+	sub.Post("/retry",
+		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
+		workspace_middleware.OptionalWorkspaceMiddleware,
+		billing_middleware.ThroughputMiddleware,
+		billing_handler.RetrySubscription)
+
 	// Cancel subscription
 	sub.Delete("/",
 		auth_middleware.UserMiddleware,

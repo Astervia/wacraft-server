@@ -395,3 +395,58 @@ func CancelSubscription(c *fiber.Ctx) error {
 
 	return c.SendStatus(fiber.StatusNoContent)
 }
+
+// RetrySubscription returns a URL to retry payment for a past due subscription.
+//
+//	@Summary		Retry subscription payment
+//	@Description	Returns a URL to the payment provider where the user can pay an outstanding invoice for a past due subscription. Without X-Workspace-ID it operates on a user subscription. With X-Workspace-ID it operates on a workspace subscription (requires billing.manage policy).
+//	@Tags			Billing Subscription
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	query		string							true	"Subscription ID"
+//	@Success		200	{string}	string				"Retry URL"
+//	@Failure		400	{object}	common_model.DescriptiveError	"Invalid query parameters"
+//	@Failure		500	{object}	common_model.DescriptiveError	"Internal server error"
+//	@Failure		503	{object}	common_model.DescriptiveError	"Payment provider not configured"
+//	@Security		ApiKeyAuth
+//	@Router			/billing/subscription/retry [post]
+func RetrySubscription(c *fiber.Ctx) error {
+	if payment.ActiveProvider == nil {
+		return c.Status(fiber.StatusServiceUnavailable).JSON(
+			common_model.NewApiError("payment provider is not configured", nil, "billing").Send(),
+		)
+	}
+
+	user := workspace_middleware.GetUser(c)
+
+	id := new(common_model.RequiredID)
+	if err := c.QueryParser(id); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+
+	if err := validators.Validator().Struct(id); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
+		)
+	}
+
+	var workspaceID *uuid.UUID
+	if workspace := workspace_middleware.GetWorkspace(c); workspace != nil {
+		wsID, err := requireWorkspacePolicy(c, workspace_model.PolicyBillingManage)
+		if err != nil {
+			return err
+		}
+		workspaceID = wsID
+	}
+
+	url, err := billing_service.RetrySubscription(id.ID, user.ID, workspaceID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			common_model.NewApiError("unable to get subscription retry url", err, "billing_service").Send(),
+		)
+	}
+
+	return c.Status(fiber.StatusOK).SendString(url)
+}
