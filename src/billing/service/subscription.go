@@ -438,7 +438,18 @@ func syncActiveSubscription(sub *billing_entity.Subscription) (billing_entity.Su
 		return *sub, fmt.Errorf("failed to get subscription details from provider: %w", err)
 	}
 
-	sub.ExpiresAt = details.CurrentPeriodEnd
+	if details.Status == "active" || details.Status == "trialing" {
+		sub.ExpiresAt = details.CurrentPeriodEnd
+	} else {
+		// If past_due, unpaid, paused, etc., the user hasn't successfully paid for the current period.
+		// We ensure ExpiresAt is not in the future so IsActive() returns false.
+		// We don't set CancelledAt so that a future invoice.paid can still renew it.
+		now := time.Now()
+		if sub.ExpiresAt.After(now) {
+			sub.ExpiresAt = now.Add(-1 * time.Second)
+		}
+	}
+
 	sub.CancelAtPeriodEnd = details.CancelAtPeriodEnd
 
 	if details.Status == "canceled" && sub.CancelledAt == nil {
@@ -481,4 +492,35 @@ func invalidateForSubscription(sub *billing_entity.Subscription) {
 	if sub.WorkspaceID != nil {
 		InvalidateCache(billing_model.ScopeWorkspace, *sub.WorkspaceID)
 	}
+}
+
+// RetrySubscription returns a URL a user can visit to pay a past due or unpaid subscription.
+func RetrySubscription(subscriptionID uuid.UUID, userID uuid.UUID, workspaceID *uuid.UUID) (string, error) {
+	var sub billing_entity.Subscription
+	if err := database.DB.First(&sub, subscriptionID).Error; err != nil {
+		return "", errors.New("subscription not found")
+	}
+
+	// Ownership check: workspace-scoped or user-scoped
+	if workspaceID != nil {
+		if sub.WorkspaceID == nil || *sub.WorkspaceID != *workspaceID {
+			return "", errors.New("unauthorized: subscription does not belong to this workspace")
+		}
+	} else if sub.UserID != userID {
+		return "", errors.New("unauthorized: you can only retry your own subscriptions")
+	}
+
+	if sub.PaymentMode != billing_model.PaymentModeSubscription {
+		return "", errors.New("only recurring subscriptions can be retried")
+	}
+
+	if sub.StripeSubscriptionID == nil || *sub.StripeSubscriptionID == "" {
+		return "", errors.New("this subscription has no associated payment provider subscription")
+	}
+
+	if payment.ActiveProvider == nil {
+		return "", errors.New("payment provider is not configured")
+	}
+
+	return payment.ActiveProvider.GetSubscriptionRetryURL(*sub.StripeSubscriptionID)
 }
