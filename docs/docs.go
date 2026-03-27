@@ -1425,6 +1425,61 @@ const docTemplate = `{
                 }
             }
         },
+        "/billing/subscription/retry": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Returns a URL to the payment provider where the user can pay an outstanding invoice for a past due subscription. Without X-Workspace-ID it operates on a user subscription. With X-Workspace-ID it operates on a workspace subscription (requires billing.manage policy).",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Billing Subscription"
+                ],
+                "summary": "Retry subscription payment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Subscription ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retry URL",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid query parameters",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "503": {
+                        "description": "Payment provider not configured",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    }
+                }
+            }
+        },
         "/billing/subscription/sync": {
             "post": {
                 "security": [

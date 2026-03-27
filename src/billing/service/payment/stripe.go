@@ -262,6 +262,22 @@ func (s *StripeProvider) GetSubscriptionDetails(subscriptionID string) (*Subscri
 	}, nil
 }
 
+func (s *StripeProvider) GetSubscriptionRetryURL(subscriptionID string) (string, error) {
+	params := &stripe.SubscriptionParams{}
+	params.AddExpand("latest_invoice")
+
+	sub, err := subscription.Get(subscriptionID, params)
+	if err != nil {
+		return "", fmt.Errorf("failed to get stripe subscription: %w", err)
+	}
+
+	if sub.LatestInvoice != nil && sub.LatestInvoice.HostedInvoiceURL != "" {
+		return sub.LatestInvoice.HostedInvoiceURL, nil
+	}
+
+	return "", errors.New("no hosted invoice url available for this subscription")
+}
+
 func (s *StripeProvider) GetCheckoutSessionStatus(sessionID string) (*CheckoutSessionStatus, error) {
 	sess, err := session.Get(sessionID, nil)
 	if err != nil {

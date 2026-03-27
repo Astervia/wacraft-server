@@ -3907,6 +3907,44 @@ paths:
       summary: Reactivate a subscription
       tags:
       - Billing Subscription
+  /billing/subscription/retry:
+    post:
+      consumes:
+      - application/json
+      description: Returns a URL to the payment provider where the user can pay an
+        outstanding invoice for a past due subscription. Without X-Workspace-ID it
+        operates on a user subscription. With X-Workspace-ID it operates on a workspace
+        subscription (requires billing.manage policy).
+      parameters:
+      - description: Subscription ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Retry URL
+          schema:
+            type: string
+        "400":
+          description: Invalid query parameters
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "503":
+          description: Payment provider not configured
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: Retry subscription payment
+      tags:
+      - Billing Subscription
   /billing/subscription/sync:
     post:
       consumes:
