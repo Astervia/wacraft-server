@@ -12,7 +12,7 @@ jobs:
     build-and-push:
         runs-on: ubuntu-latest
         permissions:
-            contents: read
+            contents: write
             packages: write
 
         steps:
@@ -57,3 +57,9 @@ jobs:
 
                   # Sign the 'latest' tag
                   cosign sign --yes --key env://COSIGN_PRIVATE_KEY "${{ env.IMAGE_NAME }}:latest"
+
+            - name: Publish GitHub release
+              uses: softprops/action-gh-release@v2
+              with:
+                  tag_name: ${{ steps.vars.outputs.tag }}
+                  generate_release_notes: true
