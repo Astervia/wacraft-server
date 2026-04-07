@@ -395,6 +395,15 @@ definitions:
         type: string
       name:
         type: string
+      scheduled_at:
+        description: |-
+          ScheduledAt is the UTC time at which the scheduler worker will start sending the campaign.
+          Null means the campaign is not scheduled.
+        type: string
+      status:
+        description: 'Status tracks the campaign lifecycle: draft | scheduled | running
+          | completed | failed | cancelled.'
+        type: string
       updated_at:
         type: string
       workspace:
@@ -456,6 +465,23 @@ definitions:
         allOf:
         - $ref: '#/definitions/message_model.SenderData'
         description: Specific data that allows to send message.
+    type: object
+  campaign_model.ScheduleCampaign:
+    properties:
+      id:
+        type: string
+      scheduled_at:
+        type: string
+    required:
+    - id
+    - scheduled_at
+    type: object
+  campaign_model.UnscheduleCampaign:
+    properties:
+      id:
+        type: string
+    required:
+    - id
     type: object
   campaign_model.UpdateCampaign:
     properties:
@@ -4914,6 +4940,90 @@ paths:
       summary: List unsent campaign messages
       tags:
       - Campaign Message
+  /campaign/schedule:
+    delete:
+      consumes:
+      - application/json
+      description: Cancels a pending schedule, clearing scheduled_at and resetting
+        status to "draft". The campaign must not be currently running.
+      parameters:
+      - description: Unschedule data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/campaign_model.UnscheduleCampaign'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated campaign
+          schema:
+            $ref: '#/definitions/campaign_entity.Campaign'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "404":
+          description: Campaign not found or access denied
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "409":
+          description: Campaign is currently running
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      - WorkspaceAuth: []
+      summary: Unschedule a campaign
+      tags:
+      - Campaign
+    post:
+      consumes:
+      - application/json
+      description: Sets the scheduled_at time and transitions the campaign to "scheduled"
+        status. The scheduler worker will automatically execute the campaign at that
+        time. Requires campaign to be in "draft" or "failed" status.
+      parameters:
+      - description: Schedule data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/campaign_model.ScheduleCampaign'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated campaign
+          schema:
+            $ref: '#/definitions/campaign_entity.Campaign'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "404":
+          description: Campaign not found or access denied
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "409":
+          description: Campaign is already running or completed
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      - WorkspaceAuth: []
+      summary: Schedule a campaign
+      tags:
+      - Campaign
   /contact:
     delete:
       consumes:

@@ -2983,6 +2983,136 @@ const docTemplate = `{
                 }
             }
         },
+        "/campaign/schedule": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
+                    }
+                ],
+                "description": "Sets the scheduled_at time and transitions the campaign to \"scheduled\" status. The scheduler worker will automatically execute the campaign at that time. Requires campaign to be in \"draft\" or \"failed\" status.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campaign"
+                ],
+                "summary": "Schedule a campaign",
+                "parameters": [
+                    {
+                        "description": "Schedule data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/campaign_model.ScheduleCampaign"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated campaign",
+                        "schema": {
+                            "$ref": "#/definitions/campaign_entity.Campaign"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "404": {
+                        "description": "Campaign not found or access denied",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "409": {
+                        "description": "Campaign is already running or completed",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "WorkspaceAuth": []
+                    }
+                ],
+                "description": "Cancels a pending schedule, clearing scheduled_at and resetting status to \"draft\". The campaign must not be currently running.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campaign"
+                ],
+                "summary": "Unschedule a campaign",
+                "parameters": [
+                    {
+                        "description": "Unschedule data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/campaign_model.UnscheduleCampaign"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated campaign",
+                        "schema": {
+                            "$ref": "#/definitions/campaign_entity.Campaign"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "404": {
+                        "description": "Campaign not found or access denied",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "409": {
+                        "description": "Campaign is currently running",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/common_model.DescriptiveError"
+                        }
+                    }
+                }
+            }
+        },
         "/contact": {
             "get": {
                 "security": [
@@ -11278,6 +11408,14 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "scheduled_at": {
+                    "description": "ScheduledAt is the UTC time at which the scheduler worker will start sending the campaign.\nNull means the campaign is not scheduled.",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "Status tracks the campaign lifecycle: draft | scheduled | running | completed | failed | cancelled.",
+                    "type": "string"
+                },
                 "updated_at": {
                     "type": "string"
                 },
@@ -11374,6 +11512,32 @@ const docTemplate = `{
                             "$ref": "#/definitions/message_model.SenderData"
                         }
                     ]
+                }
+            }
+        },
+        "campaign_model.ScheduleCampaign": {
+            "type": "object",
+            "required": [
+                "id",
+                "scheduled_at"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "scheduled_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "campaign_model.UnscheduleCampaign": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
                 }
             }
         },
