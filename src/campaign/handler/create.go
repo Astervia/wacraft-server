@@ -95,6 +95,18 @@ func CreateMessage(c *fiber.Ctx) error {
 		)
 	}
 
+	// Adding messages to a finished campaign resets it to draft so it can be re-run.
+	if existingCampaign.Status == "completed" || existingCampaign.Status == "failed" || existingCampaign.Status == "cancelled" {
+		if err := database.DB.Model(&existingCampaign).Updates(map[string]interface{}{
+			"status":       "draft",
+			"scheduled_at": nil,
+		}).Error; err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(
+				common_model.NewApiError("unable to reset campaign status", err, "repository").Send(),
+			)
+		}
+	}
+
 	campaign, err := repository.Create(
 		campaign_entity.CampaignMessage{
 			CampaignID: newCampaign.CampaignID,
