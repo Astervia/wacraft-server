@@ -12,6 +12,7 @@ Covers every scenario that needs to be verified end-to-end in the UI. Each test 
 - All curl examples can be substituted with the Swagger UI at `/swagger/index.html`.
 
 Confirm the migration ran:
+
 ```sql
 SELECT column_name FROM information_schema.columns
 WHERE table_name = 'campaigns'
@@ -39,12 +40,12 @@ WHERE table_name = 'campaigns'
 
 1. Create a campaign and add at least one message to it (`POST /campaign/message`).
 2. Call `POST /campaign/schedule`:
-   ```json
-   {
-     "id": "<campaign-uuid>",
-     "scheduled_at": "<UTC timestamp at least 2 minutes from now>"
-   }
-   ```
+    ```json
+    {
+        "id": "<campaign-uuid>",
+        "scheduled_at": "<UTC timestamp at least 2 minutes from now>"
+    }
+    ```
 3. Check the response: `"status": "scheduled"`, `"scheduled_at"` matches the value sent.
 4. Fetch the campaign via `GET /campaign` — confirm the same values persist.
 
@@ -87,9 +88,9 @@ WHERE table_name = 'campaigns'
 1. Schedule a campaign for 5+ minutes in the future.
 2. Confirm status is `scheduled`.
 3. Call `DELETE /campaign/schedule`:
-   ```json
-   { "id": "<campaign-uuid>" }
-   ```
+    ```json
+    { "id": "<campaign-uuid>" }
+    ```
 4. Check the response: `"status": "draft"`, `"scheduled_at": null`.
 5. Wait past the original `scheduled_at` and confirm the campaign was **not** executed (status stays `draft`).
 
@@ -104,14 +105,14 @@ WHERE table_name = 'campaigns'
 1. Create a campaign with 10+ messages to give enough time to connect mid-run.
 2. Schedule it for a time 30 seconds away (or use a past time and wait for the next poll).
 3. As soon as status becomes `running` (poll frequently), connect to:
-   ```
-   GET /websocket/campaign/whatsapp/send/<campaignID>
-   ```
+    ```
+    GET /websocket/campaign/whatsapp/send/<campaignID>
+    ```
 4. Optionally send `status` — expect `Sending` back.
 5. Observe incoming JSON frames:
-   ```json
-   { "sent": N, "successes": N, "errors": N, "total": N }
-   ```
+    ```json
+    { "sent": N, "successes": N, "errors": N, "total": N }
+    ```
 
 **Pass:** Progress frames are received in real time without the client having triggered the send itself.
 
@@ -127,9 +128,9 @@ WHERE table_name = 'campaigns'
 2. Connect to its WebSocket endpoint.
 3. Send the text message `send`.
 4. Expect an error response:
-   ```json
-   { "message": "campaign is scheduled", ... }
-   ```
+    ```json
+    { "message": "campaign is scheduled", ... }
+    ```
 
 ### 7b — Campaign is `running`
 
@@ -137,9 +138,9 @@ WHERE table_name = 'campaigns'
 2. Connect to the WebSocket.
 3. Send `send`.
 4. Expect an error response:
-   ```json
-   { "message": "campaign is running", ... }
-   ```
+    ```json
+    { "message": "campaign is running", ... }
+    ```
 
 **Pass:** Both cases return an error; the ongoing execution is unaffected.
 
@@ -216,12 +217,12 @@ WHERE table_name = 'campaigns'
 
 Test each of the following; all should return HTTP `400`:
 
-| Request | Bad Body |
-|---------|----------|
-| `POST /campaign/schedule` | `{}` (missing `id` and `scheduled_at`) |
-| `POST /campaign/schedule` | `{ "id": "not-a-uuid", "scheduled_at": "2026-01-01T00:00:00Z" }` |
-| `DELETE /campaign/schedule` | `{}` (missing `id`) |
-| Either endpoint | Malformed JSON (`{bad`) |
+| Request                     | Bad Body                                                         |
+| --------------------------- | ---------------------------------------------------------------- |
+| `POST /campaign/schedule`   | `{}` (missing `id` and `scheduled_at`)                           |
+| `POST /campaign/schedule`   | `{ "id": "not-a-uuid", "scheduled_at": "2026-01-01T00:00:00Z" }` |
+| `DELETE /campaign/schedule` | `{}` (missing `id`)                                              |
+| Either endpoint             | Malformed JSON (`{bad`)                                          |
 
 **Pass:** All return `400`.
 
@@ -264,15 +265,15 @@ Only applicable when `SYNC_BACKEND=redis` with two or more server instances.
 
 ## Quick Reference — Status Transitions
 
-| From | Action | To |
-|------|--------|----|
-| `draft` | `POST /campaign/schedule` | `scheduled` |
-| `scheduled` | `DELETE /campaign/schedule` | `draft` |
-| `scheduled` | Scheduler picks up | `running` |
-| `running` | Execution finishes | `completed` |
-| `running` | Execution errors | `failed` |
-| `running` | WebSocket `cancel` | `cancelled` |
-| `failed` | `POST /campaign/schedule` | `scheduled` |
-| `running` | `POST /campaign/schedule` | 409 (blocked) |
-| `completed` | `POST /campaign/schedule` | 409 (blocked) |
-| `running` | `DELETE /campaign/schedule` | 409 (blocked) |
+| From        | Action                      | To            |
+| ----------- | --------------------------- | ------------- |
+| `draft`     | `POST /campaign/schedule`   | `scheduled`   |
+| `scheduled` | `DELETE /campaign/schedule` | `draft`       |
+| `scheduled` | Scheduler picks up          | `running`     |
+| `running`   | Execution finishes          | `completed`   |
+| `running`   | Execution errors            | `failed`      |
+| `running`   | WebSocket `cancel`          | `cancelled`   |
+| `failed`    | `POST /campaign/schedule`   | `scheduled`   |
+| `running`   | `POST /campaign/schedule`   | 409 (blocked) |
+| `completed` | `POST /campaign/schedule`   | 409 (blocked) |
+| `running`   | `DELETE /campaign/schedule` | 409 (blocked) |
