@@ -11,8 +11,10 @@ import (
 	billing_router "github.com/Astervia/wacraft-server/src/billing/router"
 	"github.com/Astervia/wacraft-server/src/billing/service/payment"
 	// PREMIUM STARTS
+	campaign_handler "github.com/Astervia/wacraft-server/src/campaign/handler"
 	campaign_router "github.com/Astervia/wacraft-server/src/campaign/router"
 	campaign_websocket "github.com/Astervia/wacraft-server/src/campaign/websocket-router"
+	campaign_worker "github.com/Astervia/wacraft-server/src/campaign/worker"
 	// PREMIUM ENDS
 	"github.com/Astervia/wacraft-server/src/config/env"
 	contact_router "github.com/Astervia/wacraft-server/src/contact/router"
@@ -82,6 +84,18 @@ func serve() {
 	deliveryWorker := webhook_worker.NewDeliveryWorker()
 	deliveryWorker.Start()
 
+	// PREMIUM STARTS
+	// Wire the channel pool into the campaign scheduler worker so that WebSocket
+	// clients connecting during a scheduled run receive real-time progress.
+	campaign_worker.SetChannelPool(
+		campaign_handler.SendCampaignPool.GetOrCreateChannel,
+		campaign_handler.SendCampaignPool.ReleaseChannel,
+	)
+	// Start campaign scheduler worker
+	schedulerWorker := campaign_worker.NewSchedulerWorker()
+	schedulerWorker.Start()
+	// PREMIUM ENDS
+
 	// Setup graceful shutdown
 	go func() {
 		sigChan := make(chan os.Signal, 1)
@@ -90,6 +104,9 @@ func serve() {
 
 		pterm.DefaultLogger.Info("Shutdown signal received, stopping services...")
 		deliveryWorker.Stop()
+		// PREMIUM STARTS
+		schedulerWorker.Stop()
+		// PREMIUM ENDS
 		app.Shutdown()
 	}()
 

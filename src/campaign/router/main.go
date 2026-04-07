@@ -53,6 +53,20 @@ func mainRoutes(group fiber.Router) {
 		workspace_middleware.RequirePolicy(workspace_model.PolicyCampaignRead),
 		billing_middleware.ThroughputMiddleware,
 		campaign_handler.ContentKeyLike)
+	group.Post("/schedule",
+		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyCampaignManage),
+		billing_middleware.ThroughputMiddleware,
+		campaign_handler.Schedule)
+	group.Delete("/schedule",
+		auth_middleware.UserMiddleware,
+		auth_middleware.EmailVerifiedMiddleware,
+		workspace_middleware.WorkspaceMiddleware,
+		workspace_middleware.RequirePolicy(workspace_model.PolicyCampaignManage),
+		billing_middleware.ThroughputMiddleware,
+		campaign_handler.Unschedule)
 }
 
 func messageRoutes(group fiber.Router) {

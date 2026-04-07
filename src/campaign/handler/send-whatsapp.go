@@ -2,6 +2,7 @@ package campaign_handler
 
 import (
 	"errors"
+	"fmt"
 	"sync"
 
 	campaign_entity "github.com/Astervia/wacraft-core/src/campaign/entity"
@@ -117,6 +118,13 @@ func handleSendWhatsAppCampaignMessage(
 		return client.Connection.WriteMessage(websocket.TextMessage, []byte(websocket_model.Pong))
 
 	case string(campaign_model.Send):
+		// Reject if the scheduler already owns this campaign.
+		var dbCampaign campaign_entity.Campaign
+		if err := database.DB.Select("status").Where("id = ?", campaignID).First(&dbCampaign).Error; err == nil {
+			if dbCampaign.Status == "scheduled" || dbCampaign.Status == "running" {
+				return fmt.Errorf("campaign is %s", dbCampaign.Status)
+			}
+		}
 		if campaignChannel.IsSending() {
 			return errors.New("currently sending campaign")
 		}
