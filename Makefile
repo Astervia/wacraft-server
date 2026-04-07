@@ -1,11 +1,16 @@
 .DEFAULT_GOAL := build
 
-.PHONY: help build compile prod prod-down dev dev-distributed dev-scaled dev-down dev-migrate-down dev-migrate-to dev-migrate-status test test-redis test-memory test-distributed
+.PHONY: help build compile prod prod-down dev dev-distributed dev-scaled dev-down dev-migrate-down dev-migrate-to dev-migrate-status test test-memory test-distributed
 
 DC_PROD := docker compose
 DC_DEV := docker compose -f docker-compose.dev.yml
 TEST_REDIS_IMG := redis:7-alpine
 TEST_PG_IMG := postgres:17-alpine
+GO_TEST_FLAGS :=
+
+ifeq ($(NO_CACHE),1)
+GO_TEST_FLAGS += -count=1
+endif
 
 help: ## Show this interactive help map
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-25s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -84,22 +89,7 @@ dev-migrate-status: ## Check migration status in development
 	$(DC_DEV) exec app go run main.go migrate:status
 
 test: ## Run unit tests (no external dependencies)
-	go test ./... -v
-	cd wacraft-core && go test ./... -v
-
-test-redis: ## Run all tests including Redis integration tests
-	@printf "\033[36m==> Starting ephemeral Redis container...\033[0m\n"
-	docker run -d --name wacraft-test-redis -p 16379:6379 $(TEST_REDIS_IMG) > /dev/null
-	@printf "\033[36m==> Waiting for Redis to be ready...\033[0m\n"
-	until docker exec wacraft-test-redis redis-cli ping 2>/dev/null | grep -q PONG; do sleep 0.1; done
-	@printf "\033[36m==> Running tests...\033[0m\n"
-	REDIS_URL=redis://localhost:16379 go test ./... -v -race; \
-		CORE_EXIT=0; \
-		cd wacraft-core && REDIS_URL=redis://localhost:16379 go test ./... -v -race || CORE_EXIT=$$?; \
-		cd ..; \
-		printf "\033[36m==> Removing Redis container...\033[0m\n"; \
-		docker rm -f wacraft-test-redis > /dev/null; \
-		exit $$CORE_EXIT
+	go test ./... -v $(GO_TEST_FLAGS)
 
 test-memory: ## Run tests in memory mode (Postgres only, no Redis)
 	@printf "\033[36m==> Starting ephemeral PostgreSQL container...\033[0m\n"
@@ -111,16 +101,14 @@ test-memory: ## Run tests in memory mode (Postgres only, no Redis)
 	@printf "\033[36m==> Waiting for PostgreSQL to be ready...\033[0m\n"
 	until docker exec wacraft-test-postgres-mem pg_isready -U postgres -q 2>/dev/null; do sleep 0.1; done
 	@printf "\033[36m==> Running tests (memory mode)...\033[0m\n"
-	SERVER_EXIT=0; CORE_EXIT=0; \
-		SYNC_BACKEND=memory \
+	SYNC_BACKEND=memory \
 		REDIS_URL="" \
 		DATABASE_URL="postgres://postgres:postgres@localhost:15433/postgres?sslmode=disable" \
-		go test ./... -v -race || SERVER_EXIT=$$?; \
-		cd wacraft-core && REDIS_URL="" go test ./... -v -race || CORE_EXIT=$$?; \
-		cd ..; \
+		go test ./... -v -race $(GO_TEST_FLAGS); \
+		EXIT=$$?; \
 		printf "\033[36m==> Removing PostgreSQL container...\033[0m\n"; \
 		docker rm -f wacraft-test-postgres-mem > /dev/null; \
-		exit $$(( SERVER_EXIT || CORE_EXIT ))
+		exit $$EXIT
 
 test-distributed: ## Run the full test suite with both Redis and PostgreSQL
 	@printf "\033[36m==> Starting ephemeral Redis container...\033[0m\n"
@@ -136,13 +124,11 @@ test-distributed: ## Run the full test suite with both Redis and PostgreSQL
 	@printf "\033[36m==> Waiting for PostgreSQL to be ready...\033[0m\n"
 	until docker exec wacraft-test-postgres pg_isready -U postgres -q 2>/dev/null; do sleep 0.1; done
 	@printf "\033[36m==> Running tests (distributed mode)...\033[0m\n"
-	SERVER_EXIT=0; CORE_EXIT=0; \
-		SYNC_BACKEND=redis \
+	SYNC_BACKEND=redis \
 		REDIS_URL=redis://localhost:16379 \
 		DATABASE_URL="postgres://postgres:postgres@localhost:15432/postgres?sslmode=disable" \
-		go test ./... -v -race || SERVER_EXIT=$$?; \
-		cd wacraft-core && REDIS_URL=redis://localhost:16379 go test ./... -v -race || CORE_EXIT=$$?; \
-		cd ..; \
+		go test ./... -v -race $(GO_TEST_FLAGS); \
+		EXIT=$$?; \
 		printf "\033[36m==> Removing containers...\033[0m\n"; \
 		docker rm -f wacraft-test-redis wacraft-test-postgres > /dev/null; \
-		exit $$(( SERVER_EXIT || CORE_EXIT ))
+		exit $$EXIT
