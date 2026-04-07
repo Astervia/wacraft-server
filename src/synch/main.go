@@ -15,6 +15,7 @@ import (
 	billing_service "github.com/Astervia/wacraft-server/src/billing/service"
 	campaign_handler "github.com/Astervia/wacraft-server/src/campaign/handler"
 	campaign_service "github.com/Astervia/wacraft-server/src/campaign/service"
+	campaign_worker "github.com/Astervia/wacraft-server/src/campaign/worker"
 	"github.com/Astervia/wacraft-server/src/config/env"
 	message_handler "github.com/Astervia/wacraft-server/src/message/handler"
 	message_service "github.com/Astervia/wacraft-server/src/message/service"
@@ -90,6 +91,13 @@ func init() {
 	if backend == synch.BackendRedis {
 		webhook_worker.SetDeliveryLock(synch.NewLock[string](SyncFactory))
 		pterm.DefaultLogger.Info("DeliveryWorker: using Redis lock backend")
+	}
+
+	// Wire campaign scheduler lock and factory (Redis mode only).
+	if backend == synch.BackendRedis {
+		campaign_worker.SetSchedulerLock(synch.NewLock[string](SyncFactory))
+		campaign_worker.SetSchedulerFactory(SyncFactory)
+		pterm.DefaultLogger.Info("CampaignSchedulerWorker: using Redis lock backend")
 	}
 
 	// Wire WebSocket workspace managers with PubSub for cross-instance broadcast.
