@@ -18,17 +18,17 @@ duplicating them.
 
 ## Architecture and Cross-Cutting Features
 
-- `docs/features/multi_tenant/MULTI_TENANT_IMPLEMENTATION_PLAN.md`
+- `docs/features/multi_tenant/implementation_plan.md`
   - tenant and workspace model
-- `docs/features/multi_tenant/MULTI_TENANT_IMPLEMENTATION_SUMMARY.md`
+- `docs/features/multi_tenant/implementation_summary.md`
   - current multitenancy implementation state
-- `docs/features/horizontal_scaling/HORIZONTAL_SCALING_IMPLEMENTATION_PLAN.md`
+- `docs/features/horizontal_scaling/implementation_plan.md`
   - distributed deployment strategy
-- `docs/features/horizontal_scaling/HORIZONTAL_SCALING_REQUIREMENTS.md`
+- `docs/features/horizontal_scaling/requirements.md`
   - scaling assumptions and constraints
-- `docs/features/horizontal_scaling/HORIZONTAL_SCALING_TEST_PLAN.md`
+- `docs/features/horizontal_scaling/test_plan.md`
   - test scope for multi-instance behavior
-- `docs/features/webhook/WEBHOOK_SYSTEM_IMPLEMENTATION_SUMMARY.md`
+- `docs/features/webhook/system_implementation_summary.md`
   - webhook ingestion and delivery architecture
 
 ## Feature Areas
@@ -37,20 +37,20 @@ duplicating them.
   - auth flows and security-related behavior
 - `docs/features/billing/`
   - subscription, throughput, pricing, and webhook billing behavior
-- `docs/features/firewall/FIREWALL_IMPLEMENTATION_SUMMARY.md`
+- `docs/features/firewall/implementation_summary.md`
   - IP filtering and firewall-related behavior
-- `docs/features/campaign_scheduling/campaign_scheduling.md`
+- `docs/features/campaign_scheduling/README.md`
   - campaign scheduling design
 
 ## Operator Guides
 
-- `docs/guides/billing/STRIPE_SETUP_GUIDE.md`
+- `docs/guides/billing/stripe_setup_guide.md`
   - Stripe environment and webhook setup
-- `docs/guides/billing/BILLING_RATE_LIMIT_DETECTION.md`
+- `docs/guides/billing/rate_limit_detection.md`
   - throughput behavior and troubleshooting
-- `docs/guides/campaign_scheduling/campaign_scheduling_frontend.md`
+- `docs/guides/campaign_scheduling/frontend.md`
   - frontend integration expectations for scheduling
-- `docs/guides/campaign_scheduling/campaign_scheduling_ui_testing.md`
+- `docs/guides/campaign_scheduling/ui_testing.md`
   - manual testing guidance for scheduling flows
 
 ## Generated API Docs
