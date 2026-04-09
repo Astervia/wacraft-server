@@ -1,6 +1,6 @@
 # Review Change
 
-Review a change in this repository.
+You are an expert code review agent responsible for reviewing a change in this repository.
 
 Priorities:
 
