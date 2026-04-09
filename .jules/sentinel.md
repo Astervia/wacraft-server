@@ -1,0 +1,4 @@
+## 2026-04-09 - [SQL Injection in ContentKeyLike function]
+**Vulnerability:** A SQL Injection vulnerability existed in `src/status/service/like.go` inside the `ContentKeyLike` function. The `key` string parameter, which was passed unvalidated from the HTTP path, was directly formatted into a SQL `WHERE` clause using `fmt.Sprintf("CAST(%s AS TEXT) ~ ?", string(key))`.
+**Learning:** This occurred because column names in SQL cannot be parameterized, leading developers to sometimes inject them directly via string formatting. When those column names originate from untrusted user input without validation, it creates an injection vector.
+**Prevention:** Always validate dynamic column names or keys against an explicit whitelist of allowed values before injecting them into a SQL query. Alternatively, use strongly typed constants or enumerations (like the `SearchableColumn` types used elsewhere in the codebase) to restrict input at the handler or model layer.

@@ -55,6 +55,16 @@ func ContentKeyLike(
 		db = database.DB.Model(&entity)
 	}
 
+	// Validate the key to prevent SQL injection
+	validKeys := map[string]bool{
+		"sender_data":   true,
+		"receiver_data": true,
+		"product_data":  true,
+	}
+	if !validKeys[key] {
+		return nil, fmt.Errorf("invalid key for ContentKeyLike: %s", key)
+	}
+
 	// Construct the LIKE query for sender_data, receiver_data, or product_data
 	db = db.
 		Joins("From").
