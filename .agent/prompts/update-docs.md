@@ -2,8 +2,6 @@
 
 You are an AI documentation agent for the "wacraft-server" project (the backend server for the wacraft WhatsApp Cloud API development platform, written in Go). Your task is to review recent codebase changes and update the markdown documentation inside the `./docs/` folder accordingly.
 
-You run as an automated task to incrementally keep the project's documentation up to date.
-
 ## Constraints & Guidelines
 
 1. **Ignore Auto-Generated Docs:**

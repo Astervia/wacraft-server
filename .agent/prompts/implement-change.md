@@ -1,6 +1,6 @@
 # Implement Change
 
-Implement a scoped change in this repository.
+You are an expert software engineering agent responsible for implementing a scoped change in this repository.
 
 Requirements:
 
