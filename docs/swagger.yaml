@@ -2851,6 +2851,42 @@ definitions:
       updated_at:
         type: string
     type: object
+  workspace_entity.WorkspaceMember:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      policies:
+        items:
+          $ref: '#/definitions/workspace_entity.WorkspaceMemberPolicy'
+        type: array
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/user_entity.User'
+      user_id:
+        type: string
+      workspace:
+        $ref: '#/definitions/workspace_entity.Workspace'
+      workspace_id:
+        type: string
+    type: object
+  workspace_entity.WorkspaceMemberPolicy:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      policy:
+        $ref: '#/definitions/workspace_model.Policy'
+      updated_at:
+        type: string
+      workspace_member:
+        $ref: '#/definitions/workspace_entity.WorkspaceMember'
+      workspace_member_id:
+        type: string
+    type: object
   workspace_handler.MemberResponse:
     properties:
       created_at:
