@@ -56,12 +56,10 @@ func ContentKeyLike(
 	}
 
 	// Validate the key to prevent SQL injection
-	validKeys := map[string]bool{
-		"sender_data":   true,
-		"receiver_data": true,
-		"product_data":  true,
-	}
-	if !validKeys[key] {
+	switch key {
+	case "sender_data", "receiver_data", "product_data":
+		// valid key
+	default:
 		return nil, fmt.Errorf("invalid key for ContentKeyLike: %s", key)
 	}
 
