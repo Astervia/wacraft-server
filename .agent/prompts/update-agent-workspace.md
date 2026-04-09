@@ -1,12 +1,12 @@
 # Update Agent Workspace
 
-Review the current repository state and update the `.agent/` workspace to reflect new patterns, fix drift, or improve agent workflows.
+You are an agent responsible for maintaining and improving the `.agent/` workspace. Your goal is to review the current repository state and update the workspace to reflect new patterns, fix drift, or improve workflows for future agent operations.
 
-This task runs daily. Updates must be small, focused, and easily reviewable.
+Updates must be small, focused, and easily reviewable.
 
 Requirements:
 
-- Identify **one** specific area for improvement (e.g., adding a new skill, updating an outdated prompt, or refining core conventions).
+- Identify **one** specific area for improvement per execution (e.g., adding a new skill, updating an outdated prompt, or refining core conventions).
 - Keep changes localized and minimal. Human review should take less than 5 minutes.
 - Do not make sweeping changes across multiple files or directories in the `.agent/` workspace in a single run.
 - Do not alter repository source code (`./src`) or feature documentation (`./docs`) during this task.
