@@ -18,6 +18,11 @@ type MemberResponse struct {
 	Policies []workspace_model.Policy `json:"policies"`
 }
 
+type WorkspaceMemberWithPolicies struct {
+	workspace_entity.WorkspaceMember
+	Policies []workspace_entity.WorkspaceMemberPolicy `gorm:"foreignKey:WorkspaceMemberID"`
+}
+
 // AddMember adds a new member to a workspace.
 //
 //	@Summary		Add workspace member
@@ -145,41 +150,30 @@ func GetMembers(c *fiber.Ctx) error {
 		)
 	}
 
-	var members []workspace_entity.WorkspaceMember
-	if err := database.DB.Preload("User").Where("workspace_id = ?", workspace.ID).Find(&members).Error; err != nil {
+	var members []WorkspaceMemberWithPolicies
+	if err := database.DB.Model(&workspace_entity.WorkspaceMember{}).
+		Preload("User").
+		Preload("Policies").
+		Where("workspace_id = ?", workspace.ID).
+		Find(&members).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("Unable to fetch workspace members", err, "database").Send(),
 		)
 	}
 
-	// Fetch policies for all members in a single query to avoid N+1
-	memberIDs := make([]uuid.UUID, len(members))
-	for i, member := range members {
-		memberIDs[i] = member.ID
-	}
-
-	var allPolicies []workspace_entity.WorkspaceMemberPolicy
-	if err := database.DB.Where("workspace_member_id IN ?", memberIDs).Find(&allPolicies).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(
-			common_model.NewApiError("Unable to fetch member policies", err, "database").Send(),
-		)
-	}
-
-	// Group policies by member ID
-	policiesByMemberID := make(map[uuid.UUID][]workspace_model.Policy)
-	for _, p := range allPolicies {
-		policiesByMemberID[p.WorkspaceMemberID] = append(policiesByMemberID[p.WorkspaceMemberID], p.Policy)
-	}
-
 	responses := make([]MemberResponse, len(members))
 	for i, member := range members {
-		policyStrings := policiesByMemberID[member.ID]
+		policyStrings := make([]workspace_model.Policy, len(member.Policies))
+		for j, p := range member.Policies {
+			policyStrings[j] = p.Policy
+		}
+
 		if policyStrings == nil {
 			policyStrings = []workspace_model.Policy{}
 		}
 
 		responses[i] = MemberResponse{
-			WorkspaceMember: member,
+			WorkspaceMember: member.WorkspaceMember,
 			Policies:        policyStrings,
 		}
 	}
