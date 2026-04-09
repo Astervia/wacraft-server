@@ -18,11 +18,6 @@ type MemberResponse struct {
 	Policies []workspace_model.Policy `json:"policies"`
 }
 
-type WorkspaceMemberWithPolicies struct {
-	workspace_entity.WorkspaceMember
-	Policies []workspace_entity.WorkspaceMemberPolicy `gorm:"foreignKey:WorkspaceMemberID"`
-}
-
 // AddMember adds a new member to a workspace.
 //
 //	@Summary		Add workspace member
@@ -150,8 +145,8 @@ func GetMembers(c *fiber.Ctx) error {
 		)
 	}
 
-	var members []WorkspaceMemberWithPolicies
-	if err := database.DB.Model(&workspace_entity.WorkspaceMember{}).
+	var members []workspace_entity.WorkspaceMember
+	if err := database.DB.
 		Preload("User").
 		Preload("Policies").
 		Where("workspace_id = ?", workspace.ID).
@@ -173,7 +168,7 @@ func GetMembers(c *fiber.Ctx) error {
 		}
 
 		responses[i] = MemberResponse{
-			WorkspaceMember: member.WorkspaceMember,
+			WorkspaceMember: member,
 			Policies:        policyStrings,
 		}
 	}
