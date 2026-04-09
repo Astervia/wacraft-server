@@ -251,29 +251,34 @@ func upMigrateToDefaultWorkspace(ctx context.Context, db *sql.DB) error {
 
 ### 1.4 Workspace Middleware (wacraft-server)
 
-**File**: `src/workspace/middleware/workspace.go`
+**File**: `src/workspace/middleware/workspace.go` and `src/workspace/middleware/policy.go`
 
 ```go
-// WorkspaceMiddleware extracts workspace from header/path and validates membership
-func WorkspaceMiddleware() fiber.Handler {
-    return func(c *fiber.Ctx) error {
-        // Get workspace ID from X-Workspace-ID header or path parameter
-        workspaceID := c.Get("X-Workspace-ID")
-        if workspaceID == "" {
-            workspaceID = c.Params("workspace_id")
-        }
-
-        // Validate user is member of workspace
-        // Store workspace and membership in context
-        // Continue to next handler
-    }
+// WorkspaceMiddleware extracts X-Workspace-ID header, validates membership,
+// and stores workspace + policies in context.
+func WorkspaceMiddleware(c *fiber.Ctx) error {
+    // Get workspace ID from header
+    // Validate user is member of workspace
+    // Fetch member policies
+    // Store in context
+    // Continue to next handler
 }
 
-// RequirePolicy checks if the user has specific policy in current workspace
+// OptionalWorkspaceMiddleware behaves like WorkspaceMiddleware but skips
+// silently when X-Workspace-ID is not provided. Useful for endpoints that
+// optionally accept a workspace context (e.g. billing usage).
+func OptionalWorkspaceMiddleware(c *fiber.Ctx) error {
+    // Check if X-Workspace-ID is provided, else continue
+    // If provided, call WorkspaceMiddleware(c)
+}
+
+// RequirePolicy creates a middleware that checks if the user has any of the required policies.
+// The user must have at least one of the specified policies to proceed.
+// workspace.admin policy grants access to all operations.
 func RequirePolicy(policies ...workspace_model.Policy) fiber.Handler {
     return func(c *fiber.Ctx) error {
-        // Get membership from context
-        // Check if any required policy is present
+        // Get policies from context
+        // Check if user has workspace.admin or required policy
         // Return 403 if not authorized
     }
 }
