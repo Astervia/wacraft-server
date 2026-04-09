@@ -66,7 +66,7 @@ wacraft-core/src/synch/redis/
 
 **What to implement:**
 
-- `src/config/env/redis.go` - Loads all Redis/sync env vars following the project pattern: exported package-level vars with defaults, parsed in `loadRedisEnv()`, called from `init()` in `src/config/env/main.go`. See `HORIZONTAL_SCALING_REQUIREMENTS.md` for the full example.
+- `src/config/env/redis.go` - Loads all Redis/sync env vars following the project pattern: exported package-level vars with defaults, parsed in `loadRedisEnv()`, called from `init()` in `src/config/env/main.go`. See `requirements.md` for the full example.
 - `wacraft-core/src/synch/redis/config.go` - A `Config` struct that receives the already-parsed values from `env` package. The core library does NOT read env vars directly (it stays reusable/testable).
 - `wacraft-core/src/synch/redis/client.go` - A `RedisClient` struct wrapping `github.com/redis/go-redis/v9`. Accepts a `Config`. Provides health check, key prefixing (`Config.KeyPrefix`), and graceful shutdown.
 
