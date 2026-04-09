@@ -152,19 +152,30 @@ func GetMembers(c *fiber.Ctx) error {
 		)
 	}
 
-	// Fetch policies for each member
+	// Fetch policies for all members in a single query to avoid N+1
+	memberIDs := make([]uuid.UUID, len(members))
+	for i, member := range members {
+		memberIDs[i] = member.ID
+	}
+
+	var allPolicies []workspace_entity.WorkspaceMemberPolicy
+	if err := database.DB.Where("workspace_member_id IN ?", memberIDs).Find(&allPolicies).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			common_model.NewApiError("Unable to fetch member policies", err, "database").Send(),
+		)
+	}
+
+	// Group policies by member ID
+	policiesByMemberID := make(map[uuid.UUID][]workspace_model.Policy)
+	for _, p := range allPolicies {
+		policiesByMemberID[p.WorkspaceMemberID] = append(policiesByMemberID[p.WorkspaceMemberID], p.Policy)
+	}
+
 	responses := make([]MemberResponse, len(members))
 	for i, member := range members {
-		var policies []workspace_entity.WorkspaceMemberPolicy
-		if err := database.DB.Where("workspace_member_id = ?", member.ID).Find(&policies).Error; err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(
-				common_model.NewApiError("Unable to fetch member policies", err, "database").Send(),
-			)
-		}
-
-		policyStrings := make([]workspace_model.Policy, len(policies))
-		for j, p := range policies {
-			policyStrings[j] = p.Policy
+		policyStrings := policiesByMemberID[member.ID]
+		if policyStrings == nil {
+			policyStrings = []workspace_model.Policy{}
 		}
 
 		responses[i] = MemberResponse{
