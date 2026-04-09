@@ -3051,7 +3051,7 @@ info:
     name: MIT
     url: https://opensource.org/licenses/MIT
   title: wacraft Server API
-  version: 0.2.0
+  version: 0.2.10
 paths:
   /auth/forgot-password:
     post:
