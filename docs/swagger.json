@@ -14867,6 +14867,61 @@
                 }
             }
         },
+        "workspace_entity.WorkspaceMember": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "policies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/workspace_entity.WorkspaceMemberPolicy"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/user_entity.User"
+                },
+                "user_id": {
+                    "type": "string"
+                },
+                "workspace": {
+                    "$ref": "#/definitions/workspace_entity.Workspace"
+                },
+                "workspace_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "workspace_entity.WorkspaceMemberPolicy": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "policy": {
+                    "$ref": "#/definitions/workspace_model.Policy"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "workspace_member": {
+                    "$ref": "#/definitions/workspace_entity.WorkspaceMember"
+                },
+                "workspace_member_id": {
+                    "type": "string"
+                }
+            }
+        },
         "workspace_handler.MemberResponse": {
             "type": "object",
             "properties": {
