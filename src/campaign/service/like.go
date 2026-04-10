@@ -1,7 +1,9 @@
 package campaign_service
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	campaign_entity "github.com/Astervia/wacraft-core/src/campaign/entity"
 	campaign_model "github.com/Astervia/wacraft-core/src/campaign/model"
@@ -20,11 +22,16 @@ func ContentKeyLike(
 	whereable database_model.Whereable,
 	db *gorm.DB,
 ) ([]campaign_entity.Campaign, error) {
+	normalizedKey := campaign_model.SearchableCampaignColumn(strings.ToLower(string(key)))
+	if !normalizedKey.IsValid() {
+		return nil, errors.New("invalid campaign search key")
+	}
+
 	if db == nil {
 		db = database.DB.Model(&entity)
 	}
 
-	expr := fmt.Sprintf("immutable_unaccent(COALESCE(%s::text, ''))", key)
+	expr := fmt.Sprintf("immutable_unaccent(COALESCE(%s::text, ''))", normalizedKey)
 
 	// Construct the LIKE query for sender_data, receiver_data, or product_data
 	db = db.
