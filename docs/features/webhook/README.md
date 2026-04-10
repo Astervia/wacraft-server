@@ -409,7 +409,8 @@ The circuit breaker protects against failing endpoints and prevents resource exh
 1. Events trigger `SendAllByQuery()` which enqueues deliveries
 2. Background worker polls every 5 seconds for pending deliveries
 3. Worker processes up to 10 deliveries concurrently
-4. Failed deliveries are retried with exponential backoff
+4. **Throughput Check**: Before executing a webhook delivery, the worker checks and consumes workspace throughput via `billing_service.ConsumeWorkspaceThroughput`. If the limit is exceeded, the delivery fails immediately with a quota exceeded error.
+5. Failed deliveries are retried with exponential backoff
 
 ### Retry Behavior
 
@@ -518,6 +519,13 @@ Modified tables:
 
 - `webhooks` - Added signing, retry, circuit breaker fields
 - `webhook_logs` - Added delivery tracking fields
+
+New Indexes (added in `20260205000001_webhook_indexes.go`):
+
+- `idx_deliveries_pending` - Partial index on `status` and `next_attempt_at` for efficient polling of pending/attempted deliveries.
+- `idx_webhooks_active` - Partial index for active webhooks.
+- `idx_deliveries_webhook_id` - Index for looking up deliveries by webhook.
+- `idx_deliveries_event_type` - Index for event type filtering.
 
 Migrations run automatically via GORM AutoMigrate.
 
