@@ -7335,14 +7335,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Field name to search",
                         "name": "keyName",
                         "in": "path",
                         "required": true
                     },
                     {
+                        "maxLength": 512,
+                        "minLength": 1,
                         "type": "string",
-                        "description": "Text to match on the key",
                         "name": "likeText",
                         "in": "path",
                         "required": true

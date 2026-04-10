@@ -7696,13 +7696,13 @@ paths:
       - in: query
         name: updated_at_leq
         type: string
-      - description: Field name to search
-        in: path
+      - in: path
         name: keyName
         required: true
         type: string
-      - description: Text to match on the key
-        in: path
+      - in: path
+        maxLength: 512
+        minLength: 1
         name: likeText
         required: true
         type: string

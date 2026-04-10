@@ -1,7 +1,9 @@
 package message_service
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	database_model "github.com/Astervia/wacraft-core/src/database/model"
 	message_entity "github.com/Astervia/wacraft-core/src/message/entity"
@@ -57,12 +59,17 @@ func ContentKeyLike(
 	whereable database_model.Whereable,
 	db *gorm.DB,
 ) ([]message_entity.Message, error) {
+	normalizedKey := message_model.JsonMessageKey(strings.ToLower(string(key)))
+	if !normalizedKey.IsValid() {
+		return nil, errors.New("invalid message search key")
+	}
+
 	if db == nil {
 		db = database.DB.Model(&entity)
 	}
 
 	// Build expression: immutable_unaccent(COALESCE(<key>::text,''))
-	expr := fmt.Sprintf("immutable_unaccent(COALESCE(%s::text, ''))", key)
+	expr := fmt.Sprintf("immutable_unaccent(COALESCE(%s::text, ''))", normalizedKey)
 
 	db = db.
 		Joins("From").

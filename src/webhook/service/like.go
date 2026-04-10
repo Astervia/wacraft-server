@@ -1,7 +1,9 @@
 package webhook_service
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	database_model "github.com/Astervia/wacraft-core/src/database/model"
 	"github.com/Astervia/wacraft-core/src/repository"
@@ -20,11 +22,16 @@ func ContentKeyLike(
 	whereable database_model.Whereable,
 	db *gorm.DB,
 ) ([]webhook_entity.Webhook, error) {
+	normalizedKey := webhook_model.SearchableWebhookColumn(strings.ToLower(string(key)))
+	if !normalizedKey.IsValid() {
+		return nil, errors.New("invalid webhook search key")
+	}
+
 	if db == nil {
 		db = database.DB.Model(&entity)
 	}
 
-	expr := fmt.Sprintf("immutable_unaccent(COALESCE(%s::text, ''))", key)
+	expr := fmt.Sprintf("immutable_unaccent(COALESCE(%s::text, ''))", normalizedKey)
 
 	// Construct the LIKE query for sender_data, receiver_data, or product_data
 	db = db.

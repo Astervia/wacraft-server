@@ -1,7 +1,9 @@
 package user_service
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	database_model "github.com/Astervia/wacraft-core/src/database/model"
 	"github.com/Astervia/wacraft-core/src/repository"
@@ -20,11 +22,16 @@ func ContentKeyLike(
 	whereable database_model.Whereable,
 	db *gorm.DB,
 ) ([]user_entity.User, error) {
+	normalizedKey := user_model.SearchableUserColumn(strings.ToLower(string(key)))
+	if !normalizedKey.IsValid() {
+		return nil, errors.New("invalid user search key")
+	}
+
 	if db == nil {
 		db = database.DB.Model(&entity)
 	}
 
-	expr := fmt.Sprintf("immutable_unaccent(COALESCE(%s::text, ''))", key)
+	expr := fmt.Sprintf("immutable_unaccent(COALESCE(%s::text, ''))", normalizedKey)
 
 	// Construct the LIKE query for sender_data, receiver_data, or product_data
 	db = db.
