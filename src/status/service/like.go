@@ -1,11 +1,14 @@
 package status_service
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	database_model "github.com/Astervia/wacraft-core/src/database/model"
 	"github.com/Astervia/wacraft-core/src/repository"
 	status_entity "github.com/Astervia/wacraft-core/src/status/entity"
+	status_model "github.com/Astervia/wacraft-core/src/status/model"
 	"github.com/Astervia/wacraft-server/src/database"
 	"gorm.io/gorm"
 )
@@ -44,13 +47,18 @@ func ContentLike(
 
 func ContentKeyLike(
 	likeText string,
-	key string,
+	key status_model.SearchableStatusColumn,
 	entity status_entity.Status,
 	pagination database_model.Paginable,
 	order database_model.Orderable,
 	whereable database_model.Whereable,
 	db *gorm.DB,
 ) ([]status_entity.Status, error) {
+	normalizedKey := status_model.SearchableStatusColumn(strings.ToLower(string(key)))
+	if !normalizedKey.IsValid() {
+		return nil, errors.New("invalid status search key")
+	}
+
 	if db == nil {
 		db = database.DB.Model(&entity)
 	}
@@ -62,7 +70,7 @@ func ContentKeyLike(
 		Joins("From.Contact").
 		Joins("To.Contact").
 		Where(
-			fmt.Sprintf("CAST(%s AS TEXT) ~ ?", string(key)),
+			fmt.Sprintf("CAST(%s AS TEXT) ~ ?", normalizedKey),
 			likeText,
 		)
 

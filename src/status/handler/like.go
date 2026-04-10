@@ -79,27 +79,29 @@ func ContentLike(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Param			status		query		status_model.QueryPaginated		true	"Pagination and query parameters"
-//	@Param			keyName		path		string							true	"Field name to search"
-//	@Param			likeText	path		string							true	"Text to match on the key"
+//	@Param			contentLike	path		status_model.ContentKeyLikeParams	true	"Params to query content like key"
 //	@Success		200			{array}		status_entity.Status			"List of statuses"
 //	@Failure		400			{object}	common_model.DescriptiveError	"Invalid query or path parameter"
 //	@Failure		500			{object}	common_model.DescriptiveError	"Failed to retrieve statuses"
 //	@Security		ApiKeyAuth
 //	@Router			/status/content/{keyName}/like/{likeText} [get]
 func ContentKeyLike(c *fiber.Ctx) error {
-	encodedText := c.Params("likeText")
-	decodedText, err := url.QueryUnescape(encodedText)
-	if err != nil {
+	params := new(status_model.ContentKeyLikeParams)
+	if err := c.ParamsParser(params); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
-			common_model.NewApiError("unable to decode likeText", err, "net/url").Send(),
+			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+	if err := validators.Validator().Struct(params); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
 		)
 	}
 
-	encodedKey := c.Params("keyName")
-	decodedKey, err := url.QueryUnescape(encodedKey)
+	decodedText, err := url.QueryUnescape(params.LikeText)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
-			common_model.NewApiError("unable to decode keyName", err, "net/url").Send(),
+			common_model.NewApiError("unable to decode likeText", err, "net/url").Send(),
 		)
 	}
 
@@ -118,7 +120,7 @@ func ContentKeyLike(c *fiber.Ctx) error {
 
 	statuses, err := status_service.ContentKeyLike(
 		decodedText,
-		decodedKey,
+		params.KeyName,
 		status_entity.Status{
 			StatusFields: status_model.StatusFields{
 				MessageID: query.MessageID,
