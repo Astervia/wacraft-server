@@ -1,58 +1,50 @@
-# Skill: GORM External Wrapper
+# Skill: GORM External Entity Wrapper
 
-Use this skill when needing to establish relationships between local models and external entities (e.g., from `github.com/Astervia/wacraft-core`) that lack those relationship definitions.
+Use this skill when fetching external or shared domain models via GORM where you need to eagerly load (`.Preload()`) related local entities, but the external model lacks the necessary GORM relationship tags.
 
 ## Purpose
 
-Enable the use of GORM's `.Preload()` functionality for external models that cannot be directly modified to include the necessary `gorm` tags (such as `foreignKey` or `references`).
+Enable clean eager loading (`.Preload()`) of related entities when the base model is imported from an external or shared module (like `github.com/Astervia/wacraft-core`) and does not define GORM relationship tags (e.g., `foreignKey`, `references`).
 
 ## Core Problem
 
-External libraries or core domain packages often define entities without knowledge of the specific relationships needed in the current service's database schema. When you try to load a local model that has a relationship to an external model, or vice-versa, GORM cannot automatically resolve the join or preload the nested data because the external struct lacks the required relationship tags.
+GORM's `.Preload()` functionality requires explicit relationship tags (`gorm:"foreignKey:...,references:..."`) on the struct fields to know how to join tables.
+When depending on shared or core libraries, those domain models often (and correctly) omit persistence-layer details like GORM tags.
+Attempting to `.Preload()` onto an entity without these tags results in GORM failing to execute the join or load the related data.
 
 ## Preferred Pattern
 
-Create a local wrapper struct that embeds the external entity and adds the necessary relationship fields with appropriate GORM tags.
+Create a localized wrapper struct within the specific feature's persistence or repository layer.
+
+- Embed the external entity in the wrapper struct.
+- Define the relationship field directly on the wrapper struct.
+- Add the necessary `gorm` tags (e.g., `foreignKey`, `references`) to the newly added field.
+- Ensure the wrapper specifies the underlying table name of the external entity to prevent GORM from inferring a table name based on the wrapper struct's name.
 
 ## Workflow
 
-1. Identify the external entity that needs to be preloaded or joined.
-2. Create a new local wrapper struct, typically named `ExternalEntityWrapper` or `LocalExternalEntity` (e.g., `LocalWorkspace`).
-3. Embed the external entity inside the wrapper struct.
-4. Add the new relationship fields (e.g., `HasMany`, `BelongsTo`) directly to the wrapper struct.
-5. Decorate these new relationship fields with the required `gorm` tags, explicitly defining `foreignKey` and `references` as needed.
-6. Use this local wrapper struct in your GORM queries (`.Model(&LocalExternalEntity{}).Preload("RelatedModels").Find(...)`).
-7. Once loaded, you can access the embedded external entity's fields directly or extract the core entity if needed.
+1. Identify the external entity and the local relationship that needs to be eager-loaded.
+2. In the repository or persistence layer, define a local wrapper struct that embeds the external entity.
+3. Add the related entity field to the wrapper struct and annotate it with the proper `gorm` relationship tags.
+4. Implement the `TableName()` method on the wrapper struct to return the correct table name corresponding to the external entity.
+5. Use this wrapper struct in your GORM queries to fetch the data with `.Preload()`.
+6. After fetching, map the results back to the expected domain model or DTO as necessary before returning from the persistence layer.
 
-## Example
+## Inspect First
 
-Suppose you have an external `core.User` model, and you want to load a user with their local `Post` models.
-
-```go
-package model
-
-import "github.com/Astervia/wacraft-core/domain"
-
-// LocalUser wraps the external core.User to add local relationship definitions.
-type LocalUser struct {
-    domain.User // Embed the external entity
-    Posts       []Post `gorm:"foreignKey:UserID;references:ID"` // Add the relationship
-}
-
-// In your repository/service:
-// var user LocalUser
-// db.Preload("Posts").First(&user, "id = ?", userID)
-```
+- The external model definition (e.g., in `github.com/Astervia/wacraft-core`).
+- The related local model definition.
+- Existing repository patterns in `src/<domain>/service/` or `src/<domain>/repository/`.
 
 ## Anti-Patterns
 
-- Attempting to modify the external package's structs directly (which is often impossible or violates modularity).
-- Manually querying the related tables and stitching the data together in memory when a simple wrapper and `.Preload()` would suffice.
-- Using `db.Raw()` for complex joins when standard ORM relationship mapping via a wrapper is clearer and safer.
+- Modifying the shared/external module to include GORM tags (leaks persistence details into core models).
+- Manually executing multiple queries (N+1 queries) instead of using `.Preload()` when a join is more efficient.
+- Failing to implement `TableName()` on the wrapper, causing GORM to query a non-existent table (e.g., querying `external_entity_wrappers` instead of `external_entities`).
 
 ## Done Criteria
 
-- The wrapper struct successfully embeds the external model.
-- `gorm` tags on the wrapper correctly define the relationship.
-- GORM queries using `.Preload()` execute without errors and populate the related data.
-- The external package remains unmodified.
+- The local wrapper successfully enables `.Preload()`.
+- The external module remains unaware of GORM-specific tags.
+- The `TableName()` method correctly routes queries to the underlying table.
+- The repository returns cleanly mapped domain entities to the service layer.

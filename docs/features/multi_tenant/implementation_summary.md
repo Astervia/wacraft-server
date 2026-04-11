@@ -64,10 +64,11 @@ Added `WorkspaceID *uuid.UUID` to:
 
 ### Middleware
 
-| File                                    | Purpose                                                |
-| --------------------------------------- | ------------------------------------------------------ |
-| `src/workspace/middleware/workspace.go` | Extracts `X-Workspace-ID` header, validates membership |
-| `src/workspace/middleware/policy.go`    | `RequirePolicy()` - Checks user has required policies  |
+| File                                    | Purpose                                                                             |
+| --------------------------------------- | ----------------------------------------------------------------------------------- |
+| `src/workspace/middleware/workspace.go` | `WorkspaceMiddleware` - Extracts `X-Workspace-ID` header, validates membership      |
+| `src/workspace/middleware/workspace.go` | `OptionalWorkspaceMiddleware` - Same as above, but skips silently if ID not present |
+| `src/workspace/middleware/policy.go`    | `RequirePolicy()` - Checks user has required policies                               |
 
 ### API Endpoints
 
