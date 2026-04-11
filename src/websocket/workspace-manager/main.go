@@ -50,8 +50,11 @@ func (m *WorkspaceChannelManager[T]) GetChannel(workspaceID uuid.UUID) *websocke
 // every instance broadcasts to its own local clients (including this one via the
 // subscriber goroutine). In memory-only mode a direct local broadcast is performed.
 func (m *WorkspaceChannelManager[T]) BroadcastToWorkspace(workspaceID uuid.UUID, data T) {
+	// ⚡ Bolt Optimization: Combine state and map lookups into a single mutex critical
+	// section to reduce lock contention and eliminate redundant RWMutex operations.
 	m.globalMutex.RLock()
 	pubsub := m.pubsub
+	channel := m.channels[workspaceID]
 	m.globalMutex.RUnlock()
 
 	if pubsub != nil {
@@ -67,7 +70,6 @@ func (m *WorkspaceChannelManager[T]) BroadcastToWorkspace(workspaceID uuid.UUID,
 	}
 
 	// Memory-only mode: direct local broadcast.
-	channel := m.GetChannel(workspaceID)
 	if channel != nil {
 		channel.BroadcastJsonMultithread(data)
 	}
