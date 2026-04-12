@@ -406,7 +406,8 @@ The circuit breaker protects against failing endpoints and prevents resource exh
 
 ### How It Works
 
-1. Events trigger `SendAllByQuery()` which enqueues deliveries
+1. Events trigger `SendAllByQuery()` or `SendBatchByQuery()` which enqueues deliveries.
+    - **Performance Optimization**: For batch operations (like receiving multiple messages), use `SendBatchByQuery()` to prevent N+1 queries. It fetches the matching webhooks exactly once per event scope before enqueuing all payloads.
 2. Background worker polls every 5 seconds for pending deliveries
 3. Worker processes up to 10 deliveries concurrently
 4. **Throughput Check**: Before executing a webhook delivery, the worker checks and consumes workspace throughput via `billing_service.ConsumeWorkspaceThroughput`. If the limit is exceeded, the delivery fails immediately with a quota exceeded error.
@@ -536,6 +537,7 @@ Migrations run automatically via GORM AutoMigrate.
 - Existing webhooks work with defaults: `is_active=true`, `signing_enabled=false`, `max_retries=3`
 - All new fields are optional in API requests
 - Existing `SendAllByQuery` calls automatically use the queue system
+- New endpoints dispatching multiple events should use `SendBatchByQuery` to avoid query bottlenecks
 
 ---
 
