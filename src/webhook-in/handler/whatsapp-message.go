@@ -123,17 +123,25 @@ func messageCallbackForPhoneConfig(ctx *fiber.Ctx, body *wh_model.WebhookBody, c
 	}
 
 	go func() {
-		for _, msg := range msgs {
+		// Convert to []any for batch processing
+		payloads := make([]any, len(msgs))
+		for i, msg := range msgs {
+			payloads[i] = msg
+
 			// Broadcast to workspace-scoped WebSocket clients
 			if mp.WorkspaceID != nil {
 				go message_handler.NewMessageWorkspaceManager.BroadcastToWorkspace(*mp.WorkspaceID, msg)
 			}
-			go webhook_service.SendAllByQuery(
+		}
+
+		// ⚡ BOLT OPTIMIZATION: Send webhooks in batch to avoid N+1 DB queries per message
+		if len(payloads) > 0 {
+			go webhook_service.SendBatchByQuery(
 				webhook_entity.Webhook{
 					Event:       webhook_out_model.ReceiveWhatsAppMessage,
 					WorkspaceID: mp.WorkspaceID,
 				},
-				msg,
+				payloads,
 			)
 		}
 	}()
@@ -204,16 +212,24 @@ func messageCallback(ctx *fiber.Ctx, body *wh_model.WebhookBody, change *wh_mode
 	}
 
 	go func() {
-		for _, msg := range msgs {
+		// Convert to []any for batch processing
+		payloads := make([]any, len(msgs))
+		for i, msg := range msgs {
+			payloads[i] = msg
+
 			// Broadcast to workspace-scoped WebSocket clients
 			if mp.WorkspaceID != nil {
 				go message_handler.NewMessageWorkspaceManager.BroadcastToWorkspace(*mp.WorkspaceID, msg)
 			}
-			go webhook_service.SendAllByQuery(
+		}
+
+		// ⚡ BOLT OPTIMIZATION: Send webhooks in batch to avoid N+1 DB queries per message
+		if len(payloads) > 0 {
+			go webhook_service.SendBatchByQuery(
 				webhook_entity.Webhook{
 					Event: webhook_out_model.ReceiveWhatsAppMessage,
 				},
-				msg,
+				payloads,
 			)
 		}
 	}()
