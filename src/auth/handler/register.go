@@ -118,16 +118,20 @@ func Register(c *fiber.Ctx) error {
 		)
 	}
 
-	// Assign all admin policies to user
-	for _, policy := range workspace_model.AllPolicies {
-		policyRecord := workspace_entity.WorkspaceMemberPolicy{
-			WorkspaceMemberID: member.ID,
-			Policy:            policy,
+	// Assign all admin policies to user in batch
+	if len(workspace_model.AllPolicies) > 0 {
+		policiesToInsert := make([]workspace_entity.WorkspaceMemberPolicy, 0, len(workspace_model.AllPolicies))
+		for _, policy := range workspace_model.AllPolicies {
+			policiesToInsert = append(policiesToInsert, workspace_entity.WorkspaceMemberPolicy{
+				WorkspaceMemberID: member.ID,
+				Policy:            policy,
+			})
 		}
-		if err := tx.Create(&policyRecord).Error; err != nil {
+
+		if err := tx.Create(&policiesToInsert).Error; err != nil {
 			tx.Rollback()
 			return c.Status(fiber.StatusInternalServerError).JSON(
-				common_model.NewApiError("Failed to assign policies", err, "database").Send(),
+				common_model.NewApiError("Failed to assign policies in batch", err, "database").Send(),
 			)
 		}
 	}

@@ -95,18 +95,20 @@ func AddMember(c *fiber.Ctx) error {
 		)
 	}
 
-	// Add policies
-	for _, policy := range newMember.Policies {
-		_, err := repository.Create(
-			workspace_entity.WorkspaceMemberPolicy{
+	// Add policies in batch
+	if len(newMember.Policies) > 0 {
+		policiesToInsert := make([]workspace_entity.WorkspaceMemberPolicy, 0, len(newMember.Policies))
+		for _, policy := range newMember.Policies {
+			policiesToInsert = append(policiesToInsert, workspace_entity.WorkspaceMemberPolicy{
 				WorkspaceMemberID: member.ID,
 				Policy:            policy,
-			}, tx,
-		)
-		if err != nil {
+			})
+		}
+
+		if err := tx.Create(&policiesToInsert).Error; err != nil {
 			tx.Rollback()
 			return c.Status(fiber.StatusInternalServerError).JSON(
-				common_model.NewApiError("Unable to create workspace policy", err, "repository").Send(),
+				common_model.NewApiError("Unable to create workspace policies in batch", err, "database").Send(),
 			)
 		}
 	}
@@ -256,18 +258,20 @@ func UpdateMemberPolicies(c *fiber.Ctx) error {
 		)
 	}
 
-	// Add new policies
-	for _, policy := range updateData.Policies {
-		_, err := repository.Create(
-			workspace_entity.WorkspaceMemberPolicy{
+	// Add new policies in batch
+	if len(updateData.Policies) > 0 {
+		policiesToInsert := make([]workspace_entity.WorkspaceMemberPolicy, 0, len(updateData.Policies))
+		for _, policy := range updateData.Policies {
+			policiesToInsert = append(policiesToInsert, workspace_entity.WorkspaceMemberPolicy{
 				WorkspaceMemberID: member.ID,
 				Policy:            policy,
-			}, tx,
-		)
-		if err != nil {
+			})
+		}
+
+		if err := tx.Create(&policiesToInsert).Error; err != nil {
 			tx.Rollback()
 			return c.Status(fiber.StatusInternalServerError).JSON(
-				common_model.NewApiError("Unable to create workspace policy", err, "repository").Send(),
+				common_model.NewApiError("Unable to create workspace policies in batch", err, "database").Send(),
 			)
 		}
 	}
