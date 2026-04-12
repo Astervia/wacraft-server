@@ -11,6 +11,7 @@ These conventions are specific to this repository and should guide agent work.
 5. Treat workspace scoping and auth middleware as security boundaries, not convenience layers.
 6. Update migrations intentionally when persistence shape changes; do not rely on implicit auto-migration behavior alone.
 7. Keep memory and Redis sync modes behaviorally aligned unless a task explicitly targets one backend.
+8. Do not leave temporary `.go` files containing `main` packages or functions in the repository, as they cause GitHub CI (CodeQL SAST scans and builds) to fail.
 
 ## Repo Design Bias
 
@@ -51,7 +52,7 @@ For most tasks:
 At minimum, changes should include:
 
 - focused package tests for the changed behavior when practical
-- `go test ./... -v` for normal regression coverage
+- `go test ./... -v -p 1` for normal regression coverage (use `-p 1` to execute packages sequentially, preventing race conditions and unique constraint violations caused by concurrent GORM `AutoMigrate` calls)
 - `make test-memory` or `make test-distributed` when sync, database, websocket, or worker behavior changes
 - an explicit note of any verification gap when external dependencies make full validation impractical
 
