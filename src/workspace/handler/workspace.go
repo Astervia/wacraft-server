@@ -93,18 +93,20 @@ func Create(c *fiber.Ctx) error {
 		)
 	}
 
-	// Add all policies to the creator (workspace admin)
-	for _, policy := range workspace_model.AllPolicies {
-		_, err := repository.Create(
-			workspace_entity.WorkspaceMemberPolicy{
+	// Add all policies to the creator (workspace admin) in batch
+	if len(workspace_model.AllPolicies) > 0 {
+		policiesToInsert := make([]workspace_entity.WorkspaceMemberPolicy, 0, len(workspace_model.AllPolicies))
+		for _, policy := range workspace_model.AllPolicies {
+			policiesToInsert = append(policiesToInsert, workspace_entity.WorkspaceMemberPolicy{
 				WorkspaceMemberID: member.ID,
 				Policy:            policy,
-			}, tx,
-		)
-		if err != nil {
+			})
+		}
+
+		if err := tx.Create(&policiesToInsert).Error; err != nil {
 			tx.Rollback()
 			return c.Status(fiber.StatusInternalServerError).JSON(
-				common_model.NewApiError("Unable to create workspace policy", err, "repository").Send(),
+				common_model.NewApiError("Unable to create workspace policies in batch", err, "database").Send(),
 			)
 		}
 	}
