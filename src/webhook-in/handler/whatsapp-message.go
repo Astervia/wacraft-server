@@ -296,10 +296,6 @@ func handleMessagesWithWorkspace(value wh_model.Value, tx *gorm.DB, mpID uuid.UU
 			if msg.From.Blocked {
 				return nil
 			}
-			err = tx.Model(&msg).Create(&msg).Error
-			if err != nil {
-				return err
-			}
 			msgsMu.Lock()
 			msgs = append(msgs, msg)
 			msgsMu.Unlock()
@@ -312,9 +308,17 @@ func handleMessagesWithWorkspace(value wh_model.Value, tx *gorm.DB, mpID uuid.UU
 		pterm.DefaultLogger.Error(
 			fmt.Sprintf("Error while handling message with workspace: %s", err.Error()),
 		)
+		return nil, err
 	}
 
-	return msgs, err
+	// ⚡ BOLT OPTIMIZATION: Batch insert messages to avoid N+1 queries
+	if len(msgs) > 0 {
+		if err := tx.Create(&msgs).Error; err != nil {
+			return nil, err
+		}
+	}
+
+	return msgs, nil
 }
 
 // Returns messages from unblocked contacts (legacy handler without workspace context)
@@ -365,10 +369,6 @@ func handleMessages(value wh_model.Value, tx *gorm.DB, mpID uuid.UUID) ([]messag
 			if msg.From.Blocked {
 				return nil
 			}
-			err = tx.Model(&msg).Create(&msg).Error
-			if err != nil {
-				return err
-			}
 			msgsMu.Lock()
 			msgs = append(msgs, msg)
 			msgsMu.Unlock()
@@ -381,7 +381,15 @@ func handleMessages(value wh_model.Value, tx *gorm.DB, mpID uuid.UUID) ([]messag
 		pterm.DefaultLogger.Error(
 			fmt.Sprintf("Error while handling message: %s", err.Error()),
 		)
+		return nil, err
 	}
 
-	return msgs, err
+	// ⚡ BOLT OPTIMIZATION: Batch insert messages to avoid N+1 queries
+	if len(msgs) > 0 {
+		if err := tx.Create(&msgs).Error; err != nil {
+			return nil, err
+		}
+	}
+
+	return msgs, nil
 }

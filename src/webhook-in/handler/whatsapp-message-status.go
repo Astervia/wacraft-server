@@ -6,7 +6,6 @@ import (
 	database_model "github.com/Astervia/wacraft-core/src/database/model"
 	message_entity "github.com/Astervia/wacraft-core/src/message/entity"
 	message_model "github.com/Astervia/wacraft-core/src/message/model"
-	"github.com/Astervia/wacraft-core/src/repository"
 	status_entity "github.com/Astervia/wacraft-core/src/status/entity"
 	status_model "github.com/Astervia/wacraft-core/src/status/model"
 	"github.com/Astervia/wacraft-server/src/config/env"
@@ -88,28 +87,31 @@ func handleStatuses(
 				msgID = msg.ID
 			}
 
-			s, err := repository.Create(
-				status_entity.Status{
-					StatusFields: status_model.StatusFields{
-						MessageID: msgID,
-						ProductData: &status_model.ProductData{
-							Status: &status,
-						},
+			statMu.Lock()
+			statuses = append(statuses, status_entity.Status{
+				StatusFields: status_model.StatusFields{
+					MessageID: msgID,
+					ProductData: &status_model.ProductData{
+						Status: &status,
 					},
 				},
-				tx,
-			)
-			if err != nil {
-				return err
-			}
-			statMu.Lock()
-			statuses = append(statuses, s)
+			})
 			statMu.Unlock()
 			return nil
 		})
 	}
 
 	err := eg.Wait()
+	if err != nil {
+		return nil, err
+	}
 
-	return statuses, err
+	// ⚡ BOLT OPTIMIZATION: Batch insert statuses to avoid N+1 queries
+	if len(statuses) > 0 {
+		if err := tx.Create(&statuses).Error; err != nil {
+			return nil, err
+		}
+	}
+
+	return statuses, nil
 }
