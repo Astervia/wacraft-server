@@ -89,7 +89,7 @@ dev-migrate-status: ## Check migration status in development
 	$(DC_DEV) exec app go run main.go migrate:status
 
 test: ## Run unit tests (no external dependencies)
-	go test ./... -v $(GO_TEST_FLAGS)
+	go test ./... -v -p 1 $(GO_TEST_FLAGS)
 
 test-memory: ## Run tests in memory mode (Postgres only, no Redis)
 	@printf "\033[36m==> Starting ephemeral PostgreSQL container...\033[0m\n"
@@ -104,7 +104,7 @@ test-memory: ## Run tests in memory mode (Postgres only, no Redis)
 	SYNC_BACKEND=memory \
 		REDIS_URL="" \
 		DATABASE_URL="postgres://postgres:postgres@localhost:15433/postgres?sslmode=disable" \
-		go test ./... -v -race $(GO_TEST_FLAGS); \
+		go test ./... -v -race -p 1 $(GO_TEST_FLAGS); \
 		EXIT=$$?; \
 		printf "\033[36m==> Removing PostgreSQL container...\033[0m\n"; \
 		docker rm -f wacraft-test-postgres-mem > /dev/null; \
@@ -127,7 +127,7 @@ test-distributed: ## Run the full test suite with both Redis and PostgreSQL
 	SYNC_BACKEND=redis \
 		REDIS_URL=redis://localhost:16379 \
 		DATABASE_URL="postgres://postgres:postgres@localhost:15432/postgres?sslmode=disable" \
-		go test ./... -v -race $(GO_TEST_FLAGS); \
+		go test ./... -v -race -p 1 $(GO_TEST_FLAGS); \
 		EXIT=$$?; \
 		printf "\033[36m==> Removing containers...\033[0m\n"; \
 		docker rm -f wacraft-test-redis wacraft-test-postgres > /dev/null; \

@@ -33,36 +33,3 @@ func SendAllByQuery(
 
 	return nil
 }
-
-// SendBatchByQuery fetches matching webhooks once and enqueues deliveries for multiple payloads.
-// ⚡ BOLT OPTIMIZATION: Prevents N+1 DB queries when dispatching webhooks for an array of items (like batched messages).
-func SendBatchByQuery(
-	entity webhook_entity.Webhook,
-	payloads []any,
-) error {
-	if len(payloads) == 0 {
-		return nil
-	}
-
-	var webhooks []webhook_entity.Webhook
-
-	// Query active webhooks matching the criteria exactly once
-	if err := database.DB.
-		Where(&entity).
-		Where("is_active = ?", true).
-		Find(&webhooks).Error; err != nil {
-		return err
-	}
-
-	// Enqueue delivery for each payload and each webhook
-	for _, payload := range payloads {
-		for i := range webhooks {
-			if err := EnqueueDelivery(&webhooks[i], payload, string(entity.Event)); err != nil {
-				// Log error but continue processing other webhooks
-				pterm.DefaultLogger.Error("Failed to enqueue delivery for webhook " + webhooks[i].ID.String() + ": " + err.Error())
-			}
-		}
-	}
-
-	return nil
-}
