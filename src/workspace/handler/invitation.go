@@ -284,12 +284,15 @@ func ClaimInvitation(c *fiber.Ctx) error {
 	}
 
 	// Assign policies from invitation
+	policyRecords := make([]workspace_entity.WorkspaceMemberPolicy, 0, len(invitation.Policies))
 	for _, policy := range invitation.Policies {
-		policyRecord := workspace_entity.WorkspaceMemberPolicy{
+		policyRecords = append(policyRecords, workspace_entity.WorkspaceMemberPolicy{
 			WorkspaceMemberID: member.ID,
 			Policy:            policy,
-		}
-		if err := tx.Create(&policyRecord).Error; err != nil {
+		})
+	}
+	if len(policyRecords) > 0 {
+		if err := tx.Create(&policyRecords).Error; err != nil {
 			tx.Rollback()
 			return c.Status(fiber.StatusInternalServerError).JSON(
 				common_model.NewApiError("Failed to assign policies", err, "database").Send(),
