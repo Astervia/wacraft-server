@@ -22,3 +22,7 @@
 
 **Learning:** Identified an N+1 query issue during the creation of workspace member policies (e.g., in `AddMember`, `UpdateMemberPolicies`, workspace `Create`, and user `Register` handlers). The previous implementation used a loop over `workspace_model.AllPolicies` or user-defined policies to execute a `repository.Create` or `tx.Create` for each individual `WorkspaceMemberPolicy` record. In GORM, this incurs a database roundtrip and transaction overhead per policy.
 **Action:** When inserting multiple rows of the same type, prepare a slice of the entities and use `tx.Create(&slice)` for batch insertion. This minimizes lock contention, lowers transaction overhead, and improves overall application performance during creation routines.
+
+## 2026-04-14 - Eliminated N+1 Inserts in Webhook Handlers
+**Learning:** Found N+1 database insertion issues in the webhook intake process (`src/webhook-in/handler/whatsapp-message.go` and `src/webhook-in/handler/whatsapp-message-status.go`). The handlers used concurrent goroutines inside a loop to process and immediately insert individual message and status records, creating transaction lock contention and excessive DB round-trips. Executing multiple queries concurrently on a single `*gorm.DB` transaction is also unsafe.
+**Action:** Replaced single row inserts within the concurrent data processing loop with array aggregation. A single batch insert (`tx.Create(&msgs)` and `tx.Create(&statuses)`) is now executed post-loop, significantly reducing overhead and resolving unsafe concurrent transaction access.
