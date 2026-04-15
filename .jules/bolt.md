@@ -22,3 +22,8 @@
 
 **Learning:** Identified an N+1 query issue during the creation of workspace member policies (e.g., in `AddMember`, `UpdateMemberPolicies`, workspace `Create`, and user `Register` handlers). The previous implementation used a loop over `workspace_model.AllPolicies` or user-defined policies to execute a `repository.Create` or `tx.Create` for each individual `WorkspaceMemberPolicy` record. In GORM, this incurs a database roundtrip and transaction overhead per policy.
 **Action:** When inserting multiple rows of the same type, prepare a slice of the entities and use `tx.Create(&slice)` for batch insertion. This minimizes lock contention, lowers transaction overhead, and improves overall application performance during creation routines.
+
+## 2026-04-15 - Fixed N+1 Query in Workspace Member Policy Creation for Invitations
+
+**Learning:** Discovered another instance of the N+1 query issue during the creation of workspace member policies, specifically in the `ClaimInvitation` handler (`src/workspace/handler/invitation.go`). The code was using a `for` loop to iterate over the policies included in an invitation and execute a `tx.Create` for each one, causing unnecessary database roundtrips.
+**Action:** When inserting multiple rows of the same type, prepare a slice of the entities and use `tx.Create(&slice)` for batch insertion. This minimizes lock contention, lowers transaction overhead, and improves overall application performance during creation routines.
