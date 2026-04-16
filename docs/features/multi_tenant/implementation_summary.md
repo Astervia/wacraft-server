@@ -562,6 +562,15 @@ const ws = new WebSocket(
     const ws = new WebSocket("ws://domain/websocket/message/new?workspace_id=<workspace-uuid>");
     ```
 
+### Performance Optimizations
+
+To prevent N+1 queries during the creation of entities that require many associated policies, the codebase utilizes GORM's batch insertion capabilities (`tx.Create(&slice)`). This minimizes lock contention, lowers transaction overhead, and improves overall application performance.
+
+This optimization is implemented in:
+- **Workspace Creation**: `src/workspace/handler/workspace.go`
+- **Member Addition & Updates**: `src/workspace/handler/member.go`
+- **User Registration**: `src/auth/handler/register.go`
+
 ### Backwards Compatibility
 
 - Legacy environment variables (`WABA_ID`, `WABA_ACCESS_TOKEN`, etc.) still work as fallback
