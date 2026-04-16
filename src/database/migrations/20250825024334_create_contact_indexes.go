@@ -29,8 +29,9 @@ func upCreateContactIndexes(ctx context.Context, tx *sql.Tx) error {
 			IMMUTABLE
 			PARALLEL SAFE
 			STRICT
+			SET search_path = public, pg_catalog
 		AS $$
-			SELECT unaccent('unaccent'::regdictionary, $1)
+			SELECT unaccent('unaccent', $1)
 		$$;`,
 
 		// 2) messaging_product_contacts.product_details (jsonb as text)
