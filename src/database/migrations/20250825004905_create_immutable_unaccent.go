@@ -30,8 +30,9 @@ func upCreateImmutableUnaccent(ctx context.Context, tx *sql.Tx) error {
 			IMMUTABLE
 			PARALLEL SAFE
 			STRICT
+			SET search_path = public, pg_catalog
 		AS $$
-			SELECT unaccent('unaccent'::regdictionary, $1)
+			SELECT unaccent('unaccent', $1);
 		$$;`,
 	}
 
