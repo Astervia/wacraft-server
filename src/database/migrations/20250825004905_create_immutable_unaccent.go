@@ -32,7 +32,7 @@ func upCreateImmutableUnaccent(ctx context.Context, tx *sql.Tx) error {
 			STRICT
 			SET search_path = public, pg_catalog
 		AS $$
-			SELECT unaccent('unaccent', $1);
+			SELECT unaccent('unaccent', $1)
 		$$;`,
 	}
 
