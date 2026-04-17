@@ -1030,27 +1030,35 @@ Note: Messages inherit workspace scope through messaging_product_id → workspac
 
 ### New Endpoints
 
-| Method | Endpoint                           | Description             | Auth   |
-| ------ | ---------------------------------- | ----------------------- | ------ |
-| POST   | `/auth/register`                   | User registration       | Public |
-| GET    | `/auth/verify-email`               | Email verification      | Public |
-| POST   | `/auth/forgot-password`            | Request password reset  | Public |
-| POST   | `/auth/reset-password`             | Reset password          | Public |
-| POST   | `/auth/accept-invitation`          | Accept workspace invite | Public |
-| POST   | `/workspace`                       | Create workspace        | User   |
-| GET    | `/workspace`                       | List user workspaces    | User   |
-| GET    | `/workspace/:id`                   | Get workspace           | Member |
-| PATCH  | `/workspace/:id`                   | Update workspace        | Admin  |
-| DELETE | `/workspace/:id`                   | Delete workspace        | Admin  |
-| POST   | `/workspace/:id/member`            | Add member              | Admin  |
-| GET    | `/workspace/:id/member`            | List members            | Member |
-| PATCH  | `/workspace/:id/member/:uid`       | Update member           | Admin  |
-| DELETE | `/workspace/:id/member/:uid`       | Remove member           | Admin  |
-| POST   | `/workspace/:id/invitation`        | Send invitation         | Admin  |
-| POST   | `/workspace/:id/phone-config`      | Create phone config     | Admin  |
-| GET    | `/workspace/:id/phone-config`      | List phone configs      | Member |
-| PATCH  | `/workspace/:id/phone-config/:pid` | Update phone config     | Admin  |
-| DELETE | `/workspace/:id/phone-config/:pid` | Delete phone config     | Admin  |
+| Method | Endpoint                           | Description             | Auth                    |
+| ------ | ---------------------------------- | ----------------------- | ----------------------- |
+| POST   | `/auth/register`                   | User registration       | Public                  |
+| GET    | `/auth/verify-email`               | Email verification      | Public                  |
+| POST   | `/auth/forgot-password`            | Request password reset  | Public                  |
+| POST   | `/auth/reset-password`             | Reset password          | Public                  |
+| POST   | `/auth/accept-invitation`          | Accept workspace invite | Public                  |
+| POST   | `/workspace`                       | Create workspace        | User                    |
+| GET    | `/workspace`                       | List user workspaces    | User                    |
+| GET    | `/workspace/:workspace_id`         | Get workspace           | Member                  |
+| PATCH  | `/workspace/:workspace_id`         | Update workspace        | workspace.settings      |
+| DELETE | `/workspace/:workspace_id`         | Delete workspace        | workspace.admin         |
+| POST   | `/workspace/:workspace_id/member`  | Add member              | workspace.members       |
+| GET    | `/workspace/:workspace_id/member`  | List members            | Member                  |
+| PATCH  | `/workspace/:workspace_id/member/:user_id` | Update member           | workspace.members       |
+| DELETE | `/workspace/:workspace_id/member/:user_id` | Remove member           | workspace.members       |
+| POST   | `/workspace/:workspace_id/invitation`      | Send invitation         | workspace.members       |
+| GET    | `/workspace/:workspace_id/invitation`      | List invitations        | workspace.members       |
+| DELETE | `/workspace/:workspace_id/invitation/:invitation_id` | Revoke invitation       | workspace.members       |
+| POST   | `/workspace/:workspace_id/phone-config`      | Create phone config     | phone_config.manage     |
+| GET    | `/workspace/:workspace_id/phone-config`      | List phone configs      | phone_config.read       |
+| GET    | `/workspace/:workspace_id/phone-config/:id`  | Get phone config        | phone_config.read       |
+| PATCH  | `/workspace/:workspace_id/phone-config/:id`  | Update phone config     | phone_config.manage     |
+| DELETE | `/workspace/:workspace_id/phone-config/:id`  | Delete phone config     | phone_config.manage     |
+| POST   | `/workspace/:workspace_id/phone-config/:id/request-code` | Request verification code | phone_config.manage     |
+| POST   | `/workspace/:workspace_id/phone-config/:id/verify-code`  | Verify phone number code  | phone_config.manage     |
+| POST   | `/workspace/:workspace_id/phone-config/:id/pin-authenticate` | Set two-step PIN          | phone_config.manage     |
+| POST   | `/workspace/:workspace_id/phone-config/:id/register`     | Register phone number     | phone_config.manage     |
+| POST   | `/workspace/:workspace_id/phone-config/:id/deregister`   | Deregister phone number   | phone_config.manage     |
 
 ### Modified Endpoints
 
