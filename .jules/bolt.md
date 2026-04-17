@@ -22,3 +22,7 @@
 
 **Learning:** Identified an N+1 query issue during the creation of workspace member policies (e.g., in `AddMember`, `UpdateMemberPolicies`, workspace `Create`, and user `Register` handlers). The previous implementation used a loop over `workspace_model.AllPolicies` or user-defined policies to execute a `repository.Create` or `tx.Create` for each individual `WorkspaceMemberPolicy` record. In GORM, this incurs a database roundtrip and transaction overhead per policy.
 **Action:** When inserting multiple rows of the same type, prepare a slice of the entities and use `tx.Create(&slice)` for batch insertion. This minimizes lock contention, lowers transaction overhead, and improves overall application performance during creation routines.
+
+## 2024-10-24 - Batch Insert for Relationship Data in Handlers
+**Learning:** In GORM, iterating through an array from an API request to perform single inserts (`tx.Create(&struct)`) inside a transaction can quietly create an N+1 query issue for relationship data (e.g., `PlanPrice` array for `Plan`, `WorkspaceMemberPolicy` array for `WorkspaceMember`). While these are fast locally, they cause multiple DB round trips and transaction locking overhead.
+**Action:** When handling arrays of incoming nested data in handlers, map the incoming payload into a slice of entity structs, then use GORM's batch insert capabilities (`tx.Create(&slice)`) to combine all inserts into a single `INSERT` statement.
