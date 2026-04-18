@@ -251,7 +251,7 @@ func upMigrateToDefaultWorkspace(ctx context.Context, db *sql.DB) error {
 
 ### 1.4 Workspace Middleware (wacraft-server)
 
-**File**: `src/workspace/middleware/workspace.go` and `src/workspace/middleware/policy.go`
+**File**: `src/workspace/middleware/workspace.go`, `src/workspace/middleware/websocket.go`, and `src/workspace/middleware/policy.go`
 
 ```go
 // WorkspaceMiddleware extracts X-Workspace-ID header, validates membership,
@@ -272,6 +272,16 @@ func OptionalWorkspaceMiddleware(c *fiber.Ctx) error {
     // If provided, call WorkspaceMiddleware(c)
 }
 
+// WebSocketWorkspaceMiddleware extracts workspace ID from header or query param
+// and validates user membership. Useful for WebSocket routes since some
+// clients don't support custom headers.
+func WebSocketWorkspaceMiddleware(c *fiber.Ctx) error {
+    // Validate WebSocket upgrade
+    // Get workspace ID from header or query parameter
+    // Fetch workspace and validate user membership
+    // Store workspace in context
+}
+
 // RequirePolicy creates a middleware that checks if the user has any of the required policies.
 // The user must have at least one of the specified policies to proceed.
 // workspace.admin policy grants access to all operations.
@@ -282,6 +292,13 @@ func RequirePolicy(policies ...workspace_model.Policy) fiber.Handler {
         // Return 403 if not authorized
     }
 }
+
+// Helper functions for context retrieval:
+func GetWorkspace(c *fiber.Ctx) *workspace_entity.Workspace
+func GetWorkspaceMember(c *fiber.Ctx) *workspace_entity.WorkspaceMember
+func GetWorkspacePolicies(c *fiber.Ctx) []workspace_model.Policy
+func GetUser(c *fiber.Ctx) *user_entity.User
+func HasPolicy(c *fiber.Ctx, policy workspace_model.Policy) bool
 ```
 
 ### 1.5 Update Query Models (wacraft-core)
