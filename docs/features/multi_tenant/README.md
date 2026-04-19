@@ -918,7 +918,11 @@ CREATE POLICY workspace_isolation ON contacts
 - Cache policy checks per user-workspace pair
 - Invalidate on membership/policy changes
 
-### 5.7 Tasks Checklist - Phase 5
+### 5.7 Database Query Optimization (Batch Insertion)
+
+- Use GORM's `Create` with a slice/array for batch insertions of related entities (such as `WorkspaceMemberPolicy` during workspace creation, member addition, and user registration) to prevent N+1 query bottlenecks and reduce transaction overhead.
+
+### 5.8 Tasks Checklist - Phase 5
 
 - [ ] Implement WorkspaceQuota entity and enforcement
 - [ ] Implement WorkspaceUsage tracking
