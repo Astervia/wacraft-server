@@ -26,3 +26,8 @@
 
 **Learning:** When using GORM to perform a "get-or-save" (upsert-like) operation, a common anti-pattern is to create a core entity, create a related entity using the core's ID, and then immediately execute a `.Preload("RelationName").First(&entity)` database query just to return the fully populated object. This forces an unnecessary SELECT query right after the INSERTs.
 **Action:** When creating related objects within a single function scope where the relation's data is already in memory, simply assign the pointer of the existing object directly to the relationship struct field (e.g., `mpContact.Contact = &contact`) before returning. This completely eliminates the subsequent database round-trip required by `.Preload()`.
+
+## 2026-04-21 - Fixed GORM Concurrent Transaction and N+1 Inserts in Webhook Handlers
+
+**Learning:** Passing a single `tx *gorm.DB` transaction object into concurrent goroutines (e.g., inside an `errgroup`) is unsafe and leads to race conditions, as a single transaction uses exactly one connection that is not thread-safe for concurrent queries. Furthermore, creating rows individually within a loop causes unnecessary database round-trips (N+1 query pattern for inserts).
+**Action:** Always execute transaction-bound operations sequentially. To optimize multiple inserts, accumulate the entities into a slice during a sequential loop and use `tx.Create(&slice)` for a single batch insert.

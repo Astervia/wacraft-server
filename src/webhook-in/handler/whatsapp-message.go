@@ -2,7 +2,6 @@ package webhook_handler
 
 import (
 	"fmt"
-	"sync"
 
 	contact_entity "github.com/Astervia/wacraft-core/src/contact/entity"
 	message_entity "github.com/Astervia/wacraft-core/src/message/entity"
@@ -249,139 +248,127 @@ func messageCallback(ctx *fiber.Ctx, body *wh_model.WebhookBody, change *wh_mode
 // handleMessagesWithWorkspace handles messages with workspace context.
 // Contacts created through this handler will be associated with the workspace.
 func handleMessagesWithWorkspace(value wh_model.Value, tx *gorm.DB, mpID uuid.UUID, workspaceID *uuid.UUID) ([]message_entity.Message, error) {
-	var eg errgroup.Group
-
 	msgs := []message_entity.Message{}
-	var msgsMu sync.Mutex
 
-	// Handling each message
+	// Handling each message sequentially to safely use the transaction and batch inserts
 	for index, message := range *value.Messages {
-		eg.Go(func() error {
-			// Interpolating message properties
-			var name string
-			if value.Contacts != nil && len(*value.Contacts) >= index {
-				name = (*value.Contacts)[index].Profile.Name
-			}
+		// Interpolating message properties
+		var name string
+		if value.Contacts != nil && len(*value.Contacts) >= index {
+			name = (*value.Contacts)[index].Profile.Name
+		}
 
-			mpContact, err := messaging_product_service.GetContactOrSave(
-				messaging_product_entity.MessagingProductContact{
-					MessagingProductID: mpID,
-					ProductDetails: &messaging_product_model.ProductDetails{
-						WhatsAppProductDetails: &messaging_product_model.WhatsAppProductDetails{
-							WaID:        message.From,
-							PhoneNumber: message.From,
-						},
+		mpContact, err := messaging_product_service.GetContactOrSave(
+			messaging_product_entity.MessagingProductContact{
+				MessagingProductID: mpID,
+				ProductDetails: &messaging_product_model.ProductDetails{
+					WhatsAppProductDetails: &messaging_product_model.WhatsAppProductDetails{
+						WaID:        message.From,
+						PhoneNumber: message.From,
 					},
 				},
-				contact_entity.Contact{
-					Name:        &name,
-					Email:       nil,
-					WorkspaceID: workspaceID,
-				},
-				tx,
-			)
-			if err != nil {
-				return err
-			}
-
-			// Building the message entity and creating with the mp contact found
-			msg := message_entity.Message{
-				MessageFields: message_model.MessageFields{
-					ReceiverData:       &message_model.ReceiverData{MessageReceived: &message},
-					FromID:             &mpContact.ID,
-					MessagingProductID: mpID,
-				},
-				From: &mpContact,
-			}
-			if msg.From.Blocked {
-				return nil
-			}
-			err = tx.Model(&msg).Create(&msg).Error
-			if err != nil {
-				return err
-			}
-			msgsMu.Lock()
-			msgs = append(msgs, msg)
-			msgsMu.Unlock()
-			return nil
-		})
-	}
-
-	err := eg.Wait()
-	if err != nil {
-		pterm.DefaultLogger.Error(
-			fmt.Sprintf("Error while handling message with workspace: %s", err.Error()),
+			},
+			contact_entity.Contact{
+				Name:        &name,
+				Email:       nil,
+				WorkspaceID: workspaceID,
+			},
+			tx,
 		)
+		if err != nil {
+			pterm.DefaultLogger.Error(
+				fmt.Sprintf("Error while getting or saving contact with workspace: %s", err.Error()),
+			)
+			return nil, err
+		}
+
+		// Building the message entity
+		msg := message_entity.Message{
+			MessageFields: message_model.MessageFields{
+				ReceiverData:       &message_model.ReceiverData{MessageReceived: &message},
+				FromID:             &mpContact.ID,
+				MessagingProductID: mpID,
+			},
+			From: &mpContact,
+		}
+		if msg.From.Blocked {
+			continue
+		}
+		msgs = append(msgs, msg)
 	}
 
-	return msgs, err
+	// Batch insert all unblocked messages
+	if len(msgs) > 0 {
+		if err := tx.Create(&msgs).Error; err != nil {
+			pterm.DefaultLogger.Error(
+				fmt.Sprintf("Error while creating messages with workspace: %s", err.Error()),
+			)
+			return nil, err
+		}
+	}
+
+	return msgs, nil
 }
 
 // Returns messages from unblocked contacts (legacy handler without workspace context)
 func handleMessages(value wh_model.Value, tx *gorm.DB, mpID uuid.UUID) ([]message_entity.Message, error) {
-	var eg errgroup.Group
-
 	msgs := []message_entity.Message{}
-	var msgsMu sync.Mutex
 
-	// Handling each message
+	// Handling each message sequentially to safely use the transaction and batch inserts
 	for index, message := range *value.Messages {
-		eg.Go(func() error {
-			// Interpolating message properties
-			var name string
-			if value.Contacts != nil && len(*value.Contacts) >= index {
-				name = (*value.Contacts)[index].Profile.Name
-			}
+		// Interpolating message properties
+		var name string
+		if value.Contacts != nil && len(*value.Contacts) >= index {
+			name = (*value.Contacts)[index].Profile.Name
+		}
 
-			mpContact, err := messaging_product_service.GetContactOrSave(
-				messaging_product_entity.MessagingProductContact{
-					MessagingProductID: mpID,
-					ProductDetails: &messaging_product_model.ProductDetails{
-						WhatsAppProductDetails: &messaging_product_model.WhatsAppProductDetails{
-							WaID:        message.From,
-							PhoneNumber: message.From,
-						},
+		mpContact, err := messaging_product_service.GetContactOrSave(
+			messaging_product_entity.MessagingProductContact{
+				MessagingProductID: mpID,
+				ProductDetails: &messaging_product_model.ProductDetails{
+					WhatsAppProductDetails: &messaging_product_model.WhatsAppProductDetails{
+						WaID:        message.From,
+						PhoneNumber: message.From,
 					},
 				},
-				contact_entity.Contact{
-					Name:  &name,
-					Email: nil,
-				},
-				tx,
-			)
-			if err != nil {
-				return err
-			}
-
-			// Building the message entity and creating with the mp contact found
-			msg := message_entity.Message{
-				MessageFields: message_model.MessageFields{
-					ReceiverData:       &message_model.ReceiverData{MessageReceived: &message},
-					FromID:             &mpContact.ID,
-					MessagingProductID: mpID,
-				},
-				From: &mpContact,
-			}
-			if msg.From.Blocked {
-				return nil
-			}
-			err = tx.Model(&msg).Create(&msg).Error
-			if err != nil {
-				return err
-			}
-			msgsMu.Lock()
-			msgs = append(msgs, msg)
-			msgsMu.Unlock()
-			return nil
-		})
-	}
-
-	err := eg.Wait()
-	if err != nil {
-		pterm.DefaultLogger.Error(
-			fmt.Sprintf("Error while handling message: %s", err.Error()),
+			},
+			contact_entity.Contact{
+				Name:  &name,
+				Email: nil,
+			},
+			tx,
 		)
+		if err != nil {
+			pterm.DefaultLogger.Error(
+				fmt.Sprintf("Error while getting or saving contact: %s", err.Error()),
+			)
+			return nil, err
+		}
+
+		// Building the message entity
+		msg := message_entity.Message{
+			MessageFields: message_model.MessageFields{
+				ReceiverData:       &message_model.ReceiverData{MessageReceived: &message},
+				FromID:             &mpContact.ID,
+				MessagingProductID: mpID,
+			},
+			From: &mpContact,
+		}
+		if msg.From.Blocked {
+			continue
+		}
+		msgs = append(msgs, msg)
 	}
 
-	return msgs, err
+	// Batch insert all unblocked messages
+	if len(msgs) > 0 {
+		if err := tx.Create(&msgs).Error; err != nil {
+			pterm.DefaultLogger.Error(
+				fmt.Sprintf("Error while creating messages: %s", err.Error()),
+			)
+			return nil, err
+		}
+	}
+
+	return msgs, nil
 }
