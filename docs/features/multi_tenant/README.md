@@ -364,25 +364,25 @@ POST   /contact                             (requires X-Workspace-ID)
 
 ### 1.8 Tasks Checklist - Phase 1
 
-- [ ] Create `wacraft-core/src/workspace/` package structure
-- [ ] Implement Workspace entity and models
-- [ ] Implement WorkspaceMember entity and models
-- [ ] Implement WorkspaceMemberPolicy entity and models
-- [ ] Implement Policy constants and helper functions
-- [ ] Add WorkspaceID to Contact entity
-- [ ] Add WorkspaceID to MessagingProduct entity
-- [ ] Add WorkspaceID to Campaign entity
-- [ ] Add WorkspaceID to Webhook entity
-- [ ] Update QueryPaginated models with WorkspaceID filter
-- [ ] Create workspace tables migration
-- [ ] Create data migration to default workspace
-- [ ] Implement WorkspaceMiddleware
-- [ ] Implement RequirePolicy middleware
-- [ ] Create workspace handlers (CRUD)
-- [ ] Create workspace member handlers
-- [ ] Update all existing handlers to scope by workspace
-- [ ] Update router to include workspace routes
-- [ ] Update router to apply workspace middleware to existing routes
+- [x] Create `wacraft-core/src/workspace/` package structure
+- [x] Implement Workspace entity and models
+- [x] Implement WorkspaceMember entity and models
+- [x] Implement WorkspaceMemberPolicy entity and models
+- [x] Implement Policy constants and helper functions
+- [x] Add WorkspaceID to Contact entity
+- [x] Add WorkspaceID to MessagingProduct entity
+- [x] Add WorkspaceID to Campaign entity
+- [x] Add WorkspaceID to Webhook entity
+- [x] Update QueryPaginated models with WorkspaceID filter
+- [x] Create workspace tables migration
+- [x] Create data migration to default workspace
+- [x] Implement WorkspaceMiddleware
+- [x] Implement RequirePolicy middleware
+- [x] Create workspace handlers (CRUD)
+- [x] Create workspace member handlers
+- [x] Update all existing handlers to scope by workspace
+- [x] Update router to include workspace routes
+- [x] Update router to apply workspace middleware to existing routes
 - [ ] Add X-Workspace-ID header to Swagger documentation
 - [ ] Write unit tests for workspace service
 - [ ] Write integration tests for workspace API
@@ -527,19 +527,19 @@ When creating a PhoneConfig, the system should:
 
 ### 2.9 Tasks Checklist - Phase 2
 
-- [ ] Create `wacraft-core/src/phone-config/` package structure
-- [ ] Implement PhoneConfig entity and models
-- [ ] Implement field encryption service
-- [ ] Add PhoneConfigID to MessagingProduct entity
-- [ ] Create phone_configs table migration
-- [ ] Create migration to optionally migrate env vars to database
-- [ ] Implement phone config handlers (CRUD)
-- [ ] Implement phone config test endpoint
-- [ ] Update webhook receive handler for multi-phone routing
-- [ ] Update message send service to use PhoneConfig
-- [ ] Update WhatsApp template service to use PhoneConfig
-- [ ] Add phone config routes to router
-- [ ] Implement webhook verification endpoint per phone config
+- [x] Create `wacraft-core/src/phone-config/` package structure
+- [x] Implement PhoneConfig entity and models
+- [x] Implement field encryption service
+- [x] Add PhoneConfigID to MessagingProduct entity
+- [x] Create phone_configs table migration
+- [x] Create migration to optionally migrate env vars to database
+- [x] Implement phone config handlers (CRUD)
+- [x] Implement phone config test endpoint
+- [x] Update webhook receive handler for multi-phone routing
+- [x] Update message send service to use PhoneConfig
+- [x] Update WhatsApp template service to use PhoneConfig
+- [x] Add phone config routes to router
+- [x] Implement webhook verification endpoint per phone config
 - [ ] Add deprecation warnings for env var usage
 - [ ] Write unit tests for encryption service
 - [ ] Write integration tests for phone config API
