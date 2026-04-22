@@ -660,18 +660,18 @@ src/database/migrations/20260128120000_drop_phone_number_id_column.go
 
 ### Core Multi-Tenancy
 
-- [ ] Create workspace via API
-- [ ] List user's workspaces
-- [ ] Add member to workspace with policies
-- [ ] Verify cross-workspace isolation (user can't see other workspace data)
+- [x] Create workspace via API
+- [x] List user's workspaces
+- [x] Add member to workspace with policies
+- [x] Verify cross-workspace isolation (user can't see other workspace data)
 
 ### Phone Configuration
 
-- [ ] Create phone config with encrypted credentials
-- [ ] Verify phone config ownership validation (reject invalid credentials)
-- [ ] Test WabaID uniqueness constraint (only one active config per WabaID)
-- [ ] Send message using phone config
-- [ ] Receive webhook on per-phone endpoint (`/webhook-in/{waba_id}`)
+- [x] Create phone config with encrypted credentials
+- [x] Verify phone config ownership validation (reject invalid credentials)
+- [x] Test WabaID uniqueness constraint (only one active config per WabaID)
+- [x] Send message using phone config
+- [x] Receive webhook on per-phone endpoint (`/webhook-in/{waba_id}`)
 
 ### User Registration & Authentication
 
