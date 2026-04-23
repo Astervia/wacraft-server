@@ -1323,6 +1323,12 @@ This section provides detailed, step-by-step test scenarios to validate the comp
 
 ---
 
+## Performance Optimizations
+
+- **Batch Policy Insertion**: Refactored policy creation in `src/workspace/handler/member.go`, `src/workspace/handler/workspace.go`, `src/workspace/handler/invitation.go`, and `src/auth/handler/register.go` to use batch insertions (`tx.Create(&policies)`), effectively removing the N+1 query bottleneck during user registration, workspace creation, member additions, and invitation claiming.
+
+---
+
 ### 8. Performance & Load Tests
 
 #### Test 8.1: Multiple Concurrent WebSocket Connections
