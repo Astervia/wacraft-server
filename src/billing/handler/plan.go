@@ -102,13 +102,17 @@ func CreatePlan(c *fiber.Ctx) error {
 			return err
 		}
 
-		for _, p := range body.Prices {
-			if err := tx.Create(&billing_entity.PlanPrice{
-				PlanID:     result.ID,
-				Currency:   p.Currency,
-				PriceCents: p.PriceCents,
-				IsDefault:  p.IsDefault,
-			}).Error; err != nil {
+		if len(body.Prices) > 0 {
+			pricesToInsert := make([]billing_entity.PlanPrice, 0, len(body.Prices))
+			for _, p := range body.Prices {
+				pricesToInsert = append(pricesToInsert, billing_entity.PlanPrice{
+					PlanID:     result.ID,
+					Currency:   p.Currency,
+					PriceCents: p.PriceCents,
+					IsDefault:  p.IsDefault,
+				})
+			}
+			if err := tx.Create(&pricesToInsert).Error; err != nil {
 				return err
 			}
 		}
