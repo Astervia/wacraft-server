@@ -1411,3 +1411,12 @@ If critical tests fail:
 3. Fix identified issue
 4. Re-run full test suite
 5. Consider migration rollback if database changes cause issues
+
+## Performance Optimizations
+
+To ensure the multi-tenant system handles user scale efficiently, performance improvements were implemented for operations dealing with relationships and policies:
+
+- **Batch Policy Creation**: Workspace member policies are inserted in batch using a single slice-based database insertion (`tx.Create(&policies)`) instead of iterative loops. This eliminates N+1 query bottlenecks during:
+  - User registration (`/auth/register`)
+  - Workspace creation (`/workspace`)
+  - Member addition and policy updates (`/workspace/:id/member`)
