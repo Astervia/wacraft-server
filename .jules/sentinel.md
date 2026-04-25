@@ -1,0 +1,4 @@
+## 2026-04-25 - Prevent Integer Overflow in Exponential Backoff
+**Vulnerability:** Integer overflow conversion `int -> uint` in webhook retry logic when doing `1<<uint(delivery.AttemptCount-1)` reported by gosec.
+**Learning:** `AttemptCount` can grow infinitely if not constrained properly before bitwise operations, which would cause an integer overflow leading to a 0 multiplier in exponential backoff calculations, causing immediate, zero-delay retries and potentially resulting in denial of service.
+**Prevention:** When implementing exponential backoff or dynamic math using bitwise shifts (`<<`) in Go, explicitly cap the shift limit (e.g., `if shift > 30 { shift = 30 }`) to prevent integer overflows and silent 0 evaluations when unconstrained database inputs exceed maximum bit sizes.
