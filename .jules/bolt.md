@@ -22,3 +22,8 @@
 
 **Learning:** Identified an N+1 query issue during the creation of workspace member policies (e.g., in `AddMember`, `UpdateMemberPolicies`, workspace `Create`, and user `Register` handlers). The previous implementation used a loop over `workspace_model.AllPolicies` or user-defined policies to execute a `repository.Create` or `tx.Create` for each individual `WorkspaceMemberPolicy` record. In GORM, this incurs a database roundtrip and transaction overhead per policy.
 **Action:** When inserting multiple rows of the same type, prepare a slice of the entities and use `tx.Create(&slice)` for batch insertion. This minimizes lock contention, lowers transaction overhead, and improves overall application performance during creation routines.
+
+## 2026-04-14 - Redundant DB roundtrip in "Get or Save" via Post-Insert Preload
+
+**Learning:** It is an anti-pattern to immediately query the database with `.Preload(relation).First(&entity)` right after `db.Create(&entity)` just to fetch the fully populated object for the API response. Since the parent record and the associated relationships (which were just inserted or already exist in memory) are already fully known within the handler context, running a subsequent lookup query is a redundant database roundtrip.
+**Action:** When implementing "get-or-save" logic (where entities and their relations are created if they do not exist), manually populate the relationship pointer fields (e.g., `out.Contact = &contact`) on the final return object using the available in-memory data, rather than relying on GORM's `.Preload()`.
