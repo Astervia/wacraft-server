@@ -1,0 +1,4 @@
+## 2024-04-26 - Integer Overflow in Exponential Backoff Bitwise Shift
+**Vulnerability:** Potential CWE-190 Integer Overflow in webhook backoff calculations where shifting `1 << uint(delivery.AttemptCount - 1)` can overflow Go's native integer types if `AttemptCount` is extremely large or if underflow occurs (e.g. `AttemptCount` == 0 causing negative numbers to become large unsigned ints).
+**Learning:** Bitwise shift operators in Go (`<<`) can overflow silently when processing unconstrained database integer columns (like attempt counts). If the shifted bit exceeds int sizes (31 or 63), it wraps to zero, rendering the wait time logic null.
+**Prevention:** When implementing exponential backoff or dynamic math using bitwise shifts, explicitly cap the shift limit (e.g., `if shift > 30 { shift = 30 }`) before performing the shift to prevent integer overflows.

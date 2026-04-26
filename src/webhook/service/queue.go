@@ -181,7 +181,16 @@ func UpdateDeliveryStatus(delivery *webhook_entity.WebhookDelivery, success bool
 		if baseDelay == 0 {
 			baseDelay = 1000 * time.Millisecond
 		}
-		delay := baseDelay * time.Duration(1<<uint(delivery.AttemptCount-1))
+
+		shift := delivery.AttemptCount - 1
+		if shift < 0 {
+			shift = 0
+		}
+		if shift > 30 {
+			shift = 30 // Prevent integer overflow. 2^30 is more than enough since delay is capped at 1h.
+		}
+
+		delay := baseDelay * time.Duration(1<<uint(shift))
 		maxDelay := 1 * time.Hour
 		if delay > maxDelay {
 			delay = maxDelay
