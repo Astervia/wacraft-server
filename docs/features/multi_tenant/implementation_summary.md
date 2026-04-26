@@ -524,6 +524,18 @@ const ws = new WebSocket(
 
 ---
 
+## Performance Optimizations
+
+During the multi-tenancy implementation, we identified and resolved an N+1 query issue related to `WorkspaceMemberPolicy` creation.
+
+- **Batch Policy Insertion**: Replaced iterative `repository.Create` / `tx.Create` calls inside loops with a single slice-based `tx.Create(&policies)` to reduce database roundtrips and transaction overhead.
+- **Refactored Handlers**:
+  - `src/workspace/handler/member.go` (during member addition and policy updates)
+  - `src/workspace/handler/workspace.go` (during workspace creation)
+  - `src/auth/handler/register.go` (during user registration)
+
+---
+
 ## Migration Notes
 
 ### For Existing Deployments
