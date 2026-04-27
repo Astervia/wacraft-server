@@ -129,6 +129,7 @@ Body (all fields optional):
 ```
 
 - Setting `is_default: true` automatically unsets the previous default for this plan.
+- Changing `price_cents` clears the cached `stripe_price_id`. The next subscription checkout creates a new Stripe Price for new subscriptions only; existing active Stripe subscriptions keep their current price.
 - `currency` cannot be changed after creation — delete and recreate if needed.
 
 Response `200`: updated `PlanPrice` object.

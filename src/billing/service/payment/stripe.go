@@ -150,23 +150,33 @@ func (s *StripeProvider) createSubscriptionCheckout(
 	return sess.URL, sess.ID, nil
 }
 
-// ensureStripePrice lazily creates a Stripe Product + Price for a plan price entry
-// and caches the IDs on the plan_price record. Reuses an existing Stripe Product
-// if another price entry for the same plan already has one.
+// ensureStripePrice lazily creates a Stripe Product + Price for a plan price
+// entry and caches the IDs on the plan_price record. Reuses an existing Stripe
+// Product from the same price entry or another price entry for the same plan.
 func (s *StripeProvider) ensureStripePrice(plan billing_entity.Plan, planPrice billing_entity.PlanPrice) (string, error) {
 	if planPrice.StripePriceID != nil && *planPrice.StripePriceID != "" {
 		return *planPrice.StripePriceID, nil
 	}
 
-	// Try to reuse an existing Stripe Product from another price entry of this plan.
+	// Prefer the product already cached on this price entry. If the amount was
+	// changed, the cached Stripe Price is cleared but the Product remains valid.
 	var productID string
+	if planPrice.StripeProductID != nil && *planPrice.StripeProductID != "" {
+		productID = *planPrice.StripeProductID
+	}
+
+	// Try to reuse an existing Stripe Product from another price entry of this plan.
 	var existing billing_entity.PlanPrice
-	err := database.DB.
-		Where("plan_id = ? AND stripe_product_id IS NOT NULL AND id != ?", plan.ID, planPrice.ID).
-		First(&existing).Error
-	if err == nil && existing.StripeProductID != nil {
-		productID = *existing.StripeProductID
-	} else {
+	if productID == "" {
+		err := database.DB.
+			Where("plan_id = ? AND stripe_product_id IS NOT NULL AND id != ?", plan.ID, planPrice.ID).
+			First(&existing).Error
+		if err == nil && existing.StripeProductID != nil {
+			productID = *existing.StripeProductID
+		}
+	}
+
+	if productID == "" {
 		// Create a new Stripe Product for this plan.
 		prodParams := &stripe.ProductParams{
 			Name: stripe.String(plan.Name),

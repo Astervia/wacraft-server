@@ -1,6 +1,8 @@
 package billing_handler
 
 import (
+	"errors"
+
 	billing_entity "github.com/Astervia/wacraft-core/src/billing/entity"
 	billing_model "github.com/Astervia/wacraft-core/src/billing/model"
 	common_model "github.com/Astervia/wacraft-core/src/common/model"
@@ -9,6 +11,7 @@ import (
 	"github.com/Astervia/wacraft-server/src/validators"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 // GetPlanPrices returns all prices for a specific plan.
@@ -189,23 +192,47 @@ func UpdatePlanPrice(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(nil)
 	}
 
-	// If promoting to default, unset the previous default for this plan first.
-	if body.IsDefault != nil && *body.IsDefault {
-		if err := database.DB.
-			Model(&billing_entity.PlanPrice{}).
-			Where("plan_id = ? AND is_default = true AND id != ?", planID, id.ID).
-			Update("is_default", false).Error; err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(
-				common_model.NewApiError("unable to unset previous default price", err, "repository").Send(),
-			)
+	var existing billing_entity.PlanPrice
+	if err := database.DB.Where("id = ? AND plan_id = ?", id.ID, planID).First(&existing).Error; err != nil {
+		status := fiber.StatusInternalServerError
+		msg := "unable to get plan price"
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			status = fiber.StatusNotFound
+			msg = "plan price not found"
 		}
+		return c.Status(status).JSON(
+			common_model.NewApiError(msg, err, "repository").Send(),
+		)
 	}
 
-	planPrice, err := repository.Updates[billing_entity.PlanPrice](
-		updates,
-		&billing_entity.PlanPrice{Audit: common_model.Audit{ID: id.ID}},
-		database.DB,
-	)
+	if body.PriceCents != nil && *body.PriceCents != existing.PriceCents {
+		// Stripe Prices are immutable for amount/currency. Clearing only the
+		// cached price makes the next subscription checkout create a replacement
+		// Stripe Price without touching existing active subscriptions.
+		updates["stripe_price_id"] = nil
+	}
+
+	var planPrice billing_entity.PlanPrice
+	err = database.DB.Transaction(func(tx *gorm.DB) error {
+		// If promoting to default, unset the previous default for this plan first.
+		if body.IsDefault != nil && *body.IsDefault {
+			if err := tx.
+				Model(&billing_entity.PlanPrice{}).
+				Where("plan_id = ? AND is_default = true AND id != ?", planID, id.ID).
+				Update("is_default", false).Error; err != nil {
+				return err
+			}
+		}
+
+		if err := tx.
+			Model(&billing_entity.PlanPrice{}).
+			Where("id = ? AND plan_id = ?", id.ID, planID).
+			Updates(updates).Error; err != nil {
+			return err
+		}
+
+		return tx.Where("id = ? AND plan_id = ?", id.ID, planID).First(&planPrice).Error
+	})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			common_model.NewApiError("unable to update plan price", err, "repository").Send(),
