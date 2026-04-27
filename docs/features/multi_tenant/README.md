@@ -1047,6 +1047,8 @@ Note: Messages inherit workspace scope through messaging_product_id → workspac
 | PATCH  | `/workspace/:id/member/:uid`       | Update member           | Admin  |
 | DELETE | `/workspace/:id/member/:uid`       | Remove member           | Admin  |
 | POST   | `/workspace/:id/invitation`        | Send invitation         | Admin  |
+| GET    | `/workspace/:id/invitation`        | List invitations        | Admin  |
+| DELETE | `/workspace/:id/invitation/:iid`   | Revoke invitation       | Admin  |
 | POST   | `/workspace/:id/phone-config`      | Create phone config     | Admin  |
 | GET    | `/workspace/:id/phone-config`      | List phone configs      | Member |
 | PATCH  | `/workspace/:id/phone-config/:pid` | Update phone config     | Admin  |
