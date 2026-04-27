@@ -83,12 +83,8 @@ func GetContactOrSave(
 		return out, err
 	}
 
-	// Reload with preload for a fully populated return
-	err := db.
-		Model(&messaging_product_entity.MessagingProductContact{}).
-		Where("id = ?", mpContact.ID).
-		Preload("Contact").
-		First(&out).Error
+	// Optimize: avoid redundant database query by using the in-memory contact
+	mpContact.Contact = &contact
 
-	return out, err
+	return mpContact, nil
 }
