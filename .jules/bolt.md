@@ -22,3 +22,7 @@
 
 **Learning:** Identified an N+1 query issue during the creation of workspace member policies (e.g., in `AddMember`, `UpdateMemberPolicies`, workspace `Create`, and user `Register` handlers). The previous implementation used a loop over `workspace_model.AllPolicies` or user-defined policies to execute a `repository.Create` or `tx.Create` for each individual `WorkspaceMemberPolicy` record. In GORM, this incurs a database roundtrip and transaction overhead per policy.
 **Action:** When inserting multiple rows of the same type, prepare a slice of the entities and use `tx.Create(&slice)` for batch insertion. This minimizes lock contention, lowers transaction overhead, and improves overall application performance during creation routines.
+## 2026-04-27 - Eliminated Redundant Preload Queries After Entity Creation
+
+**Learning:** When using GORM to perform a "get-or-save" (upsert-like) operation, a common anti-pattern is to create a core entity, create a related entity using the core's ID, and then immediately execute a `.Preload("RelationName").First(&entity)` database query just to return the fully populated object. This forces an unnecessary SELECT query right after the INSERTs.
+**Action:** When creating related objects within a single function scope where the relation's data is already in memory, simply assign the pointer of the existing object directly to the relationship struct field (e.g., `mpContact.Contact = &contact`) before returning. This completely eliminates the subsequent database round-trip required by `.Preload()`.
