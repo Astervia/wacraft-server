@@ -12,15 +12,15 @@ While parameterized queries (`?` in GORM) protect against SQL injection in colum
 
 ## Preferred Pattern
 
-Always validate dynamic column keys against an explicit whitelist or use strongly-typed models (like `SearchableColumn`) before interpolating them into SQL strings.
+Always map dynamic column keys to hardcoded string literals using a `switch` statement before inserting them into SQL strings.
 
 ## Workflow
 
 1. Identify areas where column names for queries (like order by, filters, or select fields) are determined at runtime.
-2. Define an explicit whitelist of allowed column names as a slice or map, or use a strongly-typed enum/struct (e.g., `SearchableColumn` if the project uses that pattern).
-3. Before executing the query, validate that the provided column name exists in the whitelist.
-4. Return an appropriate error (e.g., `400 Bad Request` or an invalid input error) if the requested column is not allowed.
-5. Once validated, it is safe to use `fmt.Sprintf` or string concatenation to build the query containing the column name.
+2. Define a `switch` block that matches the user-provided column name.
+3. For each valid case, map the input to a hardcoded SQL column string literal.
+4. Return an appropriate error (e.g., `400 Bad Request` or an invalid input error) in the `default` case to reject unrecognized columns.
+5. Use the mapped hardcoded literal directly in the query without `fmt.Sprintf` or string concatenation for the identifier.
 
 ## Inspect First
 
@@ -31,10 +31,11 @@ Always validate dynamic column keys against an explicit whitelist or use strongl
 ## Anti-Patterns
 
 - Directly interpolating user-provided strings into GORM's `.Where()`, `.Select()`, `.Order()`, or `.Group()` without validation.
-- Relying solely on URL decoding or basic sanitization (like removing quotes) instead of explicit whitelisting.
+- Relying solely on URL decoding or basic sanitization (like removing quotes) instead of an explicit mapping.
+- Using `fmt.Sprintf` to inject identifiers (like column names) even if the input is validated via an `IsValid()` method or a whitelist.
 
 ## Done Criteria
 
-- Dynamic column names are verified against an explicit, strict whitelist.
-- The codebase rejects invalid column names with a clear error.
+- Dynamic column names are explicitly mapped to hardcoded literals using a `switch` statement.
+- The codebase rejects invalid column names with a clear error via the `default` case.
 - Tests confirm that valid columns work and invalid columns are rejected.
