@@ -1,0 +1,70 @@
+name: Stale Agent PRs
+
+on:
+    schedule:
+        # Run daily at 03:00 UTC.
+        - cron: "0 3 * * *"
+    workflow_dispatch:
+
+permissions:
+    pull-requests: write
+    contents: read
+
+jobs:
+    close-stale-agent-prs:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Close stale auto-generated PRs
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  REPO: ${{ github.repository }}
+              run: |
+                  set -euo pipefail
+
+                  # Threshold: PRs untouched for >14 days from auto-generation
+                  # branch patterns are closed. The exempt label 'keep-open'
+                  # opts out individual PRs.
+                  STALE_DAYS=14
+                  CUTOFF_ISO=$(date -u -d "${STALE_DAYS} days ago" +"%Y-%m-%dT%H:%M:%SZ")
+
+                  # Branch-name patterns produced by the project's coding agents
+                  # (Jules / Bolt / Sentinel). Each pattern is matched against
+                  # the PR's headRefName.
+                  PATTERNS=(
+                      'agent-workspace'
+                      'agent-workspace/'
+                      'add-bolt-'
+                      'bolt-'
+                      'bolt/'
+                      'sentinel-'
+                      'sentinel/'
+                      'jules-'
+                      'jules/'
+                      'docs-multi-tenant-'
+                      'docs/multi-tenant-'
+                      'add-gorm-'
+                      'add-sentinel-'
+                  )
+
+                  filter=$(printf '|%s' "${PATTERNS[@]}")
+                  filter=${filter:1} # drop leading |
+
+                  echo "Listing open PRs to develop older than ${CUTOFF_ISO}..."
+
+                  gh pr list \
+                      --repo "${REPO}" \
+                      --base develop \
+                      --state open \
+                      --limit 200 \
+                      --json number,headRefName,updatedAt,labels \
+                      --jq ".[] | select(.updatedAt < \"${CUTOFF_ISO}\") | select(.headRefName | test(\"^(${filter})\")) | select(any(.labels[]; .name == \"keep-open\") | not) | .number" \
+                      | while read -r pr; do
+                          [ -z "$pr" ] && continue
+                          echo "Closing stale agent PR #${pr}"
+                          gh pr close "$pr" \
+                              --repo "${REPO}" \
+                              --comment "Auto-closing: this agent-authored PR has had no activity for over ${STALE_DAYS} days. Likely superseded or duplicated by another merge. Reopen if still relevant, or add the \`keep-open\` label to opt out next time." \
+                              --delete-branch || echo "Failed to close #${pr}, continuing"
+                      done
+
+                  echo "Done."
