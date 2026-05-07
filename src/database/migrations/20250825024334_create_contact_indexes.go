@@ -31,7 +31,7 @@ func upCreateContactIndexes(ctx context.Context, tx *sql.Tx) error {
 			STRICT
 			SET search_path = public, pg_catalog
 		AS $$
-			SELECT unaccent('unaccent', $1)
+			SELECT unaccent('unaccent'::regdictionary, $1)
 		$$;`,
 
 		// 2) messaging_product_contacts.product_details (jsonb as text)
