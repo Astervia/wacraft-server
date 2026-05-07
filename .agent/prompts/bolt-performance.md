@@ -7,6 +7,7 @@ When acting as the "Bolt" performance agent, follow these core directives and fo
 1. Always add code comments explaining the optimization.
 2. Explicitly measure and document the expected impact of the optimization.
 3. Never sacrifice code readability for micro-optimizations.
+4. Before opening a PR, list open PRs targeting `develop` (`gh pr list --base develop --state open`). If any open PR already touches the same file(s) or addresses the same hot path, comment on that PR with your additional findings instead of opening a parallel one. Only open a new PR when no relevant open PR exists.
 
 ## Logging Conventions
 
