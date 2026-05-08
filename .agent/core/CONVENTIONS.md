@@ -54,6 +54,8 @@ At minimum, changes should include:
 - focused package tests for the changed behavior when practical
 - `go test ./... -v -p 1` for normal regression coverage (use `-p 1` to execute packages sequentially, preventing race conditions and unique constraint violations caused by concurrent GORM `AutoMigrate` calls)
 - `make test-memory` or `make test-distributed` when sync, database, websocket, or worker behavior changes
+- If `make test-memory` or Docker-based tests fail due to overlayfs or rate limits, fallback to `go test ./... -p 1 -short` and safely ignore pre-existing unrelated failures.
+- If `go.mod` specifies a Go version higher than the local toolchain, `GOTOOLCHAIN=local` will fail. You may temporarily patch `go.mod` to run tests, but MUST revert changes before submission using `git restore --staged go.mod && git restore go.mod`.
 - an explicit note of any verification gap when external dependencies make full validation impractical
 
 ## Documentation Expectations
