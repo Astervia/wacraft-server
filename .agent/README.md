@@ -32,4 +32,5 @@ Current examples:
 
 - `skills/go-update-endpoint/SKILL.md` - workflow for safe GORM update handlers that must preserve zero values
 - `skills/add-module-slice/SKILL.md` - workflow for adding a new `handler/router/service` feature slice
+- `skills/gorm-manual-preload-optimization/SKILL.md` - workflow for manual GORM relation assignment to optimize 'get-or-save' operations
 - `tools/inspect-server-surface.sh` - quick trace for server boot, routing, config, sync, and worker entry points
