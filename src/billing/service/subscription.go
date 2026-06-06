@@ -524,3 +524,172 @@ func RetrySubscription(subscriptionID uuid.UUID, userID uuid.UUID, workspaceID *
 
 	return payment.ActiveProvider.GetSubscriptionRetryURL(*sub.StripeSubscriptionID)
 }
+
+// ResumeCheckout returns a live checkout URL for a pending subscription.
+// If the original Stripe checkout session is still open, its hosted URL is
+// returned as-is. If it expired, a fresh checkout session is created for the
+// same plan (reusing the currency from the original session), the pending
+// subscription's external ID is updated in place, and the new URL is returned.
+func ResumeCheckout(subscriptionID uuid.UUID, userID uuid.UUID, workspaceID *uuid.UUID, successURL, cancelURL string) (billing_model.CheckoutResponse, error) {
+	if payment.ActiveProvider == nil {
+		return billing_model.CheckoutResponse{}, errors.New("payment provider is not configured")
+	}
+
+	var sub billing_entity.Subscription
+	if err := database.DB.Preload("Plan").First(&sub, subscriptionID).Error; err != nil {
+		return billing_model.CheckoutResponse{}, errors.New("subscription not found")
+	}
+
+	// Ownership check: workspace-scoped or user-scoped
+	if workspaceID != nil {
+		if sub.WorkspaceID == nil || *sub.WorkspaceID != *workspaceID {
+			return billing_model.CheckoutResponse{}, errors.New("unauthorized: subscription does not belong to this workspace")
+		}
+	} else if sub.UserID != userID {
+		return billing_model.CheckoutResponse{}, errors.New("unauthorized: you can only resume your own checkouts")
+	}
+
+	if sub.Status != billing_model.SubscriptionStatusPending {
+		return billing_model.CheckoutResponse{}, errors.New("only pending subscriptions can be resumed")
+	}
+	if sub.PaymentExternalID == nil || *sub.PaymentExternalID == "" {
+		return billing_model.CheckoutResponse{}, errors.New("pending subscription has no checkout session")
+	}
+
+	status, err := payment.ActiveProvider.GetCheckoutSessionStatus(*sub.PaymentExternalID)
+	if err != nil {
+		return billing_model.CheckoutResponse{}, fmt.Errorf("failed to get checkout session status: %w", err)
+	}
+
+	// Already paid (webhook may be lagging) — activate it and report so the client refreshes.
+	if status.PaymentStatus == "paid" {
+		if _, aerr := syncPendingSubscription(&sub); aerr != nil {
+			return billing_model.CheckoutResponse{}, aerr
+		}
+		return billing_model.CheckoutResponse{}, errors.New("payment already completed — refresh to see your active subscription")
+	}
+
+	// Session still open — return the existing hosted checkout URL.
+	if status.SessionStatus == "open" && status.URL != "" {
+		return billing_model.CheckoutResponse{CheckoutURL: status.URL, ExternalID: *sub.PaymentExternalID}, nil
+	}
+
+	// Session expired (or otherwise unusable) — regenerate for the same plan.
+	return regenerateCheckout(&sub, status.Currency, successURL, cancelURL)
+}
+
+// regenerateCheckout creates a fresh checkout session for a pending subscription
+// whose original session expired, updating the pending row in place.
+func regenerateCheckout(sub *billing_entity.Subscription, currency, successURL, cancelURL string) (billing_model.CheckoutResponse, error) {
+	var plan billing_entity.Plan
+	if err := database.DB.First(&plan, sub.PlanID).Error; err != nil {
+		return billing_model.CheckoutResponse{}, errors.New("plan not found")
+	}
+	if !plan.Active {
+		return billing_model.CheckoutResponse{}, errors.New("this plan is no longer available for purchase")
+	}
+
+	// Resolve the plan price by the original session's currency, falling back to
+	// the plan's default price when that currency is no longer configured.
+	var planPrice billing_entity.PlanPrice
+	priceQuery := database.DB.Where("plan_id = ?", sub.PlanID)
+	if currency != "" {
+		priceQuery = priceQuery.Where("currency = ?", currency)
+	} else {
+		priceQuery = priceQuery.Where("is_default = true")
+	}
+	if err := priceQuery.First(&planPrice).Error; err != nil {
+		if err := database.DB.Where("plan_id = ? AND is_default = true", sub.PlanID).First(&planPrice).Error; err != nil {
+			return billing_model.CheckoutResponse{}, errors.New("no price configured for this plan")
+		}
+	}
+
+	var user user_entity.User
+	if err := database.DB.First(&user, sub.UserID).Error; err != nil {
+		return billing_model.CheckoutResponse{}, errors.New("user not found")
+	}
+
+	checkoutURL, externalID, err := payment.ActiveProvider.CreateCheckoutSession(
+		plan, planPrice, sub.PaymentMode, sub.UserID, user.Email, user.StripeCustomerID,
+		sub.Scope, sub.WorkspaceID, successURL, cancelURL,
+	)
+	if err != nil {
+		return billing_model.CheckoutResponse{}, fmt.Errorf("unable to create checkout session: %w", err)
+	}
+
+	// Point the existing pending subscription at the new session.
+	if err := database.DB.Model(sub).Update("payment_external_id", externalID).Error; err != nil {
+		return billing_model.CheckoutResponse{}, fmt.Errorf("failed to update pending subscription: %w", err)
+	}
+
+	return billing_model.CheckoutResponse{CheckoutURL: checkoutURL, ExternalID: externalID}, nil
+}
+
+// ListPayments returns a page of payments read live from the payment provider.
+// User scope reads the authenticated user's payments; workspace scope reads
+// payments across the Stripe customers that hold a subscription for the workspace.
+func ListPayments(userID uuid.UUID, workspaceID *uuid.UUID, limit int, cursor string) (billing_model.PaymentListResponse, error) {
+	if payment.ActiveProvider == nil {
+		return billing_model.PaymentListResponse{}, errors.New("payment provider is not configured")
+	}
+
+	customerIDs, err := resolveCustomerIDs(userID, workspaceID)
+	if err != nil {
+		return billing_model.PaymentListResponse{}, err
+	}
+	if len(customerIDs) == 0 {
+		return billing_model.PaymentListResponse{Data: []billing_model.Payment{}}, nil
+	}
+
+	payments, hasMore, nextCursor, err := payment.ActiveProvider.ListPayments(customerIDs, limit, cursor)
+	if err != nil {
+		return billing_model.PaymentListResponse{}, err
+	}
+	if payments == nil {
+		payments = []billing_model.Payment{}
+	}
+
+	return billing_model.PaymentListResponse{
+		Data:       payments,
+		HasMore:    hasMore,
+		NextCursor: nextCursor,
+	}, nil
+}
+
+// resolveCustomerIDs returns the Stripe customer IDs to read payments for.
+// User scope: the user's own customer. Workspace scope: distinct customers of
+// every user who holds a subscription for the workspace.
+func resolveCustomerIDs(userID uuid.UUID, workspaceID *uuid.UUID) ([]string, error) {
+	if workspaceID == nil {
+		var user user_entity.User
+		if err := database.DB.First(&user, userID).Error; err != nil {
+			return nil, errors.New("user not found")
+		}
+		if user.StripeCustomerID == nil || *user.StripeCustomerID == "" {
+			return nil, nil
+		}
+		return []string{*user.StripeCustomerID}, nil
+	}
+
+	var userIDs []uuid.UUID
+	if err := database.DB.
+		Model(&billing_entity.Subscription{}).
+		Where("workspace_id = ?", *workspaceID).
+		Distinct().
+		Pluck("user_id", &userIDs).Error; err != nil {
+		return nil, fmt.Errorf("failed to resolve workspace subscribers: %w", err)
+	}
+	if len(userIDs) == 0 {
+		return nil, nil
+	}
+
+	var ids []string
+	if err := database.DB.
+		Model(&user_entity.User{}).
+		Where("id IN ? AND stripe_customer_id IS NOT NULL AND stripe_customer_id != ''", userIDs).
+		Distinct().
+		Pluck("stripe_customer_id", &ids).Error; err != nil {
+		return nil, fmt.Errorf("failed to resolve workspace customers: %w", err)
+	}
+	return ids, nil
+}

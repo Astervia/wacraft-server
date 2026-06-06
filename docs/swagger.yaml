@@ -291,6 +291,45 @@ definitions:
     required:
     - currency
     type: object
+  billing_model.Payment:
+    properties:
+      amount_cents:
+        type: integer
+      boleto_pdf_url:
+        description: Downloadable boleto voucher PDF
+        type: string
+      boleto_url:
+        description: Hosted boleto voucher page (when awaiting payment)
+        type: string
+      created_at:
+        type: string
+      currency:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      payment_method:
+        description: e.g. "card", "boleto"
+        type: string
+      receipt_url:
+        description: Receipt for a succeeded charge
+        type: string
+      status:
+        description: requires_action, processing, succeeded, canceled, ...
+        type: string
+    type: object
+  billing_model.PaymentListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/billing_model.Payment'
+        type: array
+      has_more:
+        type: boolean
+      next_cursor:
+        type: string
+    type: object
   billing_model.PaymentMode:
     enum:
     - payment
@@ -305,6 +344,16 @@ definitions:
     x-enum-varnames:
     - PaymentModePayment
     - PaymentModeSubscription
+  billing_model.ResumeCheckoutRequest:
+    properties:
+      cancel_url:
+        type: string
+      success_url:
+        type: string
+    required:
+    - cancel_url
+    - success_url
+    type: object
   billing_model.Scope:
     enum:
     - user
@@ -3388,12 +3437,57 @@ paths:
       summary: Create an endpoint weight
       tags:
       - Billing Endpoint Weight
+  /billing/payment/:
+    get:
+      consumes:
+      - application/json
+      description: 'Returns a page of payments read live from the payment provider
+        (e.g. Stripe). Pagination is cursor-based: pass the returned next_cursor to
+        fetch the next page. Without X-Workspace-ID returns the user''s payments;
+        with X-Workspace-ID returns workspace payments (requires billing.read policy).'
+      parameters:
+      - in: query
+        name: cursor
+        type: string
+      - in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Page of payments
+          schema:
+            $ref: '#/definitions/billing_model.PaymentListResponse'
+        "400":
+          description: Invalid query parameters
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "403":
+          description: Insufficient permissions
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "503":
+          description: Payment provider not configured
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: List payments
+      tags:
+      - Billing Payment
   /billing/plan/:
     delete:
       consumes:
       - application/json
       description: Deletes a billing plan by ID. Plans with active subscriptions cannot
-        be deleted. Requires billing.admin policy.
+        be deleted. Requires superuser role.
       parameters:
       - description: Plan ID
         in: query
@@ -3417,7 +3511,6 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      - WorkspaceAuth: []
       summary: Delete a billing plan
       tags:
       - Billing Plan
@@ -3493,8 +3586,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Creates a new billing plan using the provided data. Requires billing.admin
-        policy.
+      description: Creates a new billing plan using the provided data. Requires superuser
+        role.
       parameters:
       - description: Plan data
         in: body
@@ -3519,14 +3612,13 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      - WorkspaceAuth: []
       summary: Create a new billing plan
       tags:
       - Billing Plan
     put:
       consumes:
       - application/json
-      description: Updates an existing billing plan. Requires billing.admin policy.
+      description: Updates an existing billing plan. Requires superuser role.
       parameters:
       - description: Plan ID
         in: query
@@ -3556,7 +3648,6 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      - WorkspaceAuth: []
       summary: Update a billing plan
       tags:
       - Billing Plan
@@ -3565,7 +3656,7 @@ paths:
       consumes:
       - application/json
       description: Removes a currency-specific price from a billing plan. Requires
-        billing.admin policy.
+        superuser role.
       parameters:
       - description: Plan ID
         in: path
@@ -3594,7 +3685,6 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      - WorkspaceAuth: []
       summary: Delete a plan price
       tags:
       - Billing Plan Price
@@ -3676,8 +3766,7 @@ paths:
       consumes:
       - application/json
       description: Adds a new currency-specific price to a billing plan. If IsDefault
-        is true, the previous default for that plan is unset. Requires billing.admin
-        policy.
+        is true, the previous default for that plan is unset. Requires superuser role.
       parameters:
       - description: Plan ID
         in: path
@@ -3707,7 +3796,6 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      - WorkspaceAuth: []
       summary: Create a plan price
       tags:
       - Billing Plan Price
@@ -3715,7 +3803,7 @@ paths:
       consumes:
       - application/json
       description: Updates an existing plan price. If IsDefault is set to true, the
-        previous default for that plan is unset. Requires billing.admin policy.
+        previous default for that plan is unset. Requires superuser role.
       parameters:
       - description: Plan ID
         in: path
@@ -3750,7 +3838,6 @@ paths:
             $ref: '#/definitions/common_model.DescriptiveError'
       security:
       - ApiKeyAuth: []
-      - WorkspaceAuth: []
       summary: Update a plan price
       tags:
       - Billing Plan Price
@@ -3900,6 +3987,51 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Initiate checkout
+      tags:
+      - Billing Subscription
+  /billing/subscription/checkout-url:
+    post:
+      consumes:
+      - application/json
+      description: Returns a checkout URL for a pending subscription. If the original
+        checkout session is still open its URL is returned; if it expired a fresh
+        session is created for the same plan. Without X-Workspace-ID it operates on
+        a user subscription. With X-Workspace-ID it operates on a workspace subscription
+        (requires billing.manage policy).
+      parameters:
+      - description: Subscription ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Redirect URLs
+        in: body
+        name: checkout
+        required: true
+        schema:
+          $ref: '#/definitions/billing_model.ResumeCheckoutRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Checkout session
+          schema:
+            $ref: '#/definitions/billing_model.CheckoutResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+        "503":
+          description: Payment provider not configured
+          schema:
+            $ref: '#/definitions/common_model.DescriptiveError'
+      security:
+      - ApiKeyAuth: []
+      summary: Resume checkout for a pending subscription
       tags:
       - Billing Subscription
   /billing/subscription/manual:

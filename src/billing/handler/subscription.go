@@ -450,3 +450,70 @@ func RetrySubscription(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).SendString(url)
 }
+
+// ResumeCheckout returns a checkout URL for a pending (unpaid) subscription.
+//
+//	@Summary		Resume checkout for a pending subscription
+//	@Description	Returns a checkout URL for a pending subscription. If the original checkout session is still open its URL is returned; if it expired a fresh session is created for the same plan. Without X-Workspace-ID it operates on a user subscription. With X-Workspace-ID it operates on a workspace subscription (requires billing.manage policy).
+//	@Tags			Billing Subscription
+//	@Accept			json
+//	@Produce		json
+//	@Param			id			query		string							true	"Subscription ID"
+//	@Param			checkout	body		billing_model.ResumeCheckoutRequest	true	"Redirect URLs"
+//	@Success		200			{object}	billing_model.CheckoutResponse	"Checkout session"
+//	@Failure		400			{object}	common_model.DescriptiveError	"Invalid request"
+//	@Failure		500			{object}	common_model.DescriptiveError	"Internal server error"
+//	@Failure		503			{object}	common_model.DescriptiveError	"Payment provider not configured"
+//	@Security		ApiKeyAuth
+//	@Router			/billing/subscription/checkout-url [post]
+func ResumeCheckout(c *fiber.Ctx) error {
+	if payment.ActiveProvider == nil {
+		return c.Status(fiber.StatusServiceUnavailable).JSON(
+			common_model.NewApiError("payment provider is not configured", nil, "billing").Send(),
+		)
+	}
+
+	user := workspace_middleware.GetUser(c)
+
+	id := new(common_model.RequiredID)
+	if err := c.QueryParser(id); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+	if err := validators.Validator().Struct(id); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
+		)
+	}
+
+	body := new(billing_model.ResumeCheckoutRequest)
+	if err := c.BodyParser(body); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewParseJsonError(err).Send(),
+		)
+	}
+	if err := validators.Validator().Struct(body); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			common_model.NewValidationError(err).Send(),
+		)
+	}
+
+	var workspaceID *uuid.UUID
+	if workspace := workspace_middleware.GetWorkspace(c); workspace != nil {
+		wsID, err := requireWorkspacePolicy(c, workspace_model.PolicyBillingManage)
+		if err != nil {
+			return err
+		}
+		workspaceID = wsID
+	}
+
+	resp, err := billing_service.ResumeCheckout(id.ID, user.ID, workspaceID, body.SuccessURL, body.CancelURL)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			common_model.NewApiError("unable to resume checkout", err, "billing_service").Send(),
+		)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(resp)
+}
