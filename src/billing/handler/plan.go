@@ -54,10 +54,10 @@ func GetPlans(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(plans)
 }
 
-// CreatePlan creates a new billing plan (admin only).
+// CreatePlan creates a new billing plan (superuser only).
 //
 //	@Summary		Create a new billing plan
-//	@Description	Creates a new billing plan using the provided data. Requires billing.admin policy.
+//	@Description	Creates a new billing plan using the provided data. Requires superuser role.
 //	@Tags			Billing Plan
 //	@Accept			json
 //	@Produce		json
@@ -66,7 +66,6 @@ func GetPlans(c *fiber.Ctx) error {
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
-//	@Security		WorkspaceAuth
 //	@Router			/billing/plan/ [post]
 func CreatePlan(c *fiber.Ctx) error {
 	body := new(billing_model.CreatePlan)
@@ -129,10 +128,10 @@ func CreatePlan(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(result)
 }
 
-// UpdatePlan updates an existing billing plan (admin only).
+// UpdatePlan updates an existing billing plan (superuser only).
 //
 //	@Summary		Update a billing plan
-//	@Description	Updates an existing billing plan. Requires billing.admin policy.
+//	@Description	Updates an existing billing plan. Requires superuser role.
 //	@Tags			Billing Plan
 //	@Accept			json
 //	@Produce		json
@@ -142,7 +141,6 @@ func CreatePlan(c *fiber.Ctx) error {
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request body"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
-//	@Security		WorkspaceAuth
 //	@Router			/billing/plan/ [put]
 func UpdatePlan(c *fiber.Ctx) error {
 	id := new(common_model.RequiredID)
@@ -219,10 +217,10 @@ func UpdatePlan(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(plan)
 }
 
-// DeletePlan deletes a billing plan (admin only).
+// DeletePlan deletes a billing plan (superuser only).
 //
 //	@Summary		Delete a billing plan
-//	@Description	Deletes a billing plan by ID. Plans with active subscriptions cannot be deleted. Requires billing.admin policy.
+//	@Description	Deletes a billing plan by ID. Plans with active subscriptions cannot be deleted. Requires superuser role.
 //	@Tags			Billing Plan
 //	@Accept			json
 //	@Produce		json
@@ -231,7 +229,6 @@ func UpdatePlan(c *fiber.Ctx) error {
 //	@Failure		400	{object}	common_model.DescriptiveError	"Invalid query parameters"
 //	@Failure		500	{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
-//	@Security		WorkspaceAuth
 //	@Router			/billing/plan/ [delete]
 func DeletePlan(c *fiber.Ctx) error {
 	id := new(common_model.RequiredID)

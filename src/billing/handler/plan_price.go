@@ -65,10 +65,10 @@ func GetPlanPrices(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(prices)
 }
 
-// CreatePlanPrice adds a currency-specific price to a plan (admin only).
+// CreatePlanPrice adds a currency-specific price to a plan (superuser only).
 //
 //	@Summary		Create a plan price
-//	@Description	Adds a new currency-specific price to a billing plan. If IsDefault is true, the previous default for that plan is unset. Requires billing.admin policy.
+//	@Description	Adds a new currency-specific price to a billing plan. If IsDefault is true, the previous default for that plan is unset. Requires superuser role.
 //	@Tags			Billing Plan Price
 //	@Accept			json
 //	@Produce		json
@@ -78,7 +78,6 @@ func GetPlanPrices(c *fiber.Ctx) error {
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
-//	@Security		WorkspaceAuth
 //	@Router			/billing/plan/{plan_id}/price/ [post]
 func CreatePlanPrice(c *fiber.Ctx) error {
 	planID, err := uuid.Parse(c.Params("plan_id"))
@@ -130,10 +129,10 @@ func CreatePlanPrice(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(result)
 }
 
-// UpdatePlanPrice updates a plan price entry (admin only).
+// UpdatePlanPrice updates a plan price entry (superuser only).
 //
 //	@Summary		Update a plan price
-//	@Description	Updates an existing plan price. If IsDefault is set to true, the previous default for that plan is unset. Requires billing.admin policy.
+//	@Description	Updates an existing plan price. If IsDefault is set to true, the previous default for that plan is unset. Requires superuser role.
 //	@Tags			Billing Plan Price
 //	@Accept			json
 //	@Produce		json
@@ -144,7 +143,6 @@ func CreatePlanPrice(c *fiber.Ctx) error {
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid request"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
-//	@Security		WorkspaceAuth
 //	@Router			/billing/plan/{plan_id}/price/ [put]
 func UpdatePlanPrice(c *fiber.Ctx) error {
 	planID, err := uuid.Parse(c.Params("plan_id"))
@@ -242,10 +240,10 @@ func UpdatePlanPrice(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(planPrice)
 }
 
-// DeletePlanPrice removes a currency-specific price from a plan (admin only).
+// DeletePlanPrice removes a currency-specific price from a plan (superuser only).
 //
 //	@Summary		Delete a plan price
-//	@Description	Removes a currency-specific price from a billing plan. Requires billing.admin policy.
+//	@Description	Removes a currency-specific price from a billing plan. Requires superuser role.
 //	@Tags			Billing Plan Price
 //	@Accept			json
 //	@Produce		json
@@ -255,7 +253,6 @@ func UpdatePlanPrice(c *fiber.Ctx) error {
 //	@Failure		400		{object}	common_model.DescriptiveError	"Invalid parameters"
 //	@Failure		500		{object}	common_model.DescriptiveError	"Internal server error"
 //	@Security		ApiKeyAuth
-//	@Security		WorkspaceAuth
 //	@Router			/billing/plan/{plan_id}/price/ [delete]
 func DeletePlanPrice(c *fiber.Ctx) error {
 	if _, err := uuid.Parse(c.Params("plan_id")); err != nil {
