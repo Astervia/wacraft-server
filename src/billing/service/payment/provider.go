@@ -38,6 +38,8 @@ type CheckoutSessionStatus struct {
 	PaymentStatus        string // "paid", "unpaid", "no_payment_required"
 	StripeSubscriptionID string
 	CustomerID           string
+	URL                  string // Hosted checkout URL (present while the session is open)
+	Currency             string // Currency of the session (used when regenerating an expired session)
 }
 
 // Provider defines the interface for payment processing integrations.
@@ -83,6 +85,11 @@ type Provider interface {
 
 	// GetSubscriptionRetryURL returns a URL where the user can pay to recover an unpaid/past due subscription.
 	GetSubscriptionRetryURL(subscriptionID string) (string, error)
+
+	// ListPayments returns a single page of payments for the given provider-side
+	// customer IDs. Pagination is cursor-based: pass an empty cursor for the first
+	// page and the returned nextCursor for subsequent pages.
+	ListPayments(customerIDs []string, limit int, cursor string) (payments []billing_model.Payment, hasMore bool, nextCursor string, err error)
 
 	// VerifyWebhookSignature validates the authenticity of a webhook payload.
 	VerifyWebhookSignature(payload []byte, signature string) error

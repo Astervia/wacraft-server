@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stripe/stripe-go/v84"
 	"github.com/stripe/stripe-go/v84/checkout/session"
+	"github.com/stripe/stripe-go/v84/paymentintent"
 	"github.com/stripe/stripe-go/v84/price"
 	"github.com/stripe/stripe-go/v84/product"
 	"github.com/stripe/stripe-go/v84/subscription"
@@ -297,6 +298,8 @@ func (s *StripeProvider) GetCheckoutSessionStatus(sessionID string) (*CheckoutSe
 	result := &CheckoutSessionStatus{
 		SessionStatus: string(sess.Status),
 		PaymentStatus: string(sess.PaymentStatus),
+		URL:           sess.URL,
+		Currency:      string(sess.Currency),
 	}
 	if sess.Subscription != nil {
 		result.StripeSubscriptionID = sess.Subscription.ID
@@ -306,6 +309,90 @@ func (s *StripeProvider) GetCheckoutSessionStatus(sessionID string) (*CheckoutSe
 	}
 
 	return result, nil
+}
+
+// ListPayments returns a page of payments for the given Stripe customers using
+// the PaymentIntent Search API. A single search query matches any of the
+// customers, so one cursor paginates the whole set uniformly. Note: Stripe
+// Search is eventually consistent (recent payments may take up to a minute to
+// appear), which is acceptable for a payment-history view.
+func (s *StripeProvider) ListPayments(customerIDs []string, limit int, cursor string) ([]billing_model.Payment, bool, string, error) {
+	if env.StripeSecretKey == "" {
+		return nil, false, "", errors.New("stripe is not configured")
+	}
+
+	clauses := make([]string, 0, len(customerIDs))
+	for _, id := range customerIDs {
+		if id != "" {
+			clauses = append(clauses, fmt.Sprintf("customer:%q", id))
+		}
+	}
+	if len(clauses) == 0 {
+		return []billing_model.Payment{}, false, "", nil
+	}
+
+	if limit <= 0 || limit > 100 {
+		limit = 10
+	}
+
+	params := &stripe.PaymentIntentSearchParams{
+		SearchParams: stripe.SearchParams{
+			Query: strings.Join(clauses, " OR "),
+			Limit: stripe.Int64(int64(limit)),
+		},
+	}
+	if cursor != "" {
+		params.Page = stripe.String(cursor)
+	}
+	params.AddExpand("data.latest_charge")
+
+	it := paymentintent.Search(params)
+	payments := make([]billing_model.Payment, 0, limit)
+	for len(payments) < limit && it.Next() {
+		payments = append(payments, mapPaymentIntent(it.PaymentIntent()))
+	}
+	if err := it.Err(); err != nil {
+		return nil, false, "", fmt.Errorf("failed to search stripe payments: %w", err)
+	}
+
+	hasMore := false
+	nextCursor := ""
+	if meta := it.Meta(); meta != nil {
+		hasMore = meta.HasMore
+		if meta.NextPage != nil {
+			nextCursor = *meta.NextPage
+		}
+	}
+
+	return payments, hasMore, nextCursor, nil
+}
+
+// mapPaymentIntent converts a Stripe PaymentIntent into the domain Payment DTO,
+// surfacing the boleto voucher URLs when present.
+func mapPaymentIntent(pi *stripe.PaymentIntent) billing_model.Payment {
+	p := billing_model.Payment{
+		ID:          pi.ID,
+		AmountCents: pi.Amount,
+		Currency:    string(pi.Currency),
+		Status:      string(pi.Status),
+		Description: pi.Description,
+		CreatedAt:   time.Unix(pi.Created, 0),
+	}
+	if len(pi.PaymentMethodTypes) > 0 {
+		p.PaymentMethod = pi.PaymentMethodTypes[0]
+	}
+	if pi.NextAction != nil && pi.NextAction.BoletoDisplayDetails != nil {
+		p.BoletoURL = pi.NextAction.BoletoDisplayDetails.HostedVoucherURL
+		p.BoletoPDFURL = pi.NextAction.BoletoDisplayDetails.PDF
+	}
+	if pi.LatestCharge != nil {
+		p.ReceiptURL = pi.LatestCharge.ReceiptURL
+		// Prefer the method actually charged over the configured method list.
+		if pi.LatestCharge.PaymentMethodDetails != nil && pi.LatestCharge.PaymentMethodDetails.Type != "" {
+			p.PaymentMethod = string(pi.LatestCharge.PaymentMethodDetails.Type)
+		}
+	}
+	return p
 }
 
 func (s *StripeProvider) VerifyWebhookSignature(payload []byte, signature string) error {
