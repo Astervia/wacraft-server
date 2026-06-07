@@ -1,4 +1,4 @@
-name: Release – Server Docker Image
+name: Release – Server Docker Image & Binaries
 
 on:
     push:
@@ -7,23 +7,123 @@ on:
 
 env:
     IMAGE_NAME: astervia/wacraft-server
+    GO_VERSION: "1.26"
 
 jobs:
-    build-and-push:
+    meta:
+        name: Resolve release metadata
         runs-on: ubuntu-latest
+        outputs:
+            tag: ${{ steps.vars.outputs.tag }}
+            stable: ${{ steps.vars.outputs.stable }}
+        steps:
+            - name: Extract tag & stability
+              id: vars
+              run: |
+                  TAG="${GITHUB_REF#refs/tags/}"
+                  echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+                  # A "stable" release is a clean vX.Y.Z tag (no pre-release suffix).
+                  if [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+                      echo "stable=true" >> "$GITHUB_OUTPUT"
+                  else
+                      echo "stable=false" >> "$GITHUB_OUTPUT"
+                  fi
+
+    build-binaries:
+        name: Build ${{ matrix.goos }}/${{ matrix.goarch }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - { goos: linux, goarch: amd64 }
+                    - { goos: linux, goarch: arm64 }
+                    - { goos: linux, goarch: arm }
+                    - { goos: linux, goarch: "386" }
+                    - { goos: darwin, goarch: amd64 }
+                    - { goos: darwin, goarch: arm64 }
+                    - { goos: windows, goarch: amd64 }
+                    - { goos: windows, goarch: arm64 }
+                    - { goos: windows, goarch: "386" }
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v6
+
+            - name: Set up Go
+              uses: actions/setup-go@v5
+              with:
+                  go-version: ${{ env.GO_VERSION }}
+                  cache: true
+
+            - name: Generate Swagger docs
+              run: |
+                  go install github.com/swaggo/swag/cmd/swag@latest
+                  swag init --parseDependency
+
+            - name: Build binary
+              env:
+                  CGO_ENABLED: "0"
+                  GOOS: ${{ matrix.goos }}
+                  GOARCH: ${{ matrix.goarch }}
+              run: |
+                  TAG="${GITHUB_REF#refs/tags/}"
+                  BIN_NAME="wacraft-server"
+                  EXT=""
+                  if [ "$GOOS" = "windows" ]; then EXT=".exe"; fi
+
+                  DIST="wacraft-server-${TAG}-${GOOS}-${GOARCH}"
+                  mkdir -p "dist/${DIST}"
+
+                  go build -trimpath -ldflags "-s -w" -o "dist/${DIST}/${BIN_NAME}${EXT}" ./main.go
+
+                  # Bundle the assets the binary expects at runtime.
+                  cp -r docs "dist/${DIST}/docs"
+                  cp -r src/database/migrations "dist/${DIST}/migrations"
+                  cp -r src/database/migrations-before "dist/${DIST}/migrations-before"
+                  [ -f README.md ] && cp README.md "dist/${DIST}/" || true
+
+                  cd dist
+                  if [ "$GOOS" = "windows" ]; then
+                      zip -r "${DIST}.zip" "${DIST}"
+                  else
+                      tar -czf "${DIST}.tar.gz" "${DIST}"
+                  fi
+
+            - name: Upload archive artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: binary-${{ matrix.goos }}-${{ matrix.goarch }}
+                  path: |
+                      dist/*.tar.gz
+                      dist/*.zip
+                  if-no-files-found: error
+                  retention-days: 1
+
+    build-and-push:
+        name: Build & push Docker image
+        runs-on: ubuntu-latest
+        needs: meta
         permissions:
-            contents: write
             packages: write
 
         steps:
             - name: Checkout repository
               uses: actions/checkout@v6
 
-            - name: Extract tag name
-              id: vars
+            - name: Compute Docker tags
+              id: dockertags
               run: |
-                  TAG="${GITHUB_REF#refs/tags/}"
-                  echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+                  # Always tag the version. Only stable releases also move ":latest".
+                  TAGS="${{ env.IMAGE_NAME }}:${{ needs.meta.outputs.tag }}"
+                  if [ "${{ needs.meta.outputs.stable }}" = "true" ]; then
+                      TAGS="${TAGS}"$'\n'"${{ env.IMAGE_NAME }}:latest"
+                  fi
+                  {
+                      echo "tags<<EOF"
+                      echo "$TAGS"
+                      echo "EOF"
+                  } >> "$GITHUB_OUTPUT"
 
             - name: Install Cosign
               uses: sigstore/cosign-installer@v4.1.1
@@ -43,23 +143,49 @@ jobs:
                   context: .
                   file: ./Dockerfile
                   push: true
-                  tags: |
-                      ${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.tag }}
-                      ${{ env.IMAGE_NAME }}:latest
+                  tags: ${{ steps.dockertags.outputs.tags }}
 
             - name: Sign the published Docker image
               env:
                   COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
                   COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
               run: |
-                  # Sign the specific version tag
-                  cosign sign --yes --key env://COSIGN_PRIVATE_KEY "${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.tag }}"
+                  # Sign the specific version tag.
+                  cosign sign --yes --key env://COSIGN_PRIVATE_KEY "${{ env.IMAGE_NAME }}:${{ needs.meta.outputs.tag }}"
 
-                  # Sign the 'latest' tag
-                  cosign sign --yes --key env://COSIGN_PRIVATE_KEY "${{ env.IMAGE_NAME }}:latest"
+                  # Only stable releases publish & sign ':latest'.
+                  if [ "${{ needs.meta.outputs.stable }}" = "true" ]; then
+                      cosign sign --yes --key env://COSIGN_PRIVATE_KEY "${{ env.IMAGE_NAME }}:latest"
+                  fi
+
+    release:
+        name: Publish GitHub release
+        runs-on: ubuntu-latest
+        needs: [meta, build-binaries, build-and-push]
+        permissions:
+            contents: write
+
+        steps:
+            - name: Download all binary artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  pattern: binary-*
+                  path: dist
+                  merge-multiple: true
+
+            - name: Generate checksums
+              working-directory: dist
+              run: sha256sum * > SHA256SUMS.txt
 
             - name: Publish GitHub release
               uses: softprops/action-gh-release@v3
               with:
-                  tag_name: ${{ steps.vars.outputs.tag }}
+                  tag_name: ${{ needs.meta.outputs.tag }}
                   generate_release_notes: true
+                  # Pre-release tags are marked as such and never become "Latest".
+                  prerelease: ${{ needs.meta.outputs.stable != 'true' }}
+                  make_latest: ${{ needs.meta.outputs.stable == 'true' }}
+                  files: |
+                      dist/*.tar.gz
+                      dist/*.zip
+                      dist/SHA256SUMS.txt
