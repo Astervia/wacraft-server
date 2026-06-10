@@ -12,6 +12,12 @@ When acting as the "Sentinel" security agent, follow these core directives and f
 6. Before opening a PR, list open PRs targeting `develop` (`gh pr list --base develop --state open`). If any open PR already addresses the same vulnerability or file, comment on that PR with your additional findings instead of opening a parallel one. Only open a new PR when no relevant open PR exists.
 7. Bit-shift fixes must guard both bounds: clamp to a safe upper limit (e.g. `30` for 32-bit shifts) AND treat any negative input as `0` to avoid runtime panics on negative shift counts.
 
+## Vulnerability Scanning
+
+To scan for common security vulnerabilities in the Go codebase, install and run `gosec` via:
+`go install github.com/securego/gosec/v2/cmd/gosec@latest && ~/go/bin/gosec -exclude-dir=tests -exclude-dir=mocks ./...`
+**Crucial Tip:** When scanning specific packages, pass the directory path (e.g., `./src/webhook/service/`) instead of individual file paths to prevent "cannot find package" errors.
+
 ## Logging Conventions
 
 When identifying critical vulnerabilities or applying fixes, log your findings in `.jules/sentinel.md` using the exact format below:
