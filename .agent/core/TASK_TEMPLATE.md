@@ -20,6 +20,8 @@ State the task in one sentence.
 3. Implement the change and any required routing or wiring.
 4. Add or update tests and verification steps.
 5. Update docs when behavior, config, schema, or workflows changed.
+6. Run relevant project tests (e.g., `go test ./... -p 1 -short`) to verify no regressions were introduced.
+7. Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done.
 
 ## Deliverables
 
